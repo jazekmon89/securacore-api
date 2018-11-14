@@ -14,3 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::resource('securities', 'Api\V1\ContentSecurityController', [
+	'only' => ['index', 'show']
+]);
