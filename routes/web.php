@@ -15,6 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('securities', 'Api\V1\ContentSecurityController', [
-	'only' => ['index', 'show']
-]);
+Route::prefix('api')->group(function(){
+	Route::resource('v1/securities', 'Api\V1\ContentSecurityController', [
+		'only' => ['index', 'show']
+	]);
+});
