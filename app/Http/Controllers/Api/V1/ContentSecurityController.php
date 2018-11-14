@@ -51,11 +51,14 @@ class ContentSecurityController extends Controller
 	    	}
 	    }
     	$functions = json_decode($content_security->function, 1);
-    	$full_functions = [];
+    	$full_functions = [
+    		'enabled' => $content_security->enabled,
+    		'content_securities' => []
+    	];
     	$content_security_label = ContentSecurityLabel::whereIn( 'id', array_keys( $functions ) )->get();
     	foreach( $functions as $label_id => $status_alert ){
     		if ( !empty($content_security_label[$label_id]) ) {
-    			array_push( $full_functions, [
+    			array_push( $full_functions['content_securities'], [
     				'name' => $content_security_label[$label_id]->name,
     				'message' => $content_security_label[$label_id]->message,
     				'status' => $status_alert[0],
