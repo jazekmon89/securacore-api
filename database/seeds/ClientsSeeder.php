@@ -13,26 +13,40 @@ class ClientsSeeder extends Seeder
     {
         DB::table('clients')->insert([
             'url' => 'site1.com',
-            'notes' => ''
+            'notes' => '',
+            'user_id' => 1,
+            'public_key' => ''
         ],[
             'url' => 'google.com',
-            'notes' => ''
+            'notes' => '',
+            'user_id' => 1,
+            'public_key' => ''
         ],[
             'url' => 'site2.com',
-            'notes' => ''
+            'notes' => '',
+            'user_id' => 0,
+            'public_key' => ''
         ],[
             'url' => 'test4.com',
-            'notes' => ''
+            'notes' => '',
+            'user_id' => 0,
+            'public_key' => ''
         ],[
             'url' => 'test5.com',
-            'notes' => ''
+            'notes' => '',
+            'user_id' => 0,
+            'public_key' => ''
         ],[
             'url' => 'test6.com',
             'notes' => 'sample test
-                            '
+                            ',
+            'user_id' => 0,
+            'public_key' => ''
         ],[
             'url' => 'http://www.google.com',
-            'notes' => ''
+            'notes' => '',
+            'user_id' => 0,
+            'public_key' => ''
         ]);
     }
 }
