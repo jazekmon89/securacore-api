@@ -3,77 +3,69 @@
 namespace App\Http\Controllers\Api\V1;
 
 use Illuminate\Http\Request;
-use App\AdBlockSecurity;
-use App\BotSecurity;
 use App\Client;
 use App\ContentSecurity;
-use App\DoSSecurity;
-use App\ProxySecurity;
-use App\SpamSecurity;
-use App\SQLSecurity;
 use App\SecurityLabel;
 use App\Http\Controllers\Controller;
-use App\Security\Variations\AdBlocker;
-use App\Security\Variations\BotProtection;
 use App\Security\Variations\ContentProtection;
-use App\Security\Variations\DoSProtection;
-use App\Security\Variations\ProxyProtection;
-use App\Security\Variations\SpamProtection;
-use App\Security\Variations\SQLInjectionProtection;
 
 class SecurityController extends Controller
 {
 
     public function canAccess(Client $client) {
         if ( !$client->id ) {
-            return response()->json([
-                'success' => 0,
-                'message' => 'Invalid request'
-            ], 400);
+            return false;
+        }
+        // for testing environments, let us give access
+        if ( env('APP_ENV') != 'production' ){
+            return true;
         }
         $referer = request()->server('HTTP_REFERER');
+        $referer = !$referer ? request()->server('REMOTE_ADDR') : null;
         $referer_parsed = parse_url( $referer );
         $clients_flag = false;
-        if ( $referer != null ) {
-            $client_url = parse_url( $client->url );
-            if ( $client_url['host'] != $referer_parsed['host'] ) {
-                return response()->json([
-                    'success' => 0,
-                    'message' => 'Invalid request'
-                ], 400);
+        if ( !empty($referer) ) {
+            $client_parsed = parse_url( $client->url );
+            $client_host = !empty($client_parsed['host']) ? $client_parsed['host'] : (!empty($client_parsed['path']) ? $client_parsed['path'] : null);
+            $referer_host = !empty($referer_parsed['host']) ? $referer_parsed['host'] : (!empty($referer_parsed['path']) ? $referer_parsed['path'] : null);
+            if ( !$client_host || !$referer_host || ($client_host && $referer_host && $client_host != $referer_host) ) {
+                return false;
             }
         }
         return true;
     }
 
-	public function getSecurities(Client $client) {
+    public function getSecurities(Client $client) {
+        /*
+         * We dynamically call the model for a given security to get the activator fields.
+         * To achieve that, we created an associative array of security - model name
+         *  [
+         *      security name => [
+         *          security class name,
+         *          model class name
+         *      ]
+         *  ]
+        */
+        $securities = [
+            'contentProtection'=>'ContentSecurity',
+            'adBlockerProtection'=>'AdBlockSecurity',
+            'dosProtection'=>'DoSSecurity',
+            'proxyProtection'=>'ProxySecurity',
+            'sqlProtection'=>'SQLSecurity',
+            'spamProtection'=>'SpamSecurity',
+            'botProtection'=>'BotSecurity'
+        ];
+        $to_return = [];
         if ( $this->canAccess($client) ) {
-            $ad_block = AdBlockSecurity::where('client_id', $client->id)->first();
-            $ad_block = $ad_block ? $ad_block->detection : 0;
-            $bot = BotSecurity::where('client_id', $client->id)->first();
-            $bot = $bot ? $bot->badbot : 0;
-            $content = ContentSecurity::where('client_id', $client->id)->first();
-            $content = $content ? $content->enabled : 0;
-            $dos = DoSSecurity::where('client_id', $client->id)->first();
-            $dos = $dos ? $dos->security : 0;
-            $proxy = ProxySecurity::where('client_id', $client->id)->first();
-            $proxy = $proxy ? $proxy->proxy : 0;
-            $spam = SpamSecurity::where('client_id', $client->id)->first();
-            $spam = $spam ? $spam->security : 0;
-            $sql = SqlSecurity::where('client_id', $client->id)->first();
-            $sql = $sql ? $sql->sql_injection : 0;
-            return response()->json([
-                'contentProtection' => $content,
-                'adBlockerProtection' => $ad_block,
-                'dosProtection' => $dos,
-                'proxyProtection' => $proxy,
-                'sqlProtection' => $sql,
-                'spamProtection' => $spam,
-                'botProtection' => $bot
-            ], 200);
+            foreach ($securities as $security => $model) {
+                $model_name = 'App\\'.$model;
+                $activator_value = $model_name::where('client_id', $client->id)->first();
+                $activator_value = $activator_value ? $activator_value->{$model_name::ACTIVATOR_FIELD} : 0;
+                $to_return[$security] = $activator_value;
+            }
         }
-        return response()->json([], 200);
-	}
+        return response()->json($to_return, 200);
+    }
 
     public function getProtection(Client $client, $security_variation, $model) {
         $to_return = [];
@@ -112,73 +104,50 @@ class SecurityController extends Controller
     }
 
     public function __call($name, $arguments) {
-        $gets = [
-            'getContentProtection',
-            'getAdBlockerProtection',
-            'getDosProtection',
-            'getProxyProtection',
-            'getSqlProtection',
-            'getSpamProtection',
-            'getBotProtection'
-        ];
-        $sets = [
-            'setContentProtection',
-            'setAdBlockerProtection',
-            'setDosProtection',
-            'setProxyProtection',
-            'setSqlProtection',
-            'setSpamProtection',
-            'setBotProtection'
+        /*
+         * We dynamically call the getProtection or setProtection for a given get or set function name.
+         * To achieve that, we created an associative array of function name - class name and model name pair:
+         *  [
+         *      function name => [
+         *          security class name,
+         *          model class name
+         *      ]
+         *  ]
+        */
+        $functions = [
+            'ContentProtection'=>['ContentProtection', 'ContentSecurity'],
+            'AdBlockerProtection'=>['AdBlocker', 'AdBlockSecurity'],
+            'DosProtection'=>['DoSProtection', 'DoSSecurity'],
+            'ProxyProtection'=>['ProxyProtection', 'ProxySecurity'],
+            'SqlProtection'=>['SQLInjectionProtection', 'SQLSecurity'],
+            'SpamProtection'=>['SpamProtection', 'SpamSecurity'],
+            'BotProtection'=>['BotProtection', 'BotSecurity']
         ];
         $security_variation = null;
         $model = null;
         $argument_2 = !empty($arguments[2]) ? $arguments[2] : null;
-        switch ($name) {
-            case 'getContentProtection':
-                $argument_2 = 'enabled';
-                $security_variation = new ContentProtection();
-                $model = new ContentSecurity();
+        $prefix = substr($name, 0, 3);
+        foreach ($functions as $function => $class_model) {
+            if ($name == $prefix.$function) {
+                $security_name_space = 'App\\Security\\Variations\\';
+                $model_name_space = 'App\\';
+                $class_name = $security_name_space.$class_model[0];
+                $security_variation = new $class_name;
+                $model_name = $model_name_space.$class_model[1];
+                $model = new $model_name();
                 break;
-            case 'getAdBlockerProtection':
-                $argument_2 = 'detection';
-                $security_variation = new AdBlocker();
-                $model = new AdBlockSecurity();
-                break;
-            case 'getDosProtection':
-                $argument_2 = 'security';
-                $security_variation = new DoSProtection();
-                $model = new DoSSecurity();
-                break;
-            case 'getProxyProtection':
-                $argument_2 = 'proxy';
-                $security_variation = new ProxyProtection();
-                $model = new ProxySecurity();
-                break;
-            case 'getSqlProtection':
-                $argument_2 = 'sql_injection';
-                $security_variation = new SQLInjectionProtection();
-                $model = new SQLSecurity();
-                break;
-            case 'getSpamProtection':
-                $argument_2 = 'security';
-                $security_variation = new SpamProtection();
-                $model = new SpamSecurity();
-                break;
-            case 'getBotProtection':
-                $argument_2 = 'badbot';
-                $security_variation = new BotProtection();
-                $model = new BotSecurity();
-                break;
-            default:
-                $argument_2 = 'enabled';
+            }
         }
         if ( empty($arguments[0]) ) {
             return [];
         }
-        if ( in_array($name, $gets) ) {
-            $client = Client::where('id', $arguments[0])->first();
+        $client = Client::where('id', $arguments[0])->first();
+        if ( $prefix == 'get' ) {
             return $this->getProtection($client, $security_variation, $model);
-        } else if ( in_array($name , $sets) ) {
+        } else if ( $prefix == 'set' ) {
+            if ( !$argument_2 ) {             
+                $argument_2 = $model ? $model::ACTIVATOR_FIELD : null;
+            }
             return $this->setProtection($client, $security_variation, $model, $argument_2);
         }
     }

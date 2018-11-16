@@ -9,7 +9,7 @@ use App\SecurityLabel;
 class ContentProtection extends SecurityBase {
 
 	public function get(Client $client, $security_variation) {
-	    $security_variation->where('client_id', $client->id);
+	    $security_variation = $security_variation->where('client_id', $client->id);
 	    if( !$security_variation->exists() ) {
 	    	return [];
 	    }
