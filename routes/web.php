@@ -35,9 +35,7 @@ Route::group(['prefix' => 'api'], function () {
 			$uppercaseWords = str_replace(' ', '', $uppercaseWords);
 			$camelCase = lcfirst($uppercaseWords);
 			Route::get('/{client}/' . $security, 'Api\V1\SecurityController@get' . $uppercaseWords);
-			if ( $security != 'content-protection' ) {
-				Route::post('/{client}/' . $security, 'Api\V1\SecurityController@set' . $uppercaseWords);
-			}
+			Route::post('/{client}/' . $security, 'Api\V1\SecurityController@set' . $uppercaseWords);
 		}
 		Route::post('/{client}/content-protection/function/{functionId}', 'Api\V1\SecurityController@setContentProtectionByFunctionId');
 	});

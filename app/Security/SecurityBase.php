@@ -15,58 +15,59 @@ class SecurityBase implements SecurityInterface {
 		// but are we going to support any, soon?
 	}
 
-	public function get(Client $client, $security_variation) {
-	    $security_variation->where('client_id', $client->id);
-	    if( !$security_variation->exists() ) {
+	public function get(Client $client, $security_model) {
+	    $security_model = $security_model->where('client_id', $client->id);
+	    if( !$security_model->exists() ) {
 	    	return [];
 	    }
-		return $security_variation->first();
+		return $security_model->first();
 	}
 
-	public function delete($id, $security_variation) {
-		$security_variation->where('id', $id);
-		if ( $security_variation->exists() ) {
-			$security_variation->delete();
+	public function delete($id, $security_model) {
+		$security_model->where('id', $id);
+		if ( $security_model->exists() ) {
+			$security_model->delete();
 		}
 		return [];
 	}
 
-	public function update(Client $client, $security_variation, Request $request) {
-		$security_variation->where('client_id', $id);
-		if ( $security_variation->exists() ) {
-			$security_variation = $security_variation->first();
+	public function update(Client $client, $security_model, Request $request) {
+		$security_model = $security_model->where('client_id', $client->id);
+		if ( $security_model->exists() ) {
+			$security_model = $security_model->first();
 			foreach( $request->all() as $key => $value ) {
-				if ( !empty($security_variation->{$key}) && $security_variation->{$key} != $value ) {
-					$security_variation->{$key} = $value;
+				if ( !empty($security_model->{$key}) && $security_model->{$key} != $value ) {
+					$security_model->{$key} = $value;
 				}
 			}
-			$security_variation->save();
-			return get_object_vars($security_variation);
+			$security_model->save();
+			return $security_model;
 		}
-		return $security_variation;
+		return [];
 	}
 
-	public function updateMainField(Client $client, $security_variation, $field_name) {
-		$security_variation->where('client_id', $client->id);
-		if ( $security_variation->exists() ) {
-			$security_variation = $security_variation->first();
-			$security_variation->{$field_name} = intval(!$security_variation->{$field_name});
-			$security_variation->save();
+	public function updateMainField(Client $client, $security_model, $field_name) {
+		$security_model = $security_model->where('client_id', $client->id);
+		if ( $security_model->exists() ) {
+			$security_model = $security_model->first();
+			$security_model->{$field_name} = intval(!$security_model->{$field_name});
+			$security_model->save();
+			return $security_model;
 		}
-		return $security_variation;
+		return [];
 	}
 
-	public function updateJSONField(Client $client, $security_variation, $field_name, $function_id, Request $request) {
-		$security_variation->where('client_id', $client->id);
-		if ( $security_variation->exists() ) {
-			$security_variation = $security_variation->first();
-			$json_value = json_decode($security_variation->{$field_name});
+	public function updateJSONField(Client $client, $security_model, $field_name, $function_id, Request $request) {
+		$security_model = $security_model->where('client_id', $client->id);
+		if ( $security_model->exists() ) {
+			$security_model = $security_model->first();
+			$json_value = json_decode($security_model->{$field_name});
 			$json_value[$function_id] = $request->all() ?? [];
 			$json_value = json_encode($json_value);
-			$security_variation->{$field_name} = $json_value;
-			$security_variation->save();
+			$security_model->{$field_name} = $json_value;
+			$security_model->save();
 		}
-		return $security_variation;
+		return $security_model;
 	}
 }
 
