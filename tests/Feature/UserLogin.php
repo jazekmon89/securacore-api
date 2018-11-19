@@ -15,41 +15,41 @@ class UserLogin extends TestCase
      *
      * @test
      */
-    public function user_login()
+    public function user_login_success()
     {
         // $app = factory(User::class, 10)->make();
         // dd($app);
         // $this->assertTrue(true);
+        $payload = ['email' => 'josue.smitham@example.net','password' => 'secretsecret'];
+        
+        $response = $this->withHeaders([
+            'Content-Type' => 'application/x-www-form-urlencoded',
+            'Accept' => 'application/json',
+        ])
+        ->json('POST', '/api/login', $payload)
+        ->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'token',
+                'expires'
+            ]);
+    }
+
+    /**
+     * Failed Customer Login API.
+     *
+     * @test
+     */
+    public function user_login_failed()
+    {
         $payload = ['email' => 'cornell.gibson@example.com','password' => 'secretsecret'];
         
         $response = $this->withHeaders([
             'Content-Type' => 'application/x-www-form-urlencoded',
             'Accept' => 'application/json',
         ])
-        ->json('POST', '/api/login', $payload);
-        // ->assertStatus(200);
-
-        dd($response->getContent());
-            // ->assertJsonStructure([
-            //     'success',
-            //     'message',
-            //     'token',
-            //     'data' => [
-            //         "customer_id",
-            //         "customer_code",
-            //         "target_magic",
-            //         "firstname",
-            //         "lastname",
-            //         "title",
-            //         "status",
-            //         "language",
-            //         "email",
-            //         "telno",
-            //         "remarks",
-            //         "is_pmp",
-            //         "pmp_expiry",
-            //         "default_service_advisor_id",
-            //     ],
-            // ]);
+        ->json('POST', '/api/login', $payload)
+        ->assertStatus(401);
     }
 }
