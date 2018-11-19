@@ -62,7 +62,17 @@ class SecurityController extends Controller
                 $model = $model_name::where('client_id', $client->id)->first();
                 $activator_value = $model ? $model->{$model_name::ACTIVATOR_FIELD} : 0;
                 if ( isset($model->function) ) {
-                    $to_return[$security] = ['is_enabled' => $activator_value, 'function' => json_decode($model->function)];
+                    $to_return[$security] = ['is_enabled' => $activator_value, 'function' => []];
+                    $functions = json_decode($model->function, 1);
+                    $security_labels = SecurityLabel::whereIn('id', array_keys($functions))
+                        ->get()
+                        ->keyBy('id')
+                        ->toArray();
+                    foreach ($functions as $function_id => $function) {
+                        $function_security_labels = !empty($security_labels[$function_id]) ? $security_labels[$function_id] : [];
+                        $function_full = array_merge($function, $function_security_labels);
+                        $to_return[$security]['function'][$function_id] = $function_full;
+                    }
                 } else {
                     $to_return[$security] = ['is_enabled' => $activator_value];
                 }
