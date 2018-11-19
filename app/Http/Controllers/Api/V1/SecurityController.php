@@ -71,8 +71,9 @@ class SecurityController extends Controller
                         ->toArray();
                     foreach ($functions as $function_id => $function) {
                         $function_security_labels = !empty($security_labels[$function_id]) ? $security_labels[$function_id] : [];
-                        $function_full = array_merge($function, $function_security_labels);
-                        $to_return[$security]['function'][$function_id] = $function_full;
+                        $function['message'] = $function_security_labels['message'];
+                        $function_name = str_replace(' ', '_', $function_security_labels['name']);
+                        $to_return[$security]['function'][$function_name] = $function;
                     }
                 } else {
                     $to_return[$security] = ['is_enabled' => $activator_value];
