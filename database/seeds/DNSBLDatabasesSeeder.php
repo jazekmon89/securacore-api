@@ -12,9 +12,11 @@ class DNSBLDatabasesSeeder extends Seeder
     public function run()
     {
         DB::table('dnsbl_databases')->insert([
-            'database' => 'sbl.spamhaus.org'
-        ],[
-        	'database' => 'xbl.spamhaus.org'
+            [
+                'database' => 'sbl.spamhaus.org'
+            ],[
+                'database' => 'xbl.spamhaus.org'
+            ]
         ]);
     }
 }
