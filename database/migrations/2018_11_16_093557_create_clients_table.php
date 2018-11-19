@@ -20,6 +20,8 @@ class CreateClientsTable extends Migration
             $table->string('public_key', 255);
             $table->tinyInteger('is_activated')->default('1');
             $table->text('notes');
+            $table->tinyInteger('status')->default(0);
+            $table->tinyInteger('is_checked')->default(0);
             $table->timestamps();
         });
     }
