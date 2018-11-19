@@ -13,13 +13,26 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 
 Route::post('login', 'Api\APILoginController@login');
 
-Route::middleware('jwt.auth')->get('users', function () {
-    return auth('api')->user();
+
+// PROTECTED CUSTOMER ROUTES
+Route::group([
+    'middleware' => 'jwt.auth',
+    'prefix' => 'users',
+], function () {
+
+    Route::get('/', 'Api\APILoginController@me');
+    Route::get('logout', 'Api\APILoginController@logout');
+
 });
+
+
+// Route::middleware('jwt.auth')->get('users', function () {
+//     return auth('api')->user();
+// });
