@@ -59,9 +59,13 @@ class SecurityController extends Controller
         if ( $this->canAccess($client) ) {
             foreach ($securities as $security => $model) {
                 $model_name = 'App\\'.$model;
-                $activator_value = $model_name::where('client_id', $client->id)->first();
-                $activator_value = $activator_value ? $activator_value->{$model_name::ACTIVATOR_FIELD} : 0;
-                $to_return[$security] = $activator_value;
+                $model = $model_name::where('client_id', $client->id)->first();
+                $activator_value = $model ? $model->{$model_name::ACTIVATOR_FIELD} : 0;
+                if ( isset($model->function) ) {
+                    $to_return[$security] = ['is_enabled' => $activator_value, 'function' => json_decode($model->function)];
+                } else {
+                    $to_return[$security] = ['is_enabled' => $activator_value];
+                }
             }
         }
         return response()->json($to_return, 200);
