@@ -6,7 +6,7 @@ use App\Client;
 use App\SecurityLabel;
 use App\Security\SecurityInterface;
 use App\Variations\ContentSecurity;
-use Illuminate\Http\Request;
+use App\Http\Requests\SecurityUpdate;
 
 class SecurityBase implements SecurityInterface {
 
@@ -31,13 +31,14 @@ class SecurityBase implements SecurityInterface {
 		return [];
 	}
 
-	public function update(Client $client, $security_model, Request $request) {
+	public function update(Client $client, $security_model, SecurityUpdate $request) {
 		$security_model = $security_model->where('client_id', $client->id);
 		if ( $security_model->exists() ) {
 			$security_model = $security_model->first();
 			foreach( $request->all() as $key => $value ) {
-				if ( !empty($security_model->{$key}) && $security_model->{$key} != $value ) {
+				if ( isset($security_model->{$key}) && $security_model->{$key} != $value ) {
 					$security_model->{$key} = $value;
+					break;
 				}
 			}
 			$security_model->save();
@@ -46,7 +47,8 @@ class SecurityBase implements SecurityInterface {
 		return [];
 	}
 
-	public function updateMainField(Client $client, $security_model, $field_name) {
+	public function updateSingleField(Client $client, $security_model) {
+		$field_name = $security_model->ACTIVATOR_FIELD;
 		$security_model = $security_model->where('client_id', $client->id);
 		if ( $security_model->exists() ) {
 			$security_model = $security_model->first();
@@ -57,7 +59,7 @@ class SecurityBase implements SecurityInterface {
 		return [];
 	}
 
-	public function updateJSONField(Client $client, $security_model, $field_name, $function_id, Request $request) {
+	public function updateJSONField(Client $client, $security_model, $field_name, $function_id, SecurityUpdate $request) {
 		$security_model = $security_model->where('client_id', $client->id);
 		if ( $security_model->exists() ) {
 			$security_model = $security_model->first();

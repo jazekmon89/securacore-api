@@ -19,16 +19,18 @@ class ContentProtection extends SecurityBase {
     		'enabled' => $security_variation->enabled,
     		'content_securities' => []
     	];
-    	$content_security_label = SecurityLabel::whereIn( 'id', array_keys( $functions ) )->get();
+        $security_labels = SecurityLabel::whereIn('id', array_keys($functions))
+            ->get()
+            ->keyBy('id')
+            ->toArray();
     	foreach( $functions as $label_id => $status_alert ) {
-    		if ( !empty($content_security_label[$label_id]) ) {
-    			array_push( $full_functions['content_securities'], [
-    				'name' => $content_security_label[$label_id]->name,
-    				'message' => $content_security_label[$label_id]->message,
-    				'enabled' => $status_alert['enabled'],
-    				'alert' => $status_alert['alert']
-    			]);
-    		}
+            $function_security_labels = !empty($security_labels[$label_id]) ? $security_labels[$label_id] : ['name'=>'','message'=>''];
+			array_push( $full_functions['content_securities'], [
+				'name' => $function_security_labels['name'],
+				'message' => $function_security_labels['message'],
+				'enabled' => $status_alert['enabled'],
+				'alert' => $status_alert['alert']
+			]);
 		}
 		return $full_functions;
 	}

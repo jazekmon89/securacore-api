@@ -24,5 +24,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SQLISettingsSeeder::class);
         $this->call(ClientsSeeder::class);
         $this->call(UsersSeeder::class);
+        $this->call(SecurityLabelsSeeder::class);
     }
 }

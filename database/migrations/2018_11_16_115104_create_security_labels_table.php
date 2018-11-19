@@ -16,7 +16,7 @@ class CreateSecurityLabelsTable extends Migration
         Schema::create('security_labels', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 255);
-            $table->text('message');
+            $table->text('message')->nullable();
             $table->timestamps();
         });
     }

@@ -8,4 +8,17 @@ class SpamSecurity extends Model
 {
     protected $table = 'spam_settings';
     const ACTIVATOR_FIELD = 'security';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'security',
+        'logging',
+        'redirect',
+        'autoban',
+        'mail',
+    ];
 }

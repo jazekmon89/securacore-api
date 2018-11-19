@@ -8,6 +8,7 @@ use App\ContentSecurity;
 use App\SecurityLabel;
 use App\Http\Controllers\Controller;
 use App\Security\Variations\ContentProtection;
+use App\Http\Requests\SecurityUpdate;
 
 class SecurityController extends Controller
 {
@@ -59,9 +60,23 @@ class SecurityController extends Controller
         if ( $this->canAccess($client) ) {
             foreach ($securities as $security => $model) {
                 $model_name = 'App\\'.$model;
-                $activator_value = $model_name::where('client_id', $client->id)->first();
-                $activator_value = $activator_value ? $activator_value->{$model_name::ACTIVATOR_FIELD} : 0;
-                $to_return[$security] = $activator_value;
+                $model = $model_name::where('client_id', $client->id)->first();
+                $activator_value = $model ? $model->{$model_name::ACTIVATOR_FIELD} : 0;
+                if ( isset($model->function) ) {
+                    $to_return[$security] = ['is_enabled' => $activator_value, 'function' => []];
+                    $functions = json_decode($model->function, 1);
+                    $security_labels = SecurityLabel::whereIn('id', array_keys($functions))
+                        ->get()
+                        ->keyBy('id')
+                        ->toArray();
+                    foreach ($functions as $function_id => $function) {
+                        $function_security_labels = !empty($security_labels[$function_id]) ? $security_labels[$function_id] : [];
+                        $function_full = array_merge($function, $function_security_labels);
+                        $to_return[$security]['function'][$function_id] = $function_full;
+                    }
+                } else {
+                    $to_return[$security] = ['is_enabled' => $activator_value];
+                }
             }
         }
         return response()->json($to_return, 200);
@@ -78,11 +93,11 @@ class SecurityController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function setProtection(Client $client, $security_variation, $model, $fields) {
+    public function setProtection(Client $client, $security_variation, $model, SecurityUpdate $fields) {
         $to_return = [];
         if ( $this->canAccess($client) ) {
-            if ( !is_array($fields) ) {
-                $to_return = $security_variation->updateMainField($client, $model, $fields);
+            if ( !$fields ) {
+                $to_return = $security_variation->updateSingleField($client, $model);
             } else {
                 $to_return = $security_variation->update($client, $model, $fields);
             }
@@ -104,6 +119,7 @@ class SecurityController extends Controller
     }
 
     public function __call($name, $arguments) {
+        $request = app('App\Http\Requests\SecurityUpdate');
         /*
          * We dynamically call the getProtection or setProtection for a given get or set function name.
          * To achieve that, we created an associative array of function name - class name and model name pair:
@@ -125,7 +141,6 @@ class SecurityController extends Controller
         ];
         $security_variation = null;
         $model = null;
-        $argument_2 = !empty($arguments[2]) ? $arguments[2] : null;
         $prefix = substr($name, 0, 3);
         foreach ($functions as $function => $class_model) {
             if ($name == $prefix.$function) {
@@ -145,10 +160,10 @@ class SecurityController extends Controller
         if ( $prefix == 'get' ) {
             return $this->getProtection($client, $security_variation, $model);
         } else if ( $prefix == 'set' ) {
-            if ( !$argument_2 ) {             
-                $argument_2 = $model ? $model::ACTIVATOR_FIELD : null;
-            }
-            return $this->setProtection($client, $security_variation, $model, $argument_2);
+            $original_request = request()->all();
+            $request = new SecurityUpdate();
+            $request->replace($original_request);
+            return $this->setProtection($client, $security_variation, $model, $request);
         }
     }
 }
