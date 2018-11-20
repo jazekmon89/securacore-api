@@ -19,7 +19,7 @@ $factory->define(User::class, function (Faker $faker) {
         'first_name' => $faker->firstNameMale,
         'last_name' => $faker->lastName,
         'email' => $faker->unique()->safeEmail,
-        'status' => $faker->numberBetween($min = 0, $max = 1),
+        'status' => $faker->numberBetween($min = 0, $max = 1),  // inactive - 0, active - 1
         'role' => $faker->numberBetween($min = 1, $max = 2),
         'password' => 'secretsecret',
         'password_confirmation' => 'secretsecret',

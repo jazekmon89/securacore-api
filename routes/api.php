@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
 
 
 Route::post('login', 'Api\APILoginController@login');
-
+Route::post('notify', 'Api\APILogicController@notify');
 
 // PROTECTED CUSTOMER ROUTES
 Route::group([
