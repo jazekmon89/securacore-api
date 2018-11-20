@@ -8,7 +8,7 @@ use App\ContentSecurity;
 use App\SecurityLabel;
 use App\Http\Controllers\Controller;
 use App\Security\Variations\ContentProtection;
-use App\Http\Requests\SecurityUpdate;
+use App\Http\Requests\Api\SecurityUpdate;
 
 class SecurityController extends Controller
 {
@@ -124,7 +124,7 @@ class SecurityController extends Controller
         if ( empty($arguments[0]) ) {
             return [];
         }
-        $request = app('App\Http\Requests\SecurityUpdate');
+        $request = app('App\Http\Requests\Api\SecurityUpdate');
         $client = app('App\Client');
         /*
          * We dynamically call the getProtection or setProtection for a given get or set function name.

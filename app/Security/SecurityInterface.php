@@ -4,7 +4,7 @@ namespace App\Security;
 
 use App\Client;
 use App\ContentSecurity;
-use App\Http\Requests\SecurityUpdate;
+use App\Http\Requests\Api\SecurityUpdate;
 
 Interface SecurityInterface {
 

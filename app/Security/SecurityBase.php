@@ -6,7 +6,7 @@ use App\Client;
 use App\SecurityLabel;
 use App\Security\SecurityInterface;
 use App\Variations\ContentSecurity;
-use App\Http\Requests\SecurityUpdate;
+use App\Http\Requests\Api\SecurityUpdate;
 
 class SecurityBase implements SecurityInterface {
 
