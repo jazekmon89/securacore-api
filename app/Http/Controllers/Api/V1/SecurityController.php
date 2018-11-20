@@ -110,18 +110,22 @@ class SecurityController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function setContentProtectionByFunctionId(Client $client, ContentSecurity $contentSecurity, $functionId, Request $request) {
+    public function setContentProtectionByFunctionId(Client $client, $functionId) {
         $to_return = [];
         if ( $this->canAccess($client) ) {
             $contentProtection = new ContentProtection();
-            $contentProtection = $contentProtection->updateJSONField($client, $contentSecurity, 'function', $functionId, $request);
+            $contentProtection = $contentProtection->updateJSONField($client, new ContentSecurity(), 'function', $functionId);
             $to_return = get_object_vars($contentProtection);
         }
         return response()->json($to_return, 200);
     }
 
     public function __call($name, $arguments) {
+        if ( empty($arguments[0]) ) {
+            return [];
+        }
         $request = app('App\Http\Requests\SecurityUpdate');
+        $client = app('App\Client');
         /*
          * We dynamically call the getProtection or setProtection for a given get or set function name.
          * To achieve that, we created an associative array of function name - class name and model name pair:
@@ -155,10 +159,6 @@ class SecurityController extends Controller
                 break;
             }
         }
-        if ( empty($arguments[0]) ) {
-            return [];
-        }
-        $client = Client::where('id', $arguments[0])->first();
         if ( $prefix == 'get' ) {
             return $this->getProtection($client, $security_variation, $model);
         } else if ( $prefix == 'set' ) {
