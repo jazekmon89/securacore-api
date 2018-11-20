@@ -48,7 +48,7 @@ class SecurityBase implements SecurityInterface {
 	}
 
 	public function updateSingleField(Client $client, $security_model) {
-		$field_name = $security_model->ACTIVATOR_FIELD;
+		$field_name = $security_model::ACTIVATOR_FIELD;
 		$security_model = $security_model->where('client_id', $client->id);
 		if ( $security_model->exists() ) {
 			$security_model = $security_model->first();
