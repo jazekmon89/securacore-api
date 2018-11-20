@@ -59,12 +59,12 @@ class SecurityBase implements SecurityInterface {
 		return [];
 	}
 
-	public function updateJSONField(Client $client, $security_model, $field_name, $function_id, SecurityUpdate $request) {
+	public function updateJSONField(Client $client, $security_model, $field_name, $function_id) {
 		$security_model = $security_model->where('client_id', $client->id);
 		if ( $security_model->exists() ) {
 			$security_model = $security_model->first();
 			$json_value = json_decode($security_model->{$field_name});
-			$json_value[$function_id] = $request->all() ?? [];
+			$json_value->$function_id->enabled = intval(!$json_value->$function_id->enabled);
 			$json_value = json_encode($json_value);
 			$security_model->{$field_name} = $json_value;
 			$security_model->save();

@@ -13,6 +13,6 @@ Interface SecurityInterface {
 	public function delete($id, $security_model);
 	public function update(Client $client, $security_model, SecurityUpdate $request);
 	public function updateSingleField(Client $client, $security_model);
-	public function updateJSONField(Client $client, $security_model, $field_name, $function_id, SecurityUpdate $request);
+	public function updateJSONField(Client $client, $security_model, $field_name, $function_id);
 
 }
