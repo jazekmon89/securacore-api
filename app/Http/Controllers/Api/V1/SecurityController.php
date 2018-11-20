@@ -8,7 +8,7 @@ use App\ContentSecurity;
 use App\SecurityLabel;
 use App\Http\Controllers\Controller;
 use App\Security\Variations\ContentProtection;
-use App\Http\Requests\SecurityUpdate;
+use App\Http\Requests\Api\SecurityUpdate;
 
 class SecurityController extends Controller
 {
