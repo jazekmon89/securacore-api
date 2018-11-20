@@ -98,7 +98,7 @@ class SecurityController extends Controller
     public function setProtection(Client $client, $security_variation, $model, SecurityUpdate $fields) {
         $to_return = [];
         if ( $this->canAccess($client) ) {
-            if ( !$fields ) {
+            if ( count($fields->all()) == 0 ) {
                 $to_return = $security_variation->updateSingleField($client, $model);
             } else {
                 $to_return = $security_variation->update($client, $model, $fields);
@@ -125,7 +125,7 @@ class SecurityController extends Controller
             return [];
         }
         $request = app('App\Http\Requests\Api\SecurityUpdate');
-        $client = app('App\Client');
+        $client = Client::where('id', $arguments[0])->first();
         /*
          * We dynamically call the getProtection or setProtection for a given get or set function name.
          * To achieve that, we created an associative array of function name - class name and model name pair:
@@ -162,7 +162,8 @@ class SecurityController extends Controller
         if ( $prefix == 'get' ) {
             return $this->getProtection($client, $security_variation, $model);
         } else if ( $prefix == 'set' ) {
-            $original_request = request()->all();
+            $original_request = $request->all();
+            unset($original_request['token']);
             $request = new SecurityUpdate();
             $request->replace($original_request);
             return $this->setProtection($client, $security_variation, $model, $request);
