@@ -46,9 +46,13 @@ class AttackNotification extends Notification implements ShouldQueue
         // dump('$this->attack_detail', $this->attack_detail);
         
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->subject('Client has been attacked with ' . $this->attack_detail['attack_type'])
+            ->greeting('Alert!')
+            ->line('A client has been attacked!' . $this->attack_detail['attack_message'] )
+            ->line(' URL: ' . $this->attack_detail['url'])
+            ->line('Public key: ' . $this->attack_detail['public_key'])
+            ->action('Activate Security', url('/'))
+            ->line('Please notify your administrator now!');
     }
 
     /**

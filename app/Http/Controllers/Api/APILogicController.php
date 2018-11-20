@@ -62,7 +62,7 @@ class APILogicController extends Controller
             $client->sendAttackNotification($all);
             return response()->json([
                 'success'   => true,
-                'message'   => 'Client has been notified of the attack!',
+                'message'   => 'Admin & Client has been notified of the attack!',
                 'data'   => $all
             ], 200);
         } else {
