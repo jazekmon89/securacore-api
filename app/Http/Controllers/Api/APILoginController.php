@@ -66,6 +66,7 @@ class APILoginController extends Controller
             'success' => true,
             'message' => 'User logged-in successfully.',
             'token' => $jwt_token,
+            'data' => auth()->user(),
             'expires' => auth('api')->factory()->getTTL() * 60
         ]);
     }
