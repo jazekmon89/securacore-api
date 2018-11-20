@@ -109,4 +109,33 @@ class APILoginController extends Controller
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
+
+    /**
+     * Log the user out (Invalidate the token).
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logout()
+    {
+
+        try {
+            auth()->logout();
+
+            info('User logout attempt success.', ['user' => auth()->user()]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'You have logged out successfully.'
+            ]);
+        } catch (JWTException $exception) {
+
+            info('User logout attempt failed.', ['user' => auth()->user()]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, the user cannot be logged out.'
+            ], 400);
+        }
+
+    }
 }
