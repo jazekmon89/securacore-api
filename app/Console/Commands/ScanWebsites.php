@@ -44,15 +44,20 @@ class ScanWebsites extends Command
             foreach( $clients_unscanned as $unscanned) {
                 try {
                     $handle = fopen($unscanned->url, "r");
-                    $unscanned->status = 1;
+                    if (!$unscanned->status) {
+                        $unscanned->status = 1;
+                    }
                     $unscanned->is_checked = 1;
                 } catch (\Exception $ex) {
-                    $unscanned->status = 0;
+                    if ($unscanned->status) {
+                        $unscanned->status = 0;
+                    }
                     $unscanned->is_checked = 1;
                 }
                 $unscanned->save();
             }
-        } else {
+        }
+        if ( !Client::where('is_checked', 0)->exists() ){
             /* 
              * All websites are scanned.
              * We need to reset the is_checked field.
