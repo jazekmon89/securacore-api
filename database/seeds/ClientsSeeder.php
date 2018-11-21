@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Client;
 
 class ClientsSeeder extends Seeder
 {
@@ -11,44 +12,23 @@ class ClientsSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('clients')->insert([
-            [
-                'url' => 'site1.com',
-                'notes' => '',
-                'user_id' => 1,
-                'public_key' => ''
-            ],[
-                'url' => 'google.com',
-                'notes' => '',
-                'user_id' => 1,
-                'public_key' => ''
-            ],[
-                'url' => 'site2.com',
-                'notes' => '',
-                'user_id' => 0,
-                'public_key' => ''
-            ],[
-                'url' => 'test4.com',
-                'notes' => '',
-                'user_id' => 0,
-                'public_key' => ''
-            ],[
-                'url' => 'test5.com',
-                'notes' => '',
-                'user_id' => 0,
-                'public_key' => ''
-            ],[
-                'url' => 'test6.com',
-                'notes' => 'sample test
-                                ',
-                'user_id' => 0,
-                'public_key' => ''
-            ],[
-                'url' => 'http://www.google.com',
-                'notes' => '',
-                'user_id' => 0,
-                'public_key' => ''
-            ]
-        ]);
+
+        $user_ids = DB::table('users')->pluck('id');
+        $clients = factory(Client::class, 10)->make();
+        
+        foreach ($clients as $client) {
+            $random_user_id = array_random(json_decode($user_ids, true));
+
+            Client::create([
+                'user_id' => $random_user_id,
+                'url' => $client->url,
+                'public_key' => $client->public_key,
+                'is_activated' => $client->is_activated,
+                'notes' => $client->notes,
+                'status' => $client->status,
+                'is_checked' => $client->is_checked
+            ]);
+
+        }
     }
 }

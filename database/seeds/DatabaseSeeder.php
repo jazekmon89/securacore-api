@@ -22,8 +22,8 @@ class DatabaseSeeder extends Seeder
         $this->call(SettingsSeeder::class);
         $this->call(SpamSettingsSeeder::class);
         $this->call(SQLISettingsSeeder::class);
-        $this->call(ClientsSeeder::class);
         $this->call(UsersSeeder::class);
+        $this->call(ClientsSeeder::class);
         $this->call(SecurityLabelsSeeder::class);
     }
 }
