@@ -22,6 +22,17 @@ class APILoginController extends Controller
      */
     public function login(Request $request)
     {
+        $email = $request->email;
+
+        $checkAuth = User::where('email', $email)->first();
+
+        if (!$checkAuth) {
+            return response()->json([
+                'success'   => false,
+                'message'   => 'Invalid email or password',
+            ], 401);
+        }
+        
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255',
             'password'=> 'required|min:8'

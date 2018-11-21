@@ -1,7 +1,7 @@
 <?php
 
 use Faker\Generator as Faker;
-use App\Client;
+use App\Website;
 /*
 |--------------------------------------------------------------------------
 | Model Factories
@@ -13,7 +13,7 @@ use App\Client;
 |
 */
 
-$factory->define(Client::class, function (Faker $faker) {
+$factory->define(Website::class, function (Faker $faker) {
 
     return [
         'user_id' => $faker->numberBetween($min = 1, $max = 10),

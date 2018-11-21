@@ -17,17 +17,18 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
-
+// PUBLIC ENDPOINTS
 Route::post('login', 'Api\APILoginController@login');
 Route::post('notify', 'Api\APILogicController@notify');
 
-// PROTECTED CUSTOMER ROUTES
+// PROTECTED USER ROUTES
 Route::group([
     'middleware' => 'jwt.auth',
-    'prefix' => 'users',
+    'prefix' => 'user',
 ], function () {
 
     Route::get('/', 'Api\APILoginController@me');
+    Route::get('websites', 'Api\APILogicController@getUserWebsites');
     Route::get('logout', 'Api\APILoginController@logout');
 
 });
