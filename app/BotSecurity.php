@@ -18,8 +18,5 @@ class BotSecurity extends Model
         'badbot',
         'fakebot',
         'useragent_header',
-        'logging',
-        'autoban',
-        'mail'
     ];
 }

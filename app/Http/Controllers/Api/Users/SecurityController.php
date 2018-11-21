@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\Api\Users;
 
 use Illuminate\Http\Request;
 use App\Client;
 use App\ContentSecurity;
 use App\SecurityLabel;
+use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
 use App\Security\Variations\ContentProtection;
 use App\Http\Requests\Api\SecurityUpdate;
@@ -13,57 +14,66 @@ use App\Http\Requests\Api\SecurityUpdate;
 class SecurityController extends Controller
 {
 
-    public function canAccess(Client $client) {
-        if ( !$client->id ) {
-            return false;
-        }
-        // for testing environments, let us give access
-        if ( env('APP_ENV') != 'production' ){
-            return true;
-        }
-        $referer = request()->server('HTTP_REFERER');
-        $referer = !$referer ? request()->server('REMOTE_ADDR') : null;
-        $referer_parsed = parse_url( $referer );
-        $clients_flag = false;
-        if ( !empty($referer) ) {
-            $client_parsed = parse_url( $client->url );
-            $client_host = !empty($client_parsed['host']) ? $client_parsed['host'] : (!empty($client_parsed['path']) ? $client_parsed['path'] : null);
-            $referer_host = !empty($referer_parsed['host']) ? $referer_parsed['host'] : (!empty($referer_parsed['path']) ? $referer_parsed['path'] : null);
-            if ( !$client_host || !$referer_host || ($client_host && $referer_host && $client_host != $referer_host) ) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public function getSecurities(Client $client) {
         /*
          * We dynamically call the model for a given security to get the activator fields.
-         * To achieve that, we created an associative array of security - model name
+         * To achieve that, we created an associative array of security - model -> fields
          *  [
          *      security name => [
-         *          security class name,
-         *          model class name
+         *          security class name => [
+         *              model class name => [ fields ]
+         *          ]
          *      ]
          *  ]
         */
         $securities = [
-            'contentProtection'=>'ContentSecurity',
-            'adBlockerProtection'=>'AdBlockSecurity',
-            'dosProtection'=>'DoSSecurity',
-            'proxyProtection'=>'ProxySecurity',
-            'sqlProtection'=>'SQLSecurity',
-            'spamProtection'=>'SpamSecurity',
-            'botProtection'=>'BotSecurity'
+            'contentProtection' => [
+                'ContentSecurity' => []
+            ],
+            'adBlockerProtection' => [
+                'AdBlockSecurity' => []
+            ],
+            'dosProtection' => [
+                'DoSSecurity' => []
+            ],
+            'proxyProtection' => [
+                'ProxySecurity' => [
+                    'proxy_headers',
+                    'ports'
+                ]
+            ],
+            'sqlProtection' => [
+                'SQLSecurity' => [
+                    'xss',
+                    'clickjacking',
+                    'mime_mismatch',
+                    'https',
+                    'data_filtering',
+                    'sanitation',
+                    'php_version'
+                ]
+            ],
+            'spamProtection' => [
+                'SpamSecurity' => []
+            ],
+            'botProtection' => [
+                'BotSecurity' => [
+                    'fakebot',
+                    'useragent_header'
+                ]
+            ]
         ];
         $to_return = [];
-        if ( $this->canAccess($client) ) {
+        if ( ApiHelper::canAccess() ) {
             foreach ($securities as $security => $model) {
-                $model_name = 'App\\'.$model;
+                $model_name = key($securities[$security]);
+                $model_name = 'App\\'.$model_name;
+                $fields = current($model);
                 $model = $model_name::where('client_id', $client->id)->first();
-                $activator_value = $model ? $model->{$model_name::ACTIVATOR_FIELD} : 0;
+                $activator_value = $model ? $model->{$model::ACTIVATOR_FIELD} : 0;
+                $to_return[$security] = ['is_enabled' => $activator_value];
                 if ( isset($model->function) ) {
-                    $to_return[$security] = ['is_enabled' => $activator_value, 'function' => []];
+                    $to_return[$security]['function'] = [];
                     $functions = json_decode($model->function, 1);
                     $security_labels = SecurityLabel::whereIn('id', array_keys($functions))
                         ->get()
@@ -76,8 +86,9 @@ class SecurityController extends Controller
                         $function_name = str_replace(' ', '_', $function_security_labels['name']);
                         $to_return[$security]['function'][$function_name] = $function;
                     }
-                } else {
-                    $to_return[$security] = ['is_enabled' => $activator_value];
+                }
+                foreach($fields as $field) {
+                    $to_return[$security][$field] = ['is_enabled' => $model->{$field}];
                 }
             }
         }
@@ -86,7 +97,7 @@ class SecurityController extends Controller
 
     public function getProtection(Client $client, $security_variation, $model) {
         $to_return = [];
-        if ( $this->canAccess($client) ) {
+        if ( ApiHelper::canAccess() ) {
             $to_return = $security_variation->get($client, $model);
             if ( !is_array($to_return) ) {
                 $to_return = $to_return->getAttributes();
@@ -97,25 +108,26 @@ class SecurityController extends Controller
 
     public function setProtection(Client $client, $security_variation, $model, SecurityUpdate $fields) {
         $to_return = [];
-        if ( $this->canAccess($client) ) {
+        if ( ApiHelper::canAccess() ) {
             if ( count($fields->all()) == 0 ) {
                 $to_return = $security_variation->updateSingleField($client, $model);
             } else {
                 $to_return = $security_variation->update($client, $model, $fields);
             }
-            if ( !is_array($to_return) ) {
+            if ( $to_return && !is_array($to_return) ) {
                 $to_return = $to_return->getAttributes();
             }
         }
         return response()->json($to_return, 200);
     }
 
-    public function setContentProtectionByFunctionId(Client $client, $functionId) {
+    public function setJSONFieldById(Client $client, $security_variation, $model, $field_name, $functionId) {
         $to_return = [];
-        if ( $this->canAccess($client) ) {
-            $contentProtection = new ContentProtection();
-            $contentProtection = $contentProtection->updateJSONField($client, new ContentSecurity(), 'function', $functionId);
-            $to_return = get_object_vars($contentProtection);
+        if ( ApiHelper::canAccess() ) {
+            $to_return = $security_variation->updateJSONField($client, new $model(), $field_name, $functionId);
+            if ($to_return && !is_array($to_return)) {
+                $to_return = $to_return->getAttributes();
+            }
         }
         return response()->json($to_return, 200);
     }
@@ -137,19 +149,40 @@ class SecurityController extends Controller
          *  ]
         */
         $functions = [
-            'ContentProtection'=>['ContentProtection', 'ContentSecurity'],
-            'AdBlockerProtection'=>['AdBlocker', 'AdBlockSecurity'],
-            'DosProtection'=>['DoSProtection', 'DoSSecurity'],
-            'ProxyProtection'=>['ProxyProtection', 'ProxySecurity'],
-            'SqlProtection'=>['SQLInjectionProtection', 'SQLSecurity'],
-            'SpamProtection'=>['SpamProtection', 'SpamSecurity'],
-            'BotProtection'=>['BotProtection', 'BotSecurity']
+            'ContentProtection' => [
+                'ContentProtection',
+                'ContentSecurity'
+            ],
+            'AdBlockerProtection' => [
+                'AdBlocker',
+                'AdBlockSecurity'
+            ],
+            'DosProtection' => [
+                'DoSProtection',
+                'DoSSecurity'
+            ],
+            'ProxyProtection' => [
+                'ProxyProtection',
+                'ProxySecurity'
+            ],
+            'SqlProtection' => [
+                'SQLInjectionProtection',
+                'SQLSecurity'
+            ],
+            'SpamProtection' => [
+                'SpamProtection',
+                'SpamSecurity'
+            ],
+            'BotProtection' => [
+                'BotProtection',
+                'BotSecurity'
+            ]
         ];
         $security_variation = null;
         $model = null;
         $prefix = substr($name, 0, 3);
         foreach ($functions as $function => $class_model) {
-            if ($name == $prefix.$function) {
+            if ($name == $prefix.$function || $name == $prefix.$function.'JSONFieldById') {
                 $security_name_space = 'App\\Security\\Variations\\';
                 $model_name_space = 'App\\';
                 $class_name = $security_name_space.$class_model[0];
@@ -166,7 +199,15 @@ class SecurityController extends Controller
             unset($original_request['token']);
             $request = new SecurityUpdate();
             $request->replace($original_request);
-            return $this->setProtection($client, $security_variation, $model, $request);
+            $json_function_name = 'JSONFieldById';
+            $name = substr($name, -(strlen($json_function_name)));
+            if ($name == $json_function_name) {
+                $field_name = $arguments[1] ?? null;
+                $sub_field_id = $arguments[2] ?? null;
+                return $this->setJSONFieldById($client, $security_variation, $model, $field_name, $sub_field_id);
+            } else {
+                return $this->setProtection($client, $security_variation, $model, $request);
+            }
         }
     }
 }

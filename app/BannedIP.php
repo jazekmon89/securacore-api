@@ -4,10 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ProxySecurity extends Model
+class BannedIP extends Model
 {
-    protected $table = 'proxy_settings';
-    const ACTIVATOR_FIELD = 'proxy';
+    protected $table = 'banned';
 
     /**
      * The attributes that are mass assignable.
@@ -15,8 +14,11 @@ class ProxySecurity extends Model
      * @var array
      */
     protected $fillable = [
-        'proxy',
-        'proxy_headers',
-        'ports',
+        'ip',
+        'date',
+        'time',
+        'reason',
+        'url',
+        'client_id'
     ];
 }

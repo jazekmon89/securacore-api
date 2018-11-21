@@ -38,7 +38,7 @@ class APILoginController extends Controller
 
         $credentials = $request->only('email', 'password');
         $jwt_token = null;
-        $user = DB::table('users')->where('email', $credentials['email'])->first();
+        $user = User::where('email', $credentials['email'])->first();
         
         if(!$user->status) {
             info('Account not activated.', ['email' => $credentials['email'], 'status' => $user->status]);

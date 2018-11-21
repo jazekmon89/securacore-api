@@ -16,9 +16,5 @@ class DoSSecurity extends Model
      */
     protected $fillable = [
         'security',
-        'logging',
-        'autoban',
-        'redirect',
-        'mail'
     ];
 }

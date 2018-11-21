@@ -23,9 +23,5 @@ class SQLSecurity extends Model
         'data_filtering',
         'sanitation',
         'php_version',
-        'logging',
-        'redirect',
-        'autoban',
-        'mail',
     ];
 }
