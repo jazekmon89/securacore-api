@@ -16,9 +16,5 @@ class SpamSecurity extends Model
      */
     protected $fillable = [
         'security',
-        'logging',
-        'redirect',
-        'autoban',
-        'mail',
     ];
 }

@@ -37,25 +37,53 @@ Route::group([
 //     return auth('api')->user();
 // });
 
-Route::group(['prefix' => 'v1/client', 'middleware' => ['jwt.auth', 'throttle:30,1']], function() {
-	// securities API
+// securities API
+Route::group(['prefix' => 'client', 'middleware' => 'jwt.auth'], function() {
 	$securities = [
-		'content-protection',
-		'ad-blocker-protection',
-		'dos-protection',
-		'proxy-protection',
-		'sql-protection',
-		'spam-protection',
-		'bot-protection'
+		'content-protection' => ['function'],
+		'ad-blocker-protection' => null,
+		'dos-protection' => null,
+		'proxy-protection' => null,
+		'sql-protection' => null,
+		'spam-protection' => null,
+		'bot-protection' => null
 	];
-	Route::get('/{client}/security', 'Api\V1\SecurityController@getSecurities');
-	foreach( $securities as $security ) {
+	Route::get('/{client}/security', 'Api\Users\SecurityController@getSecurities');
+	foreach( $securities as $security => $fields ) {
 		$uppercaseWords = str_replace('-', ' ', $security);
 		$uppercaseWords = ucwords($uppercaseWords);
 		$uppercaseWords = str_replace(' ', '', $uppercaseWords);
 		$camelCase = lcfirst($uppercaseWords);
-		Route::get('/{client}/' . $security, 'Api\V1\SecurityController@get' . $uppercaseWords);
-		Route::post('/{client}/' . $security, 'Api\V1\SecurityController@set' . $uppercaseWords);
+		Route::get('/{client}/' . $security, 'Api\Users\SecurityController@get' . $uppercaseWords);
+		Route::post('/{client}/' . $security, 'Api\Users\SecurityController@set' . $uppercaseWords);
+		if ( !empty($fields) ) {
+			Route::post('/{client}/' . $security . '/{fieldName}/{fieldId}', 'Api\Users\SecurityController@set'  . $uppercaseWords . 'JSONFieldById');
+		}
 	}
-	Route::post('/{client}/content-protection/function/{functionId}', 'Api\V1\SecurityController@setContentProtectionByFunctionId');
+
+	Route::get('/', 'Api\Users\UserController@index');
+	Route::get('/{client}', 'Api\Users\ClientController@show');
+	Route::put('/{client}', 'Api\Users\ClientController@update');
+
+	// IP Ban
+	Route::get('/{client}/ip/check', 'Api\Users\BannedController@ip_check');
+
+	// Country Ban
+	Route::get('/{client}/country/check', 'Api\Users\BannedController@country_check');
+
+	// Live Traffic
+	Route::get('/{client}/live-traffic', 'Api\Users\LiveTrafficController@index');
+});
+
+// User CRUD Api
+Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
+	Route::get('/', 'Api\Users\UserController@index');
+	Route::get('/{user}', 'Api\Users\UserController@show');
+	Route::put('/{user}', 'Api\Users\UserController@update');
+});
+
+
+// Client CRUD Api
+Route::group(['prefix' => 'client', 'middleware' => 'jwt.auth'], function() {
+	
 });

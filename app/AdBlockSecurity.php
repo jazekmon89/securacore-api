@@ -16,6 +16,5 @@ class AdBlockSecurity extends Model
      */
     protected $fillable = [
         'detection',
-        'redirect'
     ];
 }
