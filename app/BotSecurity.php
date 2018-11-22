@@ -18,5 +18,6 @@ class BotSecurity extends Model
         'badbot',
         'fakebot',
         'useragent_header',
+        'website_id',
     ];
 }

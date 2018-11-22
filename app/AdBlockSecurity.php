@@ -16,5 +16,6 @@ class AdBlockSecurity extends Model
      */
     protected $fillable = [
         'detection',
+        'website_id',
     ];
 }

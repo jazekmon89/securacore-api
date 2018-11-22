@@ -23,5 +23,6 @@ class SQLSecurity extends Model
         'data_filtering',
         'sanitation',
         'php_version',
+        'website_id',
     ];
 }

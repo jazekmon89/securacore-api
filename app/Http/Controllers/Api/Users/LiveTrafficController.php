@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api\Users;
 
 use App\Website;
 use App\LiveTraffic;
-use App\Http\Requests\Api\LiveTrafficRequest;
-use App\Http\Controllers\Controller;
 use App\Helpers\ApiHelper;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\LiveTrafficRequest;
 
 
 class LiveTrafficController extends Controller

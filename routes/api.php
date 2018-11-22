@@ -39,7 +39,7 @@ Route::group([
 // });
 
 // securities API
-Route::group(['prefix' => 'client', 'middleware' => 'jwt.auth'], function() {
+Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
 	$securities = [
 		'content-protection' => ['function'],
 		'ad-blocker-protection' => null,
@@ -49,34 +49,36 @@ Route::group(['prefix' => 'client', 'middleware' => 'jwt.auth'], function() {
 		'spam-protection' => null,
 		'bot-protection' => null
 	];
-	Route::get('/{client}/security', 'Api\Users\SecurityController@getSecurities');
+	Route::get('/{website}/security', 'Api\Users\SecurityController@getSecurities');
 	foreach( $securities as $security => $fields ) {
 		$uppercaseWords = str_replace('-', ' ', $security);
 		$uppercaseWords = ucwords($uppercaseWords);
 		$uppercaseWords = str_replace(' ', '', $uppercaseWords);
 		$camelCase = lcfirst($uppercaseWords);
-		Route::get('/{client}/' . $security, 'Api\Users\SecurityController@get' . $uppercaseWords);
-		Route::post('/{client}/' . $security, 'Api\Users\SecurityController@set' . $uppercaseWords);
+		Route::get('/{website}/' . $security, 'Api\Users\SecurityController@get' . $uppercaseWords);
+		Route::post('/{website}/' . $security, 'Api\Users\SecurityController@set' . $uppercaseWords);
 		if ( !empty($fields) ) {
-			Route::post('/{client}/' . $security . '/{fieldName}/{fieldId}', 'Api\Users\SecurityController@set'  . $uppercaseWords . 'JSONFieldById');
+			Route::post('/{website}/' . $security . '/{fieldName}/{fieldId}', 'Api\Users\SecurityController@set'  . $uppercaseWords . 'JSONFieldById');
 		}
 	}
 
 	Route::get('/', 'Api\Users\UserController@index');
-	Route::get('/{client}', 'Api\Users\ClientController@show');
-	Route::put('/{client}', 'Api\Users\ClientController@update');
+	Route::get('/{website}', 'Api\Users\WebsiteController@show');
+	Route::put('/{website}', 'Api\Users\WebsiteController@update');
 
 	// IP Ban
-	Route::get('/{client}/ip/check', 'Api\Users\BannedController@ip_check');
+	Route::get('/{website}/ip/check', 'Api\Users\BanController@ipCheck');
+	Route::post('/{website}/ip/ban', 'Api\Users\BanController@banIP');
 
 	// Country Ban
-	Route::get('/{client}/country/check', 'Api\Users\BannedController@country_check');
+	Route::get('/{website}/country/check', 'Api\Users\BanController@countryCheck');
+	Route::post('/{website}/country/ban', 'Api\Users\BanController@banCountry');
 
 	// Live Traffic
-	Route::get('/{client}/live-traffic', 'Api\Users\LiveTrafficController@index');
+	Route::get('/{website}/live-traffic', 'Api\Users\LiveTrafficController@index');
 });
 
-// User CRUD Api
+// User Api
 Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
 	Route::get('/', 'Api\Users\UserController@index');
 	Route::get('/{user}', 'Api\Users\UserController@show');
@@ -84,7 +86,9 @@ Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
 });
 
 
-// Client CRUD Api
-Route::group(['prefix' => 'client', 'middleware' => 'jwt.auth'], function() {
-	
+// Website Api
+Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
+	Route::get('/', 'Api\Users\UserController@index');
+	Route::get('/{website}', 'Api\Users\WebsiteController@show');
+	Route::put('/{website}', 'Api\Users\WebsiteController@update');
 });

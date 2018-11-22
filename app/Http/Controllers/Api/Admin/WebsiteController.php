@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Website;
+use App\Jobs\ProcessClientInitialData;
 use App\User;
+use App\Website;
 use App\Helpers\ApiHelper;
+use App\Http\Controllers\Controller;
 use App\Http\Request\Api\WebsiteRequest;
 use Illuminate\Http\Request;
 
@@ -21,7 +23,7 @@ class WebsiteController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function indexByUserId(User $user) {
+    public function indexByUserId(Website $website, User $user) {
         $to_return = [];
         if (ApiHelper::canAccess()) {
             $website = Website::where('user_id', $user->id)->get();
@@ -44,6 +46,7 @@ class WebsiteController extends Controller
                 $website->{$field} = $value;
             }
             $website->save();
+            ProcessClientInitialData::dispatch($website);
             $to_return = $website->getAttributes();
         }
         return response()->json($to_return, 200);
@@ -61,6 +64,7 @@ class WebsiteController extends Controller
                 $website->user_id = $user->id;
             }
             $website->save();
+            ProcessClientInitialData::dispatch($website);
             $to_return = $website->getAttributes();
         }
         return response()->json($to_return, 200);
