@@ -43,7 +43,7 @@ class ProcessClientInitialData implements ShouldQueue
         // Ad Block
         $adblock = new AdBlockSecurity();
         $adblock->detection = 0;
-        $adblock->website_id = $website_id
+        $adblock->website_id = $website_id;
         $adblock->save();
 
         // Bot

@@ -38,7 +38,7 @@ Route::group([
 //     return auth('api')->user();
 // });
 
-// securities API
+// Securities API
 Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
 	$securities = [
 		'content-protection' => ['function'],
@@ -76,6 +76,12 @@ Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
 
 	// Live Traffic
 	Route::get('/{website}/live-traffic', 'Api\Users\LiveTrafficController@index');
+
+	// Log
+	Route::get('/{website}/log', 'Api\Users\LogController@index');
+	Route::post('/{website}/log', 'Api\Users\LogController@store');
+	Route::get('/{website}/logs/{log}', 'Api\Users\LogController@show');
+
 });
 
 // User Api
@@ -83,6 +89,8 @@ Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
 	Route::get('/', 'Api\Users\UserController@index');
 	Route::get('/{user}', 'Api\Users\UserController@show');
 	Route::put('/{user}', 'Api\Users\UserController@update');
+	
+	Route::get('/{user}/website', 'Api\Admin\WebsiteController@indexByUserId');
 });
 
 
