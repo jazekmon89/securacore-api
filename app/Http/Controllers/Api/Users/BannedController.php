@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Users;
 
-use App\Client;
+use App\Website;
 use App\BannedIP;
 use App\BannedCountry;
 use App\Http\Controllers\Controller;
@@ -14,11 +14,11 @@ use App\Helpers\ApiHelper;
 class BannedController extends Controller
 {
 
-    public function ip_check(Client $client, BannedIPRequest $request) {
+    public function ip_check(Website $website, BannedIPRequest $request) {
         $ip = $request->get('ip') ?? null;
         $to_return = [];
         if (ApiHelper::canAccess()) {
-            $banned_ip = BannedIP::where('client_id', $client->id)
+            $banned_ip = BannedIP::where('website_id', $website->id)
                 ->where('ip', $ip);
             $to_return = [
                 'ip' => $ip
@@ -32,11 +32,11 @@ class BannedController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function country_check(Client $client, BannedCountryRequest $request) {
+    public function country_check(Website $website, BannedCountryRequest $request) {
         $country_name = $request->get('name') ?? null;
         $to_return = [];
         if (ApiHelper::canAccess()) {
-            $banned_country = BannedCountry::where('client_id', $client->id)
+            $banned_country = BannedCountry::where('website_id', $website->id)
                 ->where('name', $country_name);
             $to_return = [
                 'country_name' => $country_name

@@ -19,6 +19,6 @@ class BannedIP extends Model
         'time',
         'reason',
         'url',
-        'client_id'
+        'website_id'
     ];
 }

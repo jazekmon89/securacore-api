@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Client;
+use App\Website;
 use App\User;
 use App\Helpers\ApiHelper;
-use App\Http\Request\Api\UserRequest;
+use App\Http\Request\Api\WebsiteRequest;
 use Illuminate\Http\Request;
 
 
-class ClientController extends Controller
+class WebsiteController extends Controller
 {
 
     public function index() {
         $to_return = [];
         if (ApiHelper::canAccess()) {
-            $client = Client::get();
-            $to_return = $client->toArray();
+            $website = Website::get();
+            $to_return = $website->toArray();
         }
         return response()->json($to_return, 200);
     }
@@ -24,13 +24,13 @@ class ClientController extends Controller
     public function indexByUserId(User $user) {
         $to_return = [];
         if (ApiHelper::canAccess()) {
-            $client = Client::where('user_id', $user->id)->get();
-            $to_return = $client->toArray();
+            $website = Website::where('user_id', $user->id)->get();
+            $to_return = $website->toArray();
         }
         return response()->json($to_return, 200);
     }
 
-    public function store(ClientRequest $request) {
+    public function store(WebsiteRequest $request) {
         $to_return = [];
         if (ApiHelper::canAccess()) {
             if (!$request->has('user_id')) {
@@ -38,57 +38,57 @@ class ClientController extends Controller
                     'error'=>'user_id needed'
                 ], 400);
             }
-            $client = new Client();
+            $website = new Website();
             $request = $request->all();
-            foreach($request as $k=>$i) {
-                $client->{$k} = $i;
+            foreach($request as $field=>$value) {
+                $website->{$field} = $value;
             }
-            $client->save();
-            $to_return = $client->getAttributes();
+            $website->save();
+            $to_return = $website->getAttributes();
         }
         return response()->json($to_return, 200);
     }
 
-    public function storeWithUserId(User $user, ClientRequest $request) {
+    public function storeWithUserId(User $user, WebsiteRequest $request) {
         $to_return = [];
         if (ApiHelper::canAccess()) {
-            $client = new Client();
+            $website = new Website();
             $request = $request->all();
-            foreach($request as $k=>$i) {
-                $client->{$k} = $i;
+            foreach($request as $field=>$value) {
+                $website->{$field} = $value;
             }
             if (!$request->has('user_id')) {
-                $client->user_id = $user->id;
+                $website->user_id = $user->id;
             }
-            $client->save();
-            $to_return = $client->getAttributes();
+            $website->save();
+            $to_return = $website->getAttributes();
         }
         return response()->json($to_return, 200);
     }
 
-    public function show(Client $client) {
+    public function show(Website $website) {
         $to_return = [];
         if (ApiHelper::canAccess()) {
-            $to_return $client->getAttributes();
+            $to_return = $website->getAttributes();
         }
         return response()->json($to_return, 200);
     }
 
-    public function update(Client $client, ClientRequest $request) {
+    public function update(Website $website, WebsiteRequest $request) {
         $to_return = [];
         if (ApiHelper::canAccess()) {
             $request = $request->all();
-            foreach($request as $k=>$i) {
-                $client->{$k} = $i;
+            foreach($request as $field=>$value) {
+                $website->{$field} = $value;
             }
-            $client->save();
-            $to_return = $client->getAttributes();
+            $website->save();
+            $to_return = $website->getAttributes();
         }
         return response()->json($to_return, 200);
     }
 
-    public function destroy(Client $client) {
-        $client->delete();
+    public function destroy(Website $website) {
+        $website->delete();
         return response()->json(['success'=>true], 200);
     }
     

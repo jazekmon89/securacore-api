@@ -28,6 +28,6 @@ class LiveTraffic extends Model
         'date',
         'time',
         'uniquev',
-        'client_id',
+        'website_id',
     ];
 }

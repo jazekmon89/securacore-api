@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\Users;
 
 use Illuminate\Http\Request;
-use App\Client;
+use App\Website;
 use App\ContentSecurity;
 use App\SecurityLabel;
 use App\Helpers\ApiHelper;
@@ -14,7 +14,7 @@ use App\Http\Requests\Api\SecurityUpdate;
 class SecurityController extends Controller
 {
 
-    public function getSecurities(Client $client) {
+    public function getSecurities(Website $website) {
         /*
          * We dynamically call the model for a given security to get the activator fields.
          * To achieve that, we created an associative array of security - model -> fields
@@ -69,7 +69,7 @@ class SecurityController extends Controller
                 $model_name = key($securities[$security]);
                 $model_name = 'App\\'.$model_name;
                 $fields = current($model);
-                $model = $model_name::where('client_id', $client->id)->first();
+                $model = $model_name::where('website_id', $website->id)->first();
                 $activator_value = $model ? $model->{$model::ACTIVATOR_FIELD} : 0;
                 $to_return[$security] = ['is_enabled' => $activator_value];
                 if ( isset($model->function) ) {
@@ -95,10 +95,10 @@ class SecurityController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function getProtection(Client $client, $security_variation, $model) {
+    public function getProtection(Website $website, $security_variation, $model) {
         $to_return = [];
         if ( ApiHelper::canAccess() ) {
-            $to_return = $security_variation->get($client, $model);
+            $to_return = $security_variation->get($website, $model);
             if ( !is_array($to_return) ) {
                 $to_return = $to_return->getAttributes();
             }
@@ -106,13 +106,13 @@ class SecurityController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function setProtection(Client $client, $security_variation, $model, SecurityUpdate $fields) {
+    public function setProtection(Website $website, $security_variation, $model, SecurityUpdate $fields) {
         $to_return = [];
         if ( ApiHelper::canAccess() ) {
             if ( count($fields->all()) == 0 ) {
-                $to_return = $security_variation->updateSingleField($client, $model);
+                $to_return = $security_variation->updateSingleField($website, $model);
             } else {
-                $to_return = $security_variation->update($client, $model, $fields);
+                $to_return = $security_variation->update($website, $model, $fields);
             }
             if ( $to_return && !is_array($to_return) ) {
                 $to_return = $to_return->getAttributes();
@@ -121,10 +121,11 @@ class SecurityController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function setJSONFieldById(Client $client, $security_variation, $model, $field_name, $functionId) {
+    public function setJSONFieldById(Website $website, $security_variation, $model, $field_name, $functionId) {
+        dd($model);
         $to_return = [];
         if ( ApiHelper::canAccess() ) {
-            $to_return = $security_variation->updateJSONField($client, new $model(), $field_name, $functionId);
+            $to_return = $security_variation->updateJSONField($website, new $model(), $field_name, $functionId);
             if ($to_return && !is_array($to_return)) {
                 $to_return = $to_return->getAttributes();
             }
@@ -137,7 +138,7 @@ class SecurityController extends Controller
             return [];
         }
         $request = app('App\Http\Requests\Api\SecurityUpdate');
-        $client = Client::where('id', $arguments[0])->first();
+        $website = Website::where('id', $arguments[0])->first();
         /*
          * We dynamically call the getProtection or setProtection for a given get or set function name.
          * To achieve that, we created an associative array of function name - class name and model name pair:
@@ -193,7 +194,7 @@ class SecurityController extends Controller
             }
         }
         if ( $prefix == 'get' ) {
-            return $this->getProtection($client, $security_variation, $model);
+            return $this->getProtection($website, $security_variation, $model);
         } else if ( $prefix == 'set' ) {
             $original_request = $request->all();
             unset($original_request['token']);
@@ -204,9 +205,9 @@ class SecurityController extends Controller
             if ($name == $json_function_name) {
                 $field_name = $arguments[1] ?? null;
                 $sub_field_id = $arguments[2] ?? null;
-                return $this->setJSONFieldById($client, $security_variation, $model, $field_name, $sub_field_id);
+                return $this->setJSONFieldById($website, $security_variation, $model, $field_name, $sub_field_id);
             } else {
-                return $this->setProtection($client, $security_variation, $model, $request);
+                return $this->setProtection($website, $security_variation, $model, $request);
             }
         }
     }
