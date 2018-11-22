@@ -11,6 +11,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call(UsersSeeder::class);
+        $this->call(WebsitesSeeder::class);
         $this->call(AdBlockerSettingsSeeder::class);
         $this->call(BadBotSettingsSeeder::class);
         $this->call(ContentSecuritySeeder::class);
@@ -22,8 +24,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SettingsSeeder::class);
         $this->call(SpamSettingsSeeder::class);
         $this->call(SQLISettingsSeeder::class);
-        $this->call(UsersSeeder::class);
-        $this->call(WebsitesSeeder::class);
         $this->call(SecurityLabelsSeeder::class);
     }
 }

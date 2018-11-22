@@ -23,11 +23,8 @@ class CreateSqliSettingsTable extends Migration
             $table->tinyInteger('data_filtering')->default('1');
             $table->tinyInteger('sanitation')->default('0');
             $table->tinyInteger('php_version')->default('0');
-            $table->tinyInteger('logging')->default('1');
-            $table->string('redirect', 255)->default('pages/blocked.php');
-            $table->tinyInteger('autoban')->default('0');
-            $table->tinyInteger('mail')->default('0');
-            $table->unsignedInteger('client_id');
+            $table->unsignedInteger('website_id');
+            $table->foreign('website_id')->references('id')->on('websites');
             $table->timestamps();
         });
     }

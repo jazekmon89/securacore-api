@@ -17,7 +17,8 @@ class CreateIpWhitelistTable extends Migration
             $table->increments('id');
             $table->string('ip', 255);
             $table->string('notes', 255);
-            $table->unsignedInteger('client_id');
+            $table->unsignedInteger('website_id');
+            $table->foreign('website_id')->references('id')->on('websites');
             $table->timestamps();
         });
     }

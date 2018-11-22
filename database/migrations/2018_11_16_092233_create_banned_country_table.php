@@ -16,10 +16,10 @@ class CreateBannedCountryTable extends Migration
         Schema::create('banned_country', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 120);
-            $table->tinyInteger('redirect')->default('0');
             $table->string('page_url', 255);
             $table->unsignedInteger('whitelist');
-            $table->unsignedInteger('client_id');
+            $table->unsignedInteger('website_id');
+            $table->foreign('website_id')->references('id')->on('websites');
             $table->timestamps();
         });
     }
