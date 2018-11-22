@@ -25,7 +25,7 @@ class WebsiteController extends Controller
 
     public function indexByUserId(Website $website, User $user) {
         $to_return = [];
-        if (ApiHelper::canAccess()) {
+        if (ApiHelper::canAccess() && auth()->user()->id == $user->id) {
             $website = Website::where('user_id', $user->id)->get();
             $to_return = $website->toArray();
         }

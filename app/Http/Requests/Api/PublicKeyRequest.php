@@ -4,7 +4,7 @@ namespace App\Http\Requests\Api;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BanCountryPostRequest extends FormRequest
+class PublicKeyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class BanCountryPostRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'public_key'
         ];
     }
 }
