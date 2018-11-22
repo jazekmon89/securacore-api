@@ -30,9 +30,8 @@ class PublicController extends Controller
         $public_key = $request->get('public_key') ?? null;
         $website = new Website();
         $field = 'public_key';
-        if (ApiHelper::publicCheckAccess($public_key, $website, $field)) {
+        if (ApiHelper::publicCheckAccess($public_key, $website, $field, $request)) {
             $website = $website->where($field, $public_key)->first();
-            $user = User::where('id', $website->user_id);
             if ( !$website->is_activated ) {
                 $website->is_activated = 1;
                 $website->save();
