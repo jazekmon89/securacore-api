@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Client;
 use App\Helpers\Helper;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +20,7 @@ class ScanWebsites extends Command
      *
      * @var string
      */
-    protected $description = 'Scan client websites to check if online or offline';
+    protected $description = 'Scan websites to check if online or offline';
 
     /**
      * Create a new command instance.
@@ -40,13 +39,13 @@ class ScanWebsites extends Command
      */
     public function handle()
     {
-        $clients_unscanned = DB::table('clients')->where('is_checked', 0)->limit(6);
-        if ( $clients_unscanned->exists() ) {
-            $clients = $clients_unscanned->get();
+        $websites_unscanned = DB::table('websites')->where('is_checked', 0)->limit(6);
+        if ( $websites_unscanned->exists() ) {
+            $websites = $websites_unscanned->get();
             $online_ids = [];
             $offline_ids = [];
             $test = [];
-            foreach( $clients as $unscanned) {
+            foreach( $websites as $unscanned) {
                 $result = Helper::domainIsAlive($unscanned->url);
                 $test[] = $result;
                 if (!$unscanned->status && $result) {
@@ -55,26 +54,26 @@ class ScanWebsites extends Command
                     $offline_ids[] = $unscanned->id;
                 }
             }
-            DB::table('clients')
+            DB::table('websites')
                 ->whereIn('id', $online_ids)
                 ->update([
                     'status' => 1
                 ]);
-            DB::table('clients')
+            DB::table('websites')
                 ->whereIn('id', $offline_ids)
                 ->update([
                     'status' => 0
                 ]);
-            $clients_unscanned->update([
+            $websites_unscanned->update([
                 'is_checked' => 1
             ]);
         }
-        if ( !DB::table('clients')->where('is_checked', 0)->exists() ){
+        if ( !DB::table('websites')->where('is_checked', 0)->exists() ){
             /* 
              * All websites are scanned.
              * We need to reset the is_checked field.
              */
-            DB::table('clients')->update(['is_checked' => 0]);
+            DB::table('websites')->update(['is_checked' => 0]);
         }
     }
 }

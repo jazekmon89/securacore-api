@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Users;
 
-use App\Client;
+use App\Website;
 use App\LiveTraffic;
 use App\Http\Requests\Api\LiveTrafficRequest;
 use App\Http\Controllers\Controller;
@@ -12,7 +12,7 @@ use App\Helpers\ApiHelper;
 class LiveTrafficController extends Controller
 {
 
-    public function index(Client $client, LiveTrafficRequest $request) {
+    public function index(Website $website, LiveTrafficRequest $request) {
         $ip = $request->get('ip') ?? null;
         $useragent = $request->get('useragent') ?? null;
         $date = $request->get('date') ?? null;

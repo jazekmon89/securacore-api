@@ -17,6 +17,6 @@ class BannedCountry extends Model
         'name',
         'page_url',
         'whitelist',
-        'client_id',
+        'website_id',
     ];
 }

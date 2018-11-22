@@ -2,43 +2,43 @@
 
 namespace App\Http\Controllers\Api\Users;
 
-use App\Client;
+use App\Website;
 use App\User;
 use App\Helpers\ApiHelper;
 use App\Http\Request\Api\UserRequest;
 use Illuminate\Http\Request;
 
 
-class ClientController extends Controller
+class WebsiteController extends Controller
 {
 
     public function index() {
         $to_return = [];
         $user = auth()->user();
         if (ApiHelper::canAccess() && auth()->user()) {
-            $client = Client::where('user_id', $user->id)->get();
-            $to_return = $client->toArray();
+            $website = Website::where('user_id', $user->id)->get();
+            $to_return = $website->toArray();
         }
         return response()->json($to_return, 200);
     }
 
-    public function show(Client $client) {
+    public function show(Website $website) {
         $to_return = [];
         if (ApiHelper::canAccess()) {
-            $to_return $client->getAttributes();
+            $to_return = $website->getAttributes();
         }
         return response()->json($to_return, 200);
     }
 
-    public function update(Client $client, ClientRequest $request) {
+    public function update(Website $website, WebsiteRequest $request) {
         $to_return = [];
         if (ApiHelper::canAccess()) {
             $request = $request->all();
-            foreach($request as $k=>$i) {
-                $client->{$k} = $i;
+            foreach($request as $field=>$value) {
+                $website->{$field} = $value;
             }
-            $client->save();
-            $to_return = $client->getAttributes();
+            $website->save();
+            $to_return = $website->getAttributes();
         }
         return response()->json($to_return, 200);
     }
