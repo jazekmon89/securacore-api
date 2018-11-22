@@ -17,7 +17,8 @@ class CreateContentSecurityTable extends Migration
             $table->increments('id');
             $table->text('function');
             $table->tinyInteger('enabled');
-            $table->unsignedInteger('client_id');
+            $table->unsignedInteger('website_id');
+            $table->foreign('website_id')->references('id')->on('websites');
             $table->timestamps();
         });
     }

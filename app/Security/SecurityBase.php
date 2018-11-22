@@ -2,7 +2,7 @@
 
 namespace App\Security;
 
-use App\Client;
+use App\Website;
 use App\SecurityLabel;
 use App\Security\SecurityInterface;
 use App\Variations\ContentSecurity;
@@ -15,8 +15,8 @@ class SecurityBase implements SecurityInterface {
 		// but are we going to support any, soon?
 	}
 
-	public function get(Client $client, $security_model) {
-	    $security_model = $security_model->where('client_id', $client->id);
+	public function get(Website $website, $security_model) {
+	    $security_model = $security_model->where('website_id', $website->id);
 	    if( !$security_model->exists() ) {
 	    	return [];
 	    }
@@ -31,8 +31,8 @@ class SecurityBase implements SecurityInterface {
 		return [];
 	}
 
-	public function update(Client $client, $security_model, SecurityUpdate $request) {
-		$security_model = $security_model->where('client_id', $client->id);
+	public function update(Website $website, $security_model, SecurityUpdate $request) {
+		$security_model = $security_model->where('website_id', $website->id);
 		if ( $security_model->exists() ) {
 			$security_model = $security_model->first();
 			foreach( $request->all() as $key => $value ) {
@@ -47,9 +47,9 @@ class SecurityBase implements SecurityInterface {
 		return [];
 	}
 
-	public function updateSingleField(Client $client, $security_model) {
+	public function updateSingleField(Website $website, $security_model) {
 		$field_name = $security_model::ACTIVATOR_FIELD;
-		$security_model = $security_model->where('client_id', $client->id);
+		$security_model = $security_model->where('website_id', $website->id);
 		if ( $security_model->exists() ) {
 			$security_model = $security_model->first();
 			$security_model->{$field_name} = intval(!$security_model->{$field_name});
@@ -59,13 +59,13 @@ class SecurityBase implements SecurityInterface {
 		return [];
 	}
 
-	public function updateJSONField(Client $client, $security_model, $field_name, $sub_field_id) {
-		$security_model = $security_model->where('client_id', $client->id);
+	public function updateJSONField(Website $website, $security_model, $field_name, $sub_field_id) {
+		$security_model = $security_model->where('website_id', $website->id);
 		if ( $security_model->exists() ) {
 			$security_model = $security_model->first();
 			if ( isset($security_model->{$field_name}) ) {
 				$json_value = json_decode($security_model->{$field_name});
-				$json_value->$sub_field_id->enabled = intval(!$json_value->$sub_field_id->enabled);
+				$json_value->{$sub_field_id}->enabled = intval(!$json_value->{$sub_field_id}->enabled);
 				$json_value = json_encode($json_value);
 				$security_model->{$field_name} = $json_value;
 				$security_model->save();

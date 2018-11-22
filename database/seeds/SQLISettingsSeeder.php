@@ -20,11 +20,7 @@ class SQLISettingsSeeder extends Seeder
             'data_filtering' => 1,
             'sanitation' => 1,
             'php_version' => 1,
-            'logging' => 1,
-            'redirect' => 'http://securacore.securacoreinc.com/pages/blocked.php',
-            'autoban' => 0,
-            'mail' => 0,
-            'client_id' => 1,
+            'website_id' => 1,
         ]);
     }
 }

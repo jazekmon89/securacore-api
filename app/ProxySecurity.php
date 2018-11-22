@@ -18,5 +18,6 @@ class ProxySecurity extends Model
         'proxy',
         'proxy_headers',
         'ports',
+        'website_id',
     ];
 }

@@ -38,8 +38,8 @@ Route::group([
 //     return auth('api')->user();
 // });
 
-// securities API
-Route::group(['prefix' => 'client', 'middleware' => 'jwt.auth'], function() {
+// Securities API
+Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
 	$securities = [
 		'content-protection' => ['function'],
 		'ad-blocker-protection' => null,
@@ -49,42 +49,82 @@ Route::group(['prefix' => 'client', 'middleware' => 'jwt.auth'], function() {
 		'spam-protection' => null,
 		'bot-protection' => null
 	];
-	Route::get('/{client}/security', 'Api\Users\SecurityController@getSecurities');
+	Route::get('/{website}/security', 'Api\Users\SecurityController@getSecurities');
 	foreach( $securities as $security => $fields ) {
 		$uppercaseWords = str_replace('-', ' ', $security);
 		$uppercaseWords = ucwords($uppercaseWords);
 		$uppercaseWords = str_replace(' ', '', $uppercaseWords);
 		$camelCase = lcfirst($uppercaseWords);
-		Route::get('/{client}/' . $security, 'Api\Users\SecurityController@get' . $uppercaseWords);
-		Route::post('/{client}/' . $security, 'Api\Users\SecurityController@set' . $uppercaseWords);
+		Route::get('/{website}/' . $security, 'Api\Users\SecurityController@get' . $uppercaseWords);
+		Route::post('/{website}/' . $security, 'Api\Users\SecurityController@set' . $uppercaseWords);
 		if ( !empty($fields) ) {
-			Route::post('/{client}/' . $security . '/{fieldName}/{fieldId}', 'Api\Users\SecurityController@set'  . $uppercaseWords . 'JSONFieldById');
+			Route::post('/{website}/' . $security . '/{fieldName}/{fieldId}', 'Api\Users\SecurityController@set'  . $uppercaseWords . 'JSONFieldById');
 		}
 	}
 
 	Route::get('/', 'Api\Users\UserController@index');
-	Route::get('/{client}', 'Api\Users\ClientController@show');
-	Route::put('/{client}', 'Api\Users\ClientController@update');
+	Route::get('/{website}', 'Api\Users\WebsiteController@show');
+	Route::put('/{website}', 'Api\Users\WebsiteController@update');
 
 	// IP Ban
-	Route::get('/{client}/ip/check', 'Api\Users\BannedController@ip_check');
+	Route::get('/{website}/ip/check', 'Api\Users\BanController@ipCheck');
+	Route::post('/{website}/ip/ban', 'Api\Users\BanController@banIP');
 
 	// Country Ban
-	Route::get('/{client}/country/check', 'Api\Users\BannedController@country_check');
+	Route::get('/{website}/country/check', 'Api\Users\BanController@countryCheck');
+	Route::post('/{website}/country/ban', 'Api\Users\BanController@banCountry');
 
 	// Live Traffic
-	Route::get('/{client}/live-traffic', 'Api\Users\LiveTrafficController@index');
+	Route::get('/{website}/live-traffic', 'Api\Users\LiveTrafficController@index');
+
+	// Log
+	Route::get('/{website}/log', 'Api\Users\LogController@index');
+	
+	Route::get('/{website}/logs/{log}', 'Api\Users\LogController@show');
+
 });
 
-// User CRUD Api
+// User Api
 Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
 	Route::get('/', 'Api\Users\UserController@index');
 	Route::get('/{user}', 'Api\Users\UserController@show');
 	Route::put('/{user}', 'Api\Users\UserController@update');
+
+	Route::get('/{user}/website', 'Api\Admin\WebsiteController@indexByUserId');
 });
 
+
+// Website Api
+Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
+	Route::get('/', 'Api\Users\UserController@index');
+	Route::get('/{website}', 'Api\Users\WebsiteController@show');
+	Route::put('/{website}', 'Api\Users\WebsiteController@update');
+});
+
+
+// ------- Admin ---------
+// User and Website CRUD Api
+Route::group(['prefix' => 'user'], function() {
+	Route::get('/', 'Api\Admin\UserController@index');
+	Route::post('/', 'Api\Admin\UserController@store');
+	Route::get('/{user}', 'Api\Admin\UserController@show');
+	Route::put('/{user}', 'Api\Admin\UserController@update');
+	Route::delete('/{user}', 'Api\Admin\UserController@destroy');
+
+	Route::get('/{user}/website', 'Api\Admin\WebsiteController@indexByUserId');
+	Route::post('/{user}/website', 'Api\Admin\WebsiteController@storeWithUserId');
+});
 
 // Client CRUD Api
-Route::group(['prefix' => 'client', 'middleware' => 'jwt.auth'], function() {
-	
+Route::group(['prefix' => 'website'], function() {
+	Route::get('/', 'Api\Admin\WebsiteController@index');
+	Route::post('/', 'Api\Admin\WebsiteController@store');
+	Route::get('/{website}', 'Api\Admin\WebsiteController@show');
+	Route::put('/{website}', 'Api\Admin\WebsiteController@update');
+	Route::delete('/{website}', 'Api\Admin\UserController@destroy');
 });
+
+
+// Public
+Route::post('website/{website}/log', 'Api\Users\LogController@storeLog');
+Route::post('check/public-key', 'Api\PublicController@checkPublicKey');

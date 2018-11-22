@@ -19,10 +19,9 @@ class CreateBannedTable extends Migration
             $table->date('date');
             $table->time('time');
             $table->string('reason', 255);
-            $table->tinyInteger('redirect')->default('0');
             $table->string('url', 255);
-            $table->tinyInteger('autoban')->default('0');
-            $table->unsignedInteger('client_id');
+            $table->unsignedInteger('website_id');
+            $table->foreign('website_id')->references('id')->on('websites');
             $table->timestamps();
         });
     }

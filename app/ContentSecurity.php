@@ -17,5 +17,6 @@ class ContentSecurity extends Model
     protected $fillable = [
         'function',
         'enabled',
+        'website_id',
     ];
 }

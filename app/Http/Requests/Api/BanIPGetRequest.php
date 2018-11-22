@@ -4,7 +4,7 @@ namespace App\Http\Requests\Api;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BannedCountryRequest extends FormRequest
+class BanIPGetRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class BannedCountryRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
+            'ip' => 'required|ip',
         ];
     }
 }

@@ -3,13 +3,13 @@
 namespace App\Security\Variations;
 
 use App\Security\SecurityBase;
-use App\Client;
+use App\Website;
 use App\SecurityLabel;
 
 class ContentProtection extends SecurityBase {
 
-	public function get(Client $client, $security_variation) {
-	    $security_variation = $security_variation->where('client_id', $client->id);
+	public function get(Website $website, $security_variation) {
+	    $security_variation = $security_variation->where('website_id', $website->id);
 	    if( !$security_variation->exists() ) {
 	    	return [];
 	    }

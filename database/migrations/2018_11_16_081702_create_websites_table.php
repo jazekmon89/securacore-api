@@ -16,12 +16,13 @@ class CreateWebsitesTable extends Migration
         Schema::create('websites', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->string('url', 255);
             $table->string('public_key', 255);
             $table->tinyInteger('is_activated')->default('1');
             $table->text('notes');
-            $table->tinyInteger('status')->default(0);
-            $table->tinyInteger('is_checked')->default(0);
+            $table->tinyInteger('online')->default(0);
+            $table->tinyInteger('is_scanned')->default(0);
             $table->timestamps();
         });
     }

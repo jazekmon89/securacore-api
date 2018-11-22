@@ -4,7 +4,7 @@ namespace App\Http\Requests\Api;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ClientRequest extends FormRequest
+class BanIPPostRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,13 +24,12 @@ class ClientRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'required|integer|exists:users,id',
-            'url' => 'required|string|max:255',
-            'public_key' => 'nullable|string|max:255',
-            'is_activated' => 'nullable|boolean',
-            'notes' => 'nullable|string',
-            'status' => 'nullable|boolean',
-            'is_checked' => 'nullable|boolean'
+            'ip' => 'required|ip',
+            'date' => 'required|date',
+            'time' => 'date_format:H:i:s',
+            'reason' => 'required|string|min:3',
+            'url' => 'required|url',
+            'website_id' => 'required|integer|exists:websites,id'
         ];
     }
 }

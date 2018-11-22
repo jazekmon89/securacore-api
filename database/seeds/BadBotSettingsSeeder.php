@@ -15,10 +15,7 @@ class BadBotSettingsSeeder extends Seeder
             'badbot' => 0,
             'fakebot' => 1,
             'useragent_header' => 0,
-            'logging' => 0,
-            'autoban' => 0,
-            'mail' => 0,
-            'client_id' => 1,
+            'website_id' => 1,
         ]);
     }
 }

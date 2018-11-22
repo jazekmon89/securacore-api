@@ -15,11 +15,7 @@ class ProxySettingsSeeder extends Seeder
             'proxy' => 1,
             'proxy_headers' => 1,
             'ports' => 1,
-            'logging' => 1,
-            'autoban' => 1,
-            'redirect' => 'http://securacore.securacoreinc.com/pages/blocked.php',
-            'mail' => 1,
-            'client_id' => 1
+            'website_id' => 1
         ]);
     }
 }

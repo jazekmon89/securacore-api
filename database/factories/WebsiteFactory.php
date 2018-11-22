@@ -21,7 +21,7 @@ $factory->define(Website::class, function (Faker $faker) {
         'public_key' => $faker->randomNumber,
         'is_activated' => $faker->numberBetween($min = 0, $max = 1),
         'notes' => $faker->sentence,
-        'status' => $faker->numberBetween($min = 0, $max = 1),
-        'is_checked' => $faker->numberBetween($min = 0, $max = 1)
+        'online' => $faker->numberBetween($min = 0, $max = 1),
+        'is_scanned' => $faker->numberBetween($min = 0, $max = 1)
     ];
 });

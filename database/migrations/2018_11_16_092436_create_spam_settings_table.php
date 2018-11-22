@@ -16,11 +16,8 @@ class CreateSpamSettingsTable extends Migration
         Schema::create('spam_settings', function (Blueprint $table) {
             $table->increments('id');
             $table->tinyInteger('security')->default('0');
-            $table->tinyInteger('logging')->default('1');
-            $table->string('redirect', 255)->default('pages/spammer.php');
-            $table->tinyInteger('autoban')->default('0');
-            $table->tinyInteger('mail')->default('0');
-            $table->unsignedInteger('client_id');
+            $table->unsignedInteger('website_id');
+            $table->foreign('website_id')->references('id')->on('websites');
             $table->timestamps();
         });
     }

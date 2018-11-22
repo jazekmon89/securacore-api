@@ -34,7 +34,8 @@ class CreateLogsTable extends Migration
             $table->string('isp', 255)->default('Unknown');
             $table->text('user_agent');
             $table->string('referer_url', 255);
-            $table->unsignedInteger('client_id');
+            $table->unsignedInteger('website_id');
+            $table->foreign('website_id')->references('id')->on('websites');
             $table->timestamps();
         });
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\User;
 use App\Helpers\ApiHelper;
+use App\Http\Controllers\Controller;
 use App\Http\Request\Api\UserRequest;
 use Illuminate\Http\Request;
 
@@ -37,7 +38,7 @@ class UserController extends Controller
     public function show(User $user) {
         $to_return = [];
         if (ApiHelper::canAccess()) {
-            $to_return $user->getAttributes();
+            $to_return = $user->getAttributes();
         }
         return response()->json($to_return, 200);
     }
