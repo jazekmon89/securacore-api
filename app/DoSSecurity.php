@@ -16,5 +16,6 @@ class DoSSecurity extends Model
      */
     protected $fillable = [
         'security',
+        'website_id',
     ];
 }

@@ -16,21 +16,23 @@ Route::get('/', function () {
 });
 
 // ------- Admin ---------
-// User and Client CRUD Api
-Route::group(['prefix' => 'user', 'middleware' => 'web'], function() {
-	Route::get('/', 'Api\Users\UserController@index');
-	Route::post('/', 'Api\Users\UserController@store');
-	Route::get('/{user}', 'Api\Users\UserController@show');
-	Route::put('/{user}', 'Api\Users\UserController@update');
-	Route::delete('/{user}', 'Api\Users\UserController@destroy');
+// User and Website CRUD Api
+Route::group(['prefix' => 'user'], function() {
+	Route::get('/', 'Api\Admin\UserController@index');
+	Route::post('/', 'Api\Admin\UserController@store');
+	Route::get('/{user}', 'Api\Admin\UserController@show');
+	Route::put('/{user}', 'Api\Admin\UserController@update');
+	Route::delete('/{user}', 'Api\Admin\UserController@destroy');
 
-	Route::get('/{user}/client', 'Api\Users\ClientController@indexByUserId');
-	Route::post('/{user}/client', 'Api\Users\ClientController@storeWithUserId');
+	Route::get('/{user}/website', 'Api\Admin\WebsiteController@indexByUserId');
+	Route::post('/{user}/website', 'Api\Admin\WebsiteController@storeWithUserId');
 });
 
 // Client CRUD Api
-Route::group(['prefix' => 'client', 'middleware' => 'web'], function() {
-	Route::get('/', 'Api\Users\UserController@index');
-	Route::get('/{client}', 'Api\Users\ClientController@show');
-	Route::put('/{client}', 'Api\Users\ClientController@update');
+Route::group(['prefix' => 'website'], function() {
+	Route::get('/', 'Api\Admin\WebsiteController@index');
+	Route::post('/', 'Api\Admin\WebsiteController@store');
+	Route::get('/{website}', 'Api\Admin\WebsiteController@show');
+	Route::put('/{website}', 'Api\Admin\WebsiteController@update');
+	Route::delete('/{website}', 'Api\Admin\UserController@destroy');
 });

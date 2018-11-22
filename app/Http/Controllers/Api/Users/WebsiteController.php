@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Users;
 use App\Website;
 use App\User;
 use App\Helpers\ApiHelper;
+use App\Http\Controllers\Controller;
 use App\Http\Request\Api\UserRequest;
 use Illuminate\Http\Request;
 

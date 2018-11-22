@@ -122,7 +122,6 @@ class SecurityController extends Controller
     }
 
     public function setJSONFieldById(Website $website, $security_variation, $model, $field_name, $functionId) {
-        dd($model);
         $to_return = [];
         if ( ApiHelper::canAccess() ) {
             $to_return = $security_variation->updateJSONField($website, new $model(), $field_name, $functionId);
