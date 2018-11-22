@@ -29,7 +29,8 @@ class CreateLiveTrafficTable extends Migration
             $table->date('date');
             $table->time('time');
             $table->tinyInteger('uniquev')->default('0');
-            $table->unsignedInteger('client_id');
+            $table->unsignedInteger('website_id');
+            $table->foreign('website_id')->references('id')->on('websites');
             $table->timestamps();
         });
     }

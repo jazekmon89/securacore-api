@@ -18,10 +18,8 @@ class CreateBadbotSettingsTable extends Migration
             $table->tinyInteger('badbot')->default('1');
             $table->tinyInteger('fakebot')->default('1');
             $table->unsignedInteger('useragent_header');
-            $table->tinyInteger('logging')->default('1');
-            $table->tinyInteger('autoban')->default('0');
-            $table->tinyInteger('mail')->default('0');
-            $table->unsignedInteger('client_id');
+            $table->unsignedInteger('website_id');
+            $table->foreign('website_id')->references('id')->on('websites');
             $table->timestamps();
         });
     }

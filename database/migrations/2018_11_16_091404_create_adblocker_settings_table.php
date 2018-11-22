@@ -16,8 +16,8 @@ class CreateAdblockerSettingsTable extends Migration
         Schema::create('adblocker_settings', function (Blueprint $table) {
             $table->increments('id');
             $table->tinyInteger('detection')->default('0');
-            $table->string('redirect', 255)->default('pages/adblocker-detected.php');
-            $table->unsignedInteger('client_id');
+            $table->unsignedInteger('website_id');
+            $table->foreign('website_id')->references('id')->on('websites');
             $table->timestamps();
         });
     }

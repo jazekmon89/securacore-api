@@ -13,11 +13,7 @@ class MassRequestsSettingsSeeder extends Seeder
     {
         DB::table('massrequests_settings')->insert([
             'security' => 0,
-            'logging' => 1,
-            'autoban' => 0,
-            'redirect' => 'http://securacore.securacoreinc.com/pages/blocked.php',
-            'mail' => 1,
-            'client_id' => 1
+            'website_id' => 1
         ]);
     }
 }

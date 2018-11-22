@@ -18,11 +18,8 @@ class CreateProxySettingsTable extends Migration
             $table->tinyInteger('proxy')->default('0');
             $table->tinyInteger('proxy_headers')->default('0');
             $table->tinyInteger('ports')->default('0');
-            $table->tinyInteger('logging')->default('1');
-            $table->tinyInteger('autoban')->default('0');
-            $table->string('redirect', 255)->default('pages/proxy.php');
-            $table->tinyInteger('mail')->default('0');
-            $table->unsignedInteger('client_id');
+            $table->unsignedInteger('website_id');
+            $table->foreign('website_id')->references('id')->on('websites');
             $table->timestamps();
         });
     }

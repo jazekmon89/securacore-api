@@ -13,8 +13,7 @@ class AdBlockerSettingsSeeder extends Seeder
     {
         DB::table('adblocker_settings')->insert([
             'detection' => 0,
-            'redirect' => '/pages/adblocker-detected.php',
-            'client_id' => 1
+            'website_id' => 1
         ]);
     }
 }
