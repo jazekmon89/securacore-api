@@ -25,8 +25,8 @@ class WebsitesSeeder extends Seeder
                 'public_key' => $website->public_key,
                 'is_activated' => $website->is_activated,
                 'notes' => $website->notes,
-                'status' => $website->status,
-                'is_checked' => $website->is_checked
+                'online' => $website->online,
+                'is_scanned' => $website->is_scanned
             ]);
 
         }

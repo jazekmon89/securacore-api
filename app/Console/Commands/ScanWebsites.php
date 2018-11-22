@@ -39,7 +39,7 @@ class ScanWebsites extends Command
      */
     public function handle()
     {
-        $websites_unscanned = DB::table('websites')->where('is_checked', 0)->limit(6);
+        $websites_unscanned = DB::table('websites')->where('is_scanned', 0)->limit(6);
         if ( $websites_unscanned->exists() ) {
             $websites = $websites_unscanned->get();
             $online_ids = [];
@@ -48,32 +48,32 @@ class ScanWebsites extends Command
             foreach( $websites as $unscanned) {
                 $result = Helper::domainIsAlive($unscanned->url);
                 $test[] = $result;
-                if (!$unscanned->status && $result) {
+                if (!$unscanned->online && $result) {
                     $online_ids[] = $unscanned->id;
-                } else if ($unscanned->status && !$result) {
+                } else if ($unscanned->online && !$result) {
                     $offline_ids[] = $unscanned->id;
                 }
             }
             DB::table('websites')
                 ->whereIn('id', $online_ids)
                 ->update([
-                    'status' => 1
+                    'online' => 1
                 ]);
             DB::table('websites')
                 ->whereIn('id', $offline_ids)
                 ->update([
-                    'status' => 0
+                    'online' => 0
                 ]);
             $websites_unscanned->update([
-                'is_checked' => 1
+                'is_scanned' => 1
             ]);
         }
-        if ( !DB::table('websites')->where('is_checked', 0)->exists() ){
+        if ( !DB::table('websites')->where('is_scanned', 0)->exists() ){
             /* 
              * All websites are scanned.
              * We need to reset the is_checked field.
              */
-            DB::table('websites')->update(['is_checked' => 0]);
+            DB::table('websites')->update(['is_scanned' => 0]);
         }
     }
 }
