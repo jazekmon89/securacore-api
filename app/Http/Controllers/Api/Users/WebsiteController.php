@@ -23,6 +23,15 @@ class WebsiteController extends Controller
         return response()->json($to_return, 200);
     }
 
+    public function indexByUserId(Website $website, User $user) {
+        $to_return = [];
+        if (ApiHelper::canAccess()) {
+            $website = Website::where('user_id', $user->id)->get();
+            $to_return = $website->toArray();
+        }
+        return response()->json($to_return, 200);
+    }
+
     public function show(Website $website) {
         $to_return = [];
         if (ApiHelper::canAccess()) {

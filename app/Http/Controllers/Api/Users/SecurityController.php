@@ -88,7 +88,9 @@ class SecurityController extends Controller
                     }
                 }
                 foreach($fields as $field) {
-                    $to_return[$security][$field] = ['is_enabled' => $model->{$field}];
+                    if ( isset($model->{$field}) ) {
+                        $to_return[$security][$field] = ['is_enabled' => $model->{$field}];
+                    }
                 }
             }
         }
