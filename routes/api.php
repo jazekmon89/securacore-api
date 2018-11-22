@@ -126,5 +126,5 @@ Route::group(['prefix' => 'website'], function() {
 
 
 // Public
-Route::post('website/{website}/log', 'Api\Users\LogController@storeLog');
+Route::post('website/{website}/log', 'Api\PublicController@storeLog');
 Route::post('check/public-key', 'Api\PublicController@checkPublicKey');
