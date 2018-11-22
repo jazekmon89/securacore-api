@@ -24,7 +24,8 @@ class LogRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'public_key' => 'required|string|min:1',
+            
         ];
     }
 }

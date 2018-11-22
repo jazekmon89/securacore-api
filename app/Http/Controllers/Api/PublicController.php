@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiHelper;
 use App\Http\Requests\Api\PublicKeyRequest;
+use App\Http\Requests\Api\LogRequest;
 use App\Http\Controllers\Controller;
+use App\Log;
 use App\User;
 use App\Website;
 
@@ -13,17 +15,23 @@ class PublicController extends Controller
 {
 
     public function storeLog(Website $website, LogRequest $request) {
-        $to_return = [];
-        if (ApiHelper::publicLogAccess($website)) {
+        $public_key = $request->get('public_key') ?? null;
+        $field = 'public_key';
+        if (ApiHelper::publicCheckAccess($public_key, $website, $field, $request)) {
             $data = $request->all();
+            if (isset($data['public_key'])) {
+                unset($data['public_key']);
+            }
             $log = new Log();
             foreach($data as $field => $value) {
                 $log->{$field} = $value;
             }
             $log->save();
-            $to_return = $log->get()->toArray();
+            return response()->json($log->toArray(), 200);
         }
-        return response()->json($to_return, 200);
+        return response()->json([
+            'error' => 'Public key not found!'
+        ], 404);
     }
 
     public function checkPublicKey(PublicKeyRequest $request) {
@@ -39,11 +47,10 @@ class PublicController extends Controller
             return response()->json([
                 'is_activated' => $website->is_activated
             ], 200);
-        } else {
-            return response()->json([
-                'error' => 'Public key not found!'
-            ], 404);
         }
+        return response()->json([
+            'error' => 'Public key not found!'
+        ], 404);
     }
     
 }
