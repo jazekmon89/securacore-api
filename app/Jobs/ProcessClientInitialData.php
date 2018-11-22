@@ -57,7 +57,7 @@ class ProcessClientInitialData implements ShouldQueue
         // Content
         $content = new ContentSecurity();
         $content->enabled = 0;
-        $content->function = json_encode([]);
+        $content->function = '{"1":{"enabled":1,"alert":0},"2":{"enabled":1,"alert":0},"3":{"enabled":1,"alert":0},"4":{"enabled":1,"alert":0},"5":{"enabled":1,"alert":0},"6":{"enabled":1,"alert":0},"7":{"enabled":1,"alert":0},"8":{"enabled":1,"alert":0},"9":{"enabled":1,"alert":0},"10":{"enabled":1,"alert":0},"11":{"enabled":1,"alert":0},"12":{"enabled":1,"alert":0}}';
         $content->website_id = $website_id;
         $content->save();
 
