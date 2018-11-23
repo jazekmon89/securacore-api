@@ -8,6 +8,7 @@ use App\AdBlockSecurity;
 use App\BotSecurity;
 use App\ContentSecurity;
 use App\DoSSecurity;
+use App\MainSettings;
 use App\ProxySecurity;
 use App\SpamSecurity;
 use App\SQLSecurity;
@@ -40,6 +41,7 @@ class ProcessClientInitialData implements ShouldQueue
     public function handle()
     {
         $website_id = $this->website->id;
+        $user_id = $this->website->user_id;
         // Ad Block
         $adblock = new AdBlockSecurity();
         $adblock->detection = 1;
@@ -93,5 +95,18 @@ class ProcessClientInitialData implements ShouldQueue
         $sql_injection->php_version = 1;
         $sql_injection->website_id = $website_id;
         $sql_injection->save();
+
+        // Main Settings
+        $main_settings = new MainSettings();
+        $main_settings->realtime = 1;
+        $main_settings->mail = 1;
+        $main_settings->ip_check = 1;
+        $main_settings->countryban = 1;
+        $main_settings->live_traffic = 1;
+        $main_settings->jquery = 1;
+        $main_settings->error_reporting = 5;
+        $main_settings->display_errors = 1;
+        $main_settings->user_id = $user_id;
+        $main_settings->save();
     }
 }

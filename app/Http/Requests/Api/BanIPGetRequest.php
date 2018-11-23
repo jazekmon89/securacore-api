@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Api;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class BanIPGetRequest extends FormRequest
 {
@@ -25,6 +27,11 @@ class BanIPGetRequest extends FormRequest
     {
         return [
             'ip' => 'required|ip',
+            'public_key' => 'required|string|min:1',
         ];
+    }
+
+    protected function failedValidation(Validator $validator) {
+        throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
 }

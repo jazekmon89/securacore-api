@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Api;
+namespace App\Http\Requests\Api\Admin;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class PublicKeyRequest extends FormRequest
+class UserStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,13 @@ class PublicKeyRequest extends FormRequest
     public function rules()
     {
         return [
-            'public_key' => 'required|string|min:1',
+            'first_name' => 'required|string|max:191',
+            'last_name' => 'required|string|max:191',
+            'email' => 'required|email',
+            'username' => 'required|string|max:191',
+            'password' => 'required|string|min:8|max:191|confirmed',
+            'role' => 'required|integer',
+            'status' => 'required|boolean'
         ];
     }
 

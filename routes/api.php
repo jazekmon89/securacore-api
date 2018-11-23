@@ -66,17 +66,6 @@ Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
 	Route::get('/{website}', 'Api\Users\WebsiteController@show');
 	Route::put('/{website}', 'Api\Users\WebsiteController@update');
 
-	// IP Ban
-	Route::get('/{website}/ip/check', 'Api\Users\BanController@ipCheck');
-	Route::post('/{website}/ip/ban', 'Api\Users\BanController@banIP');
-
-	// Country Ban
-	Route::get('/{website}/country/check', 'Api\Users\BanController@countryCheck');
-	Route::post('/{website}/country/ban', 'Api\Users\BanController@banCountry');
-
-	// Live Traffic
-	Route::get('/{website}/live-traffic', 'Api\Users\LiveTrafficController@index');
-
 	// Log
 	Route::get('/{website}/log', 'Api\Users\LogController@index');
 	
@@ -125,6 +114,22 @@ Route::group(['prefix' => 'website'], function() {
 });
 
 
-// Public
-Route::post('website/{website}/log', 'Api\Users\LogController@storeLog');
-Route::post('check/public-key', 'Api\PublicController@checkPublicKey');
+// Public ----------------------------------------------------------------------------------
+
+// Log
+Route::post('log', 'Api\Publics\LogController@store');
+
+// Public Key
+Route::post('check/public-key', 'Api\Publics\PublicKeyController@checkAndActivatePublicKey');
+
+// IP Ban
+Route::get('ip/check', 'Api\Publics\BanController@ipCheck');
+Route::post('ip/ban', 'Api\Publics\BanController@banIP');
+
+// Country Ban
+Route::get('country/check', 'Api\Publics\BanController@countryCheck');
+Route::post('country/ban', 'Api\Publics\BanController@banCountry');
+
+// Live Traffic
+Route::get('live-traffic', 'Api\Publics\LiveTrafficController@index');
+Route::post('live-traffic', 'Api\Publics\LiveTrafficController@store');

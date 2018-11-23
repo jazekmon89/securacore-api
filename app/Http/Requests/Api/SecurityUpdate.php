@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Api;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class SecurityUpdate extends FormRequest
 {
@@ -25,13 +27,9 @@ class SecurityUpdate extends FormRequest
     {
         return [
             'detection' => 'nullable|boolean',
-            'redirect' => 'nullable|string|max:255',
             'badbot' => 'nullable|boolean',
             'fakebot' => 'nullable|boolean',
             'useragent_header' => 'nullable|boolean',
-            'logging' => 'nullable|boolean',
-            'autoban' => 'nullable|boolean',
-            'mail' => 'nullable|boolean',
             'function' => 'nullable|json',
             'enabled' => 'nullable|boolean',
             'security' => 'nullable|boolean',
@@ -47,5 +45,9 @@ class SecurityUpdate extends FormRequest
             'sanitation' => 'nullable|boolean',
             'php_version' => 'nullable|boolean',
         ];
+    }
+
+    protected function failedValidation(Validator $validator) {
+        throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
 }
