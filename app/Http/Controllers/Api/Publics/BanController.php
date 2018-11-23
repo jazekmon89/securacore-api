@@ -17,15 +17,15 @@ class BanController extends Controller
 {
 
     public function banIP(BanIPPostRequest $request) {
-        $website = new Website();
-        $public_key = $request->get('public_key') ?? null;
+        $field = 'public_key';
+        $public_key = $request->get($field) ?? null;
         $to_return = [];
-        if (ApiHelper::publicCheckAccess($public_key, $website, 'public_key', $request)) {
+        if (ApiHelper::publicCheckAccess($public_key, new Website(), $field, $request)) {
             $banned_ip = new BannedIP();
             $fillables = $banned_ip->getFillable();
             $data = $request->all();
-            if ($request->has('public_key')) {
-                unset($data['public_key']);
+            if ($request->has($field)) {
+                unset($data[$field]);
             }
             foreach($data as $field => $value) {
                 if ( ($value || $value === 0) && in_array($field, $fillables) ) {
@@ -38,16 +38,16 @@ class BanController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function banCountry(Website $website, BanCountryPostRequest $request) {
-        $website = new Website();
-        $public_key = $request->get('public_key') ?? null;
+    public function banCountry(BanCountryPostRequest $request) {
+        $field = 'public_key';
+        $public_key = $request->get($field) ?? null;
         $to_return = [];
-        if (ApiHelper::publicCheckAccess($public_key, $website, 'public_key', $request)) {
+        if (ApiHelper::publicCheckAccess($public_key, new Website(), $field, $request)) {
             $banned_country = new BannedCountry();
             $fillables = $banned_country->getFillable();
             $data = $request->all();
-            if ($request->has('public_key')) {
-                unset($data['public_key']);
+            if ($request->has($field)) {
+                unset($data[$field]);
             }
             foreach($data as $field => $value) {
                 if ( ($value || $value === 0) && in_array($field, $fillables) ) {
@@ -60,12 +60,12 @@ class BanController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function ipCheck(Website $website, BanIPGetRequest $request) {
-        $website = new Website();
-        $public_key = $request->get('public_key') ?? null;
+    public function ipCheck(BanIPGetRequest $request) {
+        $field = 'public_key';
+        $public_key = $request->get($field) ?? null;
         $ip = $request->get('ip') ?? null;
         $to_return = [];
-        if (ApiHelper::publicCheckAccess($public_key, $website, 'public_key', $request)) {
+        if (ApiHelper::publicCheckAccess($public_key,  new Website(), $field, $request)) {
             $banned_ip = BannedIP::where('website_id', $website->id)
                 ->where('ip', $ip);
             $to_return = [
@@ -80,12 +80,14 @@ class BanController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function countryCheck(Website $website, BanCountryGetRequest $request) {
-        $website = new Website();
-        $public_key = $request->get('public_key') ?? null;
+    public function countryCheck(BanCountryGetRequest $request) {
+        $field = 'public_key';
+        $public_key = $request->get($field) ?? null;
         $country_name = $request->get('name') ?? null;
+        $website = new Website();
         $to_return = [];
-        if (ApiHelper::publicCheckAccess($public_key, $website, 'public_key', $request)) {
+        if (ApiHelper::publicCheckAccess($public_key, $website, $field, $request)) {
+            $website = $website::where($field, $public_key)->first();
             $banned_country = BannedCountry::where('website_id', $website->id)
                 ->where('name', $country_name);
             $to_return = [

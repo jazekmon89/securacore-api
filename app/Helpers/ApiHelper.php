@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\User;
 use App\Website;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ApiHelper {
 
@@ -61,6 +62,8 @@ class ApiHelper {
                 $user = User::where('id', $model->user_id)->where('status', 1);
                 if ( $user->exists() ) {
                     $user_exists = true;
+                } else {
+                    throw new HttpResponseException(response()->json(['error' => "Access denied. User's status is disabled or is not activated"], 403));
                 }
             }
             if ( isset($model->url) ) {
