@@ -22,6 +22,7 @@ class PublicKeyController extends Controller
                 $website->save();
             }
             return response()->json([
+                'website_id' => $website->id,
                 'is_activated' => $website->is_activated
             ], 200);
         }

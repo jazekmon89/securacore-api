@@ -38,7 +38,7 @@ class LiveTrafficRequest extends FormRequest
             'request_uri' => 'required|string|max:255',
             'referer' => 'required|string|max:255',
             'bot' => 'required|integer',
-            'time' => 'required|required|date_format:H:i:s',
+            'time' => 'required|required|date_format:H:i',
             'uniquev' => 'required|integer',
             'website_id' => 'required|exists:websites,id',
         ];

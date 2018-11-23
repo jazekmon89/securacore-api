@@ -18,6 +18,7 @@ class CreateSecurityLabelsTable extends Migration
             $table->string('name', 255);
             $table->text('message')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

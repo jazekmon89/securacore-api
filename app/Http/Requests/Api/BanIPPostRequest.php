@@ -28,7 +28,7 @@ class BanIPPostRequest extends FormRequest
         return [
             'ip' => 'required|ip',
             'date' => 'required|date|date_format:Y-m-d',
-            'time' => 'required|date_format:H:i:s',
+            'time' => 'required|date_format:H:i',
             'reason' => 'required|string|min:3',
             'url' => 'required|url',
             'website_id' => 'required|integer|exists:websites,id',

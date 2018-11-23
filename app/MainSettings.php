@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MainSettings extends Model
 {
+    use SoftDeletes;
+    
     protected $table = 'settings';
 
     /**

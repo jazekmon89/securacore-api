@@ -39,7 +39,7 @@ class ScanWebsites extends Command
      */
     public function handle()
     {
-        $websites_unscanned = DB::table('websites')->where('is_scanned', 0)->limit(6);
+        $websites_unscanned = DB::table('websites')->where('is_scanned', 0)->whereNull('deleted_at')->limit(6);
         if ( $websites_unscanned->exists() ) {
             $websites = $websites_unscanned->get();
             $online_ids = [];
@@ -68,12 +68,12 @@ class ScanWebsites extends Command
                 'is_scanned' => 1
             ]);
         }
-        if ( !DB::table('websites')->where('is_scanned', 0)->exists() ){
+        if ( !DB::table('websites')->where('is_scanned', 0)->whereNull('deleted_at')->exists() ){
             /* 
              * All websites are scanned.
              * We need to reset the is_checked field.
              */
-            DB::table('websites')->update(['is_scanned' => 0]);
+            DB::table('websites')->whereNull('deleted_at')->update(['is_scanned' => 0]);
         }
     }
 }

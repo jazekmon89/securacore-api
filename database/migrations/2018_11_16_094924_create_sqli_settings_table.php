@@ -26,6 +26,7 @@ class CreateSqliSettingsTable extends Migration
             $table->unsignedInteger('website_id');
             $table->foreign('website_id')->references('id')->on('websites');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

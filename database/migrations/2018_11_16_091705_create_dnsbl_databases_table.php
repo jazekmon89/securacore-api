@@ -17,6 +17,7 @@ class CreateDnsblDatabasesTable extends Migration
             $table->increments('id');
             $table->string('database', 30);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

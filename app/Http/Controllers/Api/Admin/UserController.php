@@ -14,7 +14,7 @@ class UserController extends Controller
 
     public function index() {
         $to_return = [];
-        if (ApiHelper::canAccess()) {
+        if (ApiHelper::isAdmin()) {
             $user = User::get();
             $to_return = $user->toArray();
         }
@@ -23,7 +23,7 @@ class UserController extends Controller
 
     public function store(UserRequest $request) {
         $to_return = [];
-        if (ApiHelper::canAccess()) {
+        if (ApiHelper::isAdmin()) {
             $user = new User();
             $fillables = $user->getFillable();
             $request = $request->all();
@@ -40,7 +40,7 @@ class UserController extends Controller
 
     public function show(User $user) {
         $to_return = [];
-        if (ApiHelper::canAccess()) {
+        if (ApiHelper::isAdmin()) {
             $to_return = $user->getAttributes();
         }
         return response()->json($to_return, 200);
@@ -48,7 +48,7 @@ class UserController extends Controller
 
     public function update(User $user, UserRequest $request) {
         $to_return = [];
-        if (ApiHelper::canAccess()) {
+        if (ApiHelper::isAdmin()) {
             $request = $request->all();
             $fillables = $user->getFillable();
             foreach($request as $field=>$value) {
@@ -63,8 +63,12 @@ class UserController extends Controller
     }
 
     public function destroy(User $user) {
-        $user->delete();
-        return response()->json(['success'=>true], 200);
+        $to_return = [];
+        if (isAdmin()) {
+            $user->delete();
+            $to_return = ['success'=>true];
+        }
+        return response()->json($to_return, 200);
     }
     
 }
