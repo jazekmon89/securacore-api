@@ -25,8 +25,11 @@ class UserController extends Controller
         if (ApiHelper::canAccess() && auth()->user()) {
             $request = $request->all();
             $user = auth()->user();
-            foreach($request as $k=>$i) {
-                $user->{$k} = $i;
+            $fillables = $user->getFillable();
+            foreach($request as $field=>$value) {
+                if ( ($value || $value === 0) && in_array($field, $fillables) ) {
+                    $user->{$field} = $value;
+                }
             }
             $user->save();
             $to_return = $user->getAttributes();

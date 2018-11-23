@@ -33,8 +33,11 @@ class WebsiteController extends Controller
             }
             $website = new Website();
             $request = $request->all();
+            $fillables = $website->getFillable();
             foreach($request as $field=>$value) {
-                $website->{$field} = $value;
+                if ( ($value || $value === 0) && in_array($field, $fillables) ) {
+                    $website->{$field} = $value;
+                }
             }
             $website->save();
             ProcessClientInitialData::dispatch($website);
@@ -48,8 +51,11 @@ class WebsiteController extends Controller
         if (ApiHelper::canAccess()) {
             $website = new Website();
             $request = $request->all();
+            $fillables = $website->getFillable();
             foreach($request as $field=>$value) {
-                $website->{$field} = $value;
+                if ( ($value || $value === 0) && in_array($field, $fillables) ) {
+                    $website->{$field} = $value;
+                }
             }
             if (!$request->has('user_id')) {
                 $website->user_id = $user->id;
@@ -73,8 +79,11 @@ class WebsiteController extends Controller
         $to_return = [];
         if (ApiHelper::canAccess()) {
             $request = $request->all();
+            $fillables = $website->getFillable();
             foreach($request as $field=>$value) {
-                $website->{$field} = $value;
+                if ( ($value || $value === 0) && in_array($field, $fillables) ) {
+                    $website->{$field} = $value;
+                }
             }
             $website->save();
             $to_return = $website->getAttributes();

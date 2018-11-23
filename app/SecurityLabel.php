@@ -12,4 +12,14 @@ class SecurityLabel extends Model
     	'updated_at',
     	'id'
     ];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name',
+        'message',
+    ];
 }

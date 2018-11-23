@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         //$this->call(MassRequestsSettingsSeeder::class);
         $this->call(MessagesSeeder::class);
         //$this->call(ProxySettingsSeeder::class);
-        $this->call(SettingsSeeder::class);
+        //$this->call(SettingsSeeder::class);
         //$this->call(SpamSettingsSeeder::class);
         //$this->call(SQLISettingsSeeder::class);
         $this->call(SecurityLabelsSeeder::class);

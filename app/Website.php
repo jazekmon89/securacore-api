@@ -17,4 +17,19 @@ class Website extends Model
         'created_at', 'updated_at'
     ];
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'user_id',
+        'url',
+        'public_key',
+        'is_activated',
+        'notes',
+        'online',
+        'is_scanned',
+    ];
+
 }

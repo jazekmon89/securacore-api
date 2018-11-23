@@ -21,9 +21,12 @@ class BanController extends Controller
         if (ApiHelper::canAccess()) {
             $data = $request->all();
             $banned_ip = new BannedIP();
+            $fillables = $banned_ip->getFillable();
             $request = $request->all();
             foreach($data as $field => $value) {
-                $banned_ip->{$field} = $value;
+                if ( ($value || $value === 0) && in_array($field, $fillables) ) {
+                    $banned_ip->{$field} = $value;
+                }
             }
             $banned_ip->save();
             $to_return = $banned_ip->getAttributes();
@@ -36,9 +39,12 @@ class BanController extends Controller
         if (ApiHelper::canAccess()) {
             $data = $request->all();
             $banned_country = new BannedCountry();
+            $fillables = $banned_country->getFillable();
             $request = $request->all();
             foreach($data as $field => $value) {
-                $banned_country->{$field} = $value;
+                if ( ($value || $value === 0) && in_array($field, $fillables) ) {
+                    $banned_country->{$field} = $value;
+                }
             }
             $banned_country->save();
             $to_return = $banned_country->getAttributes();

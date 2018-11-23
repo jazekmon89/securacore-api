@@ -23,8 +23,11 @@ class PublicController extends Controller
                 unset($data['public_key']);
             }
             $log = new Log();
+            $fillables = $log->getFillable();
             foreach($data as $field => $value) {
-                $log->{$field} = $value;
+                if ( ($value || $value === 0) && in_array($field, $fillables) ) {
+                    $log->{$field} = $value;
+                }
             }
             $log->save();
             return response()->json($log->toArray(), 200);
