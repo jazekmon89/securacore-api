@@ -13,13 +13,12 @@ class LogController extends Controller
 {
 
     public function store(LogRequest $request) {
-    	$website = new Website();
-        $public_key = $request->get('public_key') ?? null;
         $field = 'public_key';
-        if (ApiHelper::publicCheckAccess($public_key, $website, $field, $request)) {
+        $public_key = $request->get($field) ?? null;
+        if (ApiHelper::publicCheckAccess($public_key, new Website(), $field, $request)) {
             $data = $request->all();
-            if ($request->has('public_key')) {
-                unset($data['public_key']);
+            if ($request->has($field)) {
+                unset($data[$field]);
             }
             $log = new Log();
             $fillables = $log->getFillable();

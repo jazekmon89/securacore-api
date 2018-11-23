@@ -66,9 +66,6 @@ Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
 	Route::get('/{website}', 'Api\Users\WebsiteController@show');
 	Route::put('/{website}', 'Api\Users\WebsiteController@update');
 
-	// Live Traffic
-	Route::get('/{website}/live-traffic', 'Api\Users\LiveTrafficController@index');
-
 	// Log
 	Route::get('/{website}/log', 'Api\Users\LogController@index');
 	
@@ -126,9 +123,13 @@ Route::post('log', 'Api\Publics\LogController@store');
 Route::post('check/public-key', 'Api\Publics\PublicKeyController@checkAndActivatePublicKey');
 
 // IP Ban
-Route::get('/ip/check', 'Api\Publics\BanController@ipCheck');
-Route::post('/ip/ban', 'Api\Publics\BanController@banIP');
+Route::get('ip/check', 'Api\Publics\BanController@ipCheck');
+Route::post('ip/ban', 'Api\Publics\BanController@banIP');
 
 // Country Ban
-Route::get('/country/check', 'Api\Publics\BanController@countryCheck');
-Route::post('/country/ban', 'Api\Publics\BanController@banCountry');
+Route::get('country/check', 'Api\Publics\BanController@countryCheck');
+Route::post('country/ban', 'Api\Publics\BanController@banCountry');
+
+// Live Traffic
+Route::get('live-traffic', 'Api\Publics\LiveTrafficController@index');
+Route::post('live-traffic', 'Api\Publics\LiveTrafficController@store');

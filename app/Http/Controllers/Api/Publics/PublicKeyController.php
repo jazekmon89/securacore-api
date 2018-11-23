@@ -12,10 +12,11 @@ class PublicKeyController extends Controller
 {
 
     public function checkAndActivatePublicKey(PublicKeyRequest $request) {
+        $field = 'public_key';
         $website = new Website();
-        $public_key = $request->get('public_key') ?? null;
-        if (ApiHelper::publicCheckAccess($public_key, $website, 'public_key', $request)) {
-            $website = $website->where('public_key', $public_key)->first();
+        $public_key = $request->get($field) ?? null;
+        if (ApiHelper::publicCheckAccess($public_key, $website, $field, $request)) {
+            $website = $website->where($field, $public_key)->first();
             if ( !$website->is_activated ) {
                 $website->is_activated = 1;
                 $website->save();
