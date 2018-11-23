@@ -31,7 +31,8 @@ class BanIPPostRequest extends FormRequest
             'time' => 'required|date_format:H:i:s',
             'reason' => 'required|string|min:3',
             'url' => 'required|url',
-            'website_id' => 'required|integer|exists:websites,id'
+            'website_id' => 'required|integer|exists:websites,id',
+            'public_key' => 'required|string|min:1',
         ];
     }
 

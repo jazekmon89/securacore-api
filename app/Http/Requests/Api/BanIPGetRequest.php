@@ -27,6 +27,7 @@ class BanIPGetRequest extends FormRequest
     {
         return [
             'ip' => 'required|ip',
+            'public_key' => 'required|string|min:1',
         ];
     }
 

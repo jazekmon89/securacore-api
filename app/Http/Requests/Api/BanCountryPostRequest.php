@@ -29,7 +29,8 @@ class BanCountryPostRequest extends FormRequest
             'name' => 'required|ip',
             'page_url' => 'required|url',
             'whitelist' => 'required|integer',
-            'website_id' => 'required|integer|exists:websites,id'
+            'website_id' => 'required|integer|exists:websites,id',
+            'public_key' => 'required|string|min:1',
         ];
     }
 
