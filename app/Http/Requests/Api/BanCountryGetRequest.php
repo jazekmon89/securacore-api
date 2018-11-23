@@ -27,6 +27,7 @@ class BanCountryGetRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
+            'public_key' => 'required|string|min:1',
         ];
     }
 

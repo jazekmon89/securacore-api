@@ -26,7 +26,7 @@ class PublicKeyRequest extends FormRequest
     public function rules()
     {
         return [
-            'public_key'
+            'public_key' => 'required|string|min:1',
         ];
     }
 

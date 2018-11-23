@@ -44,7 +44,7 @@ class ApiHelper {
         return true;
     }
 
-    public static function publicCheckAccess($key, $model, $field, $request) {
+    public static function publicCheckAccess($public_key, $model, $field, $request) {
         $user_exists = false;
         $has_user = false;
         $referer_flag = false;
@@ -53,7 +53,7 @@ class ApiHelper {
         $referer = !$referer ? request()->server('REMOTE_ADDR') : null;
         $referer_parsed = parse_url( $referer );
         $referer_host = !empty($referer_parsed['host']) ? $referer_parsed['host'] : (!empty($referer_parsed['path']) ? $referer_parsed['path'] : null);
-        $model = $model->where($field, $key);
+        $model = $model->where($field, $public_key);
         if ( $model->exists() ) {
             $model = $model->first();
             if ( isset($model->user_id) ) {
