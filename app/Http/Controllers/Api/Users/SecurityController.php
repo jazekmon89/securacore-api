@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Api\Users;
 
-use Illuminate\Http\Request;
-use App\Website;
 use App\ContentSecurity;
-use App\SecurityLabel;
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
-use App\Security\Variations\ContentProtection;
 use App\Http\Requests\Api\SecurityUpdate;
+use App\MainSettings;
+use App\SecurityLabel;
+use App\Security\Variations\ContentProtection;
+use App\Website;
+use Illuminate\Http\Request;
+
 
 class SecurityController extends Controller
 {
@@ -91,6 +93,14 @@ class SecurityController extends Controller
                     if ( isset($model->{$field}) ) {
                         $to_return[$security][$field] = ['is_enabled' => $model->{$field}];
                     }
+                }
+            }
+            $main_settings = MainSettings::where('user_id', auth()->user()->id);
+            $to_return['main_settings'] = [];
+            if ($main_settings->exists()) {
+                $main_settings = $main_settings->first()->toArray();
+                foreach ($main_settings as $field => $value) {
+                    $to_return['main_settings'][$field] = $value;
                 }
             }
         }

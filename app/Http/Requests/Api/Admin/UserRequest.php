@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Api;
+namespace App\Http\Requests\Api\Admin;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -29,7 +29,9 @@ class UserRequest extends FormRequest
             'first_name' => 'required|string|max:191',
             'last_name' => 'required|string|max:191',
             'email' => 'required|email',
-            //'username' => 'required|string|max:191',
+            'username' => 'required|string|max:191',
+            'role' => 'required|integer',
+            'status' => 'required|boolean'
         ];
     }
 

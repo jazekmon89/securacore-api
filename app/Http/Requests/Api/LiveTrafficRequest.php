@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Api;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class LiveTrafficRequest extends FormRequest
 {
@@ -26,7 +28,11 @@ class LiveTrafficRequest extends FormRequest
         return [
             'ip' => 'required|ip',
             'useragent' => 'required|string|min:1',
-            'date' => 'required|date'
+            'date' => 'required|date|date_format:Y-m-d'
         ];
+    }
+
+    protected function failedValidation(Validator $validator) {
+        throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
 }

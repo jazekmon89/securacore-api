@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Api;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class BanCountryPostRequest extends FormRequest
 {
@@ -24,7 +26,14 @@ class BanCountryPostRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required|ip',
+            'page_url' => 'required|url',
+            'whitelist' => 'required|integer',
+            'website_id' => 'required|integer|exists:websites,id'
         ];
+    }
+
+    protected function failedValidation(Validator $validator) {
+        throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
 }

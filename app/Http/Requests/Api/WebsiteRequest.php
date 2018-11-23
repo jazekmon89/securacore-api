@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Api;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class WebsiteRequest extends FormRequest
 {
@@ -32,5 +34,9 @@ class WebsiteRequest extends FormRequest
             'status' => 'nullable|boolean',
             'is_checked' => 'nullable|boolean'
         ];
+    }
+
+    protected function failedValidation(Validator $validator) {
+        throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
 }

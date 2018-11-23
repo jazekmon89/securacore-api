@@ -35,9 +35,10 @@ class SecurityBase implements SecurityInterface {
 		$security_model = $security_model->where('website_id', $website->id);
 		if ( $security_model->exists() ) {
 			$security_model = $security_model->first();
-			foreach( $request->all() as $key => $value ) {
-				if ( isset($security_model->{$key}) && $security_model->{$key} != $value ) {
-					$security_model->{$key} = $value;
+			$fillables = $security_model->getFillable();
+			foreach( $request->all() as $field_name => $value ) {
+				if ( isset($security_model->{$field_name}) && $security_model->{$field_name} != $value && in_array($field_name, $fillables) ) {
+					$security_model->{$field_name} = $value;
 					break;
 				}
 			}
@@ -52,8 +53,11 @@ class SecurityBase implements SecurityInterface {
 		$security_model = $security_model->where('website_id', $website->id);
 		if ( $security_model->exists() ) {
 			$security_model = $security_model->first();
-			$security_model->{$field_name} = intval(!$security_model->{$field_name});
-			$security_model->save();
+			$fillables = $security_model->getFillable();
+			if ( in_array($field_name, $fillables) ) {
+				$security_model->{$field_name} = intval(!$security_model->{$field_name});
+				$security_model->save();
+			}
 			return $security_model;
 		}
 		return [];
@@ -63,7 +67,8 @@ class SecurityBase implements SecurityInterface {
 		$security_model = $security_model->where('website_id', $website->id);
 		if ( $security_model->exists() ) {
 			$security_model = $security_model->first();
-			if ( isset($security_model->{$field_name}) ) {
+			$fillables = $security_model->getFillable();
+			if ( isset($security_model->{$field_name}) && in_array($field_name, $fillables) ) {
 				$json_value = json_decode($security_model->{$field_name});
 				$json_value->{$sub_field_id}->enabled = intval(!$json_value->{$sub_field_id}->enabled);
 				$json_value = json_encode($json_value);
