@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Users;
 use App\User;
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Request\Api\UserRequest;
+use App\Http\Request\Api\UserUpdateRequest;
 use Illuminate\Http\Request;
 
 
@@ -20,7 +20,7 @@ class UserController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function update(UserRequest $request) {
+    public function update(UserUpdateRequest $request) {
         $to_return = [];
         if (ApiHelper::canAccess() && auth()->user()) {
             $request = $request->all();

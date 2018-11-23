@@ -21,6 +21,7 @@ class CreateLoginHistoryTable extends Migration
             $table->char('ip', 15);
             $table->char('status', 15);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

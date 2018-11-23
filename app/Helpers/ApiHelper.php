@@ -81,4 +81,12 @@ class ApiHelper {
         return false;
     }
 
+    public static function isAdmin() {
+        $user = auth()->user();
+        if ($user->role == 1) {
+            return true;
+        }
+        return false;
+    }
+
 }

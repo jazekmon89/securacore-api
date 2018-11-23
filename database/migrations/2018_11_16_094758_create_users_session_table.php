@@ -19,6 +19,7 @@ class CreateUsersSessionTable extends Migration
             $table->foreign('website_id')->references('id')->on('websites');
             $table->string('hash', 255);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

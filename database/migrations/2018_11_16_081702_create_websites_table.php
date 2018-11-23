@@ -24,6 +24,7 @@ class CreateWebsitesTable extends Migration
             $table->tinyInteger('online')->default(0);
             $table->tinyInteger('is_scanned')->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
