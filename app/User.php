@@ -44,4 +44,8 @@ class User extends Authenticatable implements JWTSubject
     {
         $this->notify(new AttackNotification($data));
     }
+
+    public function websites() {
+        return $this->hasMany('App\Website');
+    }
 }

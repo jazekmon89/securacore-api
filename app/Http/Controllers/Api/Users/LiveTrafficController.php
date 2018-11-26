@@ -20,7 +20,7 @@ class LiveTrafficController extends Controller
             $live_traffic = LiveTraffic::where('ip', $ip)
                 ->where('useragent', 'like', '%' . $useragent . '%')
                 ->where('date', $date);
-            $to_return = $live_traffic->get()->toArray();
+            $to_return = $live_traffic->paginate(10)->toArray();
         }
         return response()->json($to_return, 200);
     }

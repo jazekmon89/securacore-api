@@ -115,6 +115,7 @@ Route::group(['prefix' => 'admin/website', 'middleware' => 'jwt.auth'], function
 // Public ----------------------------------------------------------------------------------
 
 // Log
+Route::get('log', 'Api\Publics\LogController@index');
 Route::post('log', 'Api\Publics\LogController@store');
 
 // Public Key

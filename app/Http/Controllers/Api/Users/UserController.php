@@ -16,8 +16,8 @@ class UserController extends Controller
         $to_return = [];
         $user = auth()->user();
         if (ApiHelper::canAccess() && auth()->user()) {
-            $website = User::where('id', $user->id)->get();
-            $to_return = $website->toArray();
+            $website = User::where('id', $user->id);
+            $to_return = $website->paginate(10)->toArray();
         }
         return response()->json($to_return, 200);
     }

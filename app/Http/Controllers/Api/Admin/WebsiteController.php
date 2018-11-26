@@ -17,8 +17,7 @@ class WebsiteController extends Controller
     public function index() {
         $to_return = [];
         if (ApiHelper::canAccess()) {
-            $website = Website::get();
-            $to_return = $website->toArray();
+            $to_return = Website::paginate(10)->toArray();
         }
         return response()->json($to_return, 200);
     }
