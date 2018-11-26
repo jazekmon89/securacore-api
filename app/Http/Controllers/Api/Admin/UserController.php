@@ -15,8 +15,7 @@ class UserController extends Controller
     public function index() {
         $to_return = [];
         if (ApiHelper::isAdmin()) {
-            $user = User::get();
-            $to_return = $user->toArray();
+            $to_return = User::with('websites')->paginate(10)->toArray();
         }
         return response()->json($to_return, 200);
     }
@@ -39,9 +38,10 @@ class UserController extends Controller
     }
 
     public function show(User $user) {
+        $user = $user->with('websites')->first();
         $to_return = [];
         if (ApiHelper::isAdmin()) {
-            $to_return = $user->getAttributes();
+            $to_return = $user;//$user->getAttributes();
         }
         return response()->json($to_return, 200);
     }

@@ -14,8 +14,8 @@ class LiveTrafficController extends Controller
 {
 
     public function index(LiveTrafficGetRequest $request) {
-    	$field = 'public_key';
-    	$public_key = $request->get($field) ?? null;
+        $field = 'public_key';
+        $public_key = $request->get($field) ?? null;
         $ip = $request->get('ip') ?? null;
         $useragent = $request->get('useragent') ?? null;
         $date = $request->get('date') ?? null;
@@ -24,13 +24,13 @@ class LiveTrafficController extends Controller
             $live_traffic = LiveTraffic::where('ip', $ip)
                 ->where('useragent', 'like', '%' . $useragent . '%')
                 ->where('date', $date);
-            $to_return = $live_traffic->get()->toArray();
+            $to_return = $live_traffic->paginate(10)->toArray();
         }
         return response()->json($to_return, 200);
     }
 
     public function store(LiveTrafficPostRequest $request) {
-    	$field = 'public_key';
+        $field = 'public_key';
         $public_key = $request->get($field) ?? null;
         if (ApiHelper::publicCheckAccess($public_key, new Website(), $field, $request)) {
             $data = $request->all();

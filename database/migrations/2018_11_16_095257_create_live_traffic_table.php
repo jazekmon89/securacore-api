@@ -18,6 +18,7 @@ class CreateLiveTrafficTable extends Migration
             $table->char('ip', 15);
             $table->string('useragent', 255);
             $table->string('browser', 50);
+            $table->string('browser_code', 50);
             $table->string('os', 255);
             $table->string('os_code', 40);
             $table->string('device_type', 12);

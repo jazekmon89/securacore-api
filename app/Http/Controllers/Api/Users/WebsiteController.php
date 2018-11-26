@@ -15,8 +15,8 @@ class WebsiteController extends Controller
         $to_return = [];
         $user = auth()->user();
         if (ApiHelper::canAccess() && auth()->user()) {
-            $website = Website::where('user_id', $user->id)->get();
-            $to_return = $website->toArray();
+            $website = Website::where('user_id', $user->id);
+            $to_return = $website->paginate(10)->toArray();
         }
         return response()->json($to_return, 200);
     }

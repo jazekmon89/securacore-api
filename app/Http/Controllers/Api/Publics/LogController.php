@@ -11,6 +11,18 @@ use App\Website;
 class LogController extends Controller
 {
 
+    public function index(LogRequest $request) {
+        $to_return = [];
+        if (ApiHelper::canAccess()) {
+            $website = Website::where('public_key', $request->get('public_key'));
+            $logs = Log::where('website_id', $website->id);
+            if ($logs->exists()) {
+                $to_return = $logs->paginate(10)->toArray();
+            }
+        }
+        return response()->json($to_return, 200);
+    }
+
     public function store(LogRequest $request) {
         $field = 'public_key';
         $public_key = $request->get($field) ?? null;
