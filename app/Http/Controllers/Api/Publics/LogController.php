@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Api\Publics;
 
-use App\Website;
-use App\Log;
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\LogRequest;
-
+use App\Http\Requests\Api\Publics\LogRequest;
+use App\Log;
+use App\Website;
 
 class LogController extends Controller
 {

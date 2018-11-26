@@ -18,7 +18,7 @@ $factory->define(Website::class, function (Faker $faker) {
     return [
         'user_id' => $faker->numberBetween($min = 1, $max = 10),
         'url' => $faker->domainName,
-        'public_key' => $faker->randomNumber,
+        'public_key' => $faker->unique()->randomNumber($nbDigits = 6, $strict = false),
         'is_activated' => $faker->numberBetween($min = 0, $max = 1),
         'notes' => $faker->sentence,
         'online' => $faker->numberBetween($min = 0, $max = 1),

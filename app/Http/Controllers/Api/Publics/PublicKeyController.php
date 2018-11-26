@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Api\Publics;
 
-use App\Website;
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\PublicKeyRequest;
-
+use App\Http\Requests\Api\Publics\PublicKeyRequest;
+use App\Website;
 
 class PublicKeyController extends Controller
 {

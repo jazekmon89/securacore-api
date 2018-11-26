@@ -29,10 +29,8 @@ class WebsiteRequest extends FormRequest
             'user_id' => 'required|integer|exists:users,id',
             'url' => 'required|string|max:255',
             'public_key' => 'nullable|string|max:255',
-            'is_activated' => 'nullable|boolean',
+            'is_activated' => 'required|boolean',
             'notes' => 'nullable|string',
-            'status' => 'nullable|boolean',
-            'is_checked' => 'nullable|boolean'
         ];
     }
 

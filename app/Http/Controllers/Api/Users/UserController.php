@@ -5,17 +5,19 @@ namespace App\Http\Controllers\Api\Users;
 use App\User;
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Request\Api\UserUpdateRequest;
+use App\Http\Requests\Api\UserUpdateRequest;
 use Illuminate\Http\Request;
 
 
 class UserController extends Controller
 {
 
-    public function show() {
+    public function index() {
         $to_return = [];
+        $user = auth()->user();
         if (ApiHelper::canAccess() && auth()->user()) {
-            $to_return = auth()->user()->getAttributes();
+            $website = User::where('id', $user->id)->get();
+            $to_return = $website->toArray();
         }
         return response()->json($to_return, 200);
     }

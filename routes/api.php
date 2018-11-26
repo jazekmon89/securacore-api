@@ -76,8 +76,7 @@ Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
 // User Api
 Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
 	Route::get('/', 'Api\Users\UserController@index');
-	Route::get('/{user}', 'Api\Users\UserController@show');
-	Route::put('/{user}', 'Api\Users\UserController@update');
+	Route::put('/', 'Api\Users\UserController@update');
 
 	Route::get('/{user}/website', 'Api\Admin\WebsiteController@indexByUserId');
 });
@@ -86,14 +85,13 @@ Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
 // Website Api
 Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
 	Route::get('/', 'Api\Users\UserController@index');
-	Route::get('/{website}', 'Api\Users\WebsiteController@show');
-	Route::put('/{website}', 'Api\Users\WebsiteController@update');
+	Route::put('/', 'Api\Users\WebsiteController@update');
 });
 
 
 // ------- Admin ---------
 // User and Website CRUD Api
-Route::group(['prefix' => 'user'], function() {
+Route::group(['prefix' => 'admin/user', 'middleware' => 'jwt.auth'], function() {
 	Route::get('/', 'Api\Admin\UserController@index');
 	Route::post('/', 'Api\Admin\UserController@store');
 	Route::get('/{user}', 'Api\Admin\UserController@show');
@@ -105,7 +103,7 @@ Route::group(['prefix' => 'user'], function() {
 });
 
 // Client CRUD Api
-Route::group(['prefix' => 'website'], function() {
+Route::group(['prefix' => 'admin/website', 'middleware' => 'jwt.auth'], function() {
 	Route::get('/', 'Api\Admin\WebsiteController@index');
 	Route::post('/', 'Api\Admin\WebsiteController@store');
 	Route::get('/{website}', 'Api\Admin\WebsiteController@show');
