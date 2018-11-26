@@ -26,7 +26,7 @@ class CreateLogsTable extends Migration
             $table->string('os_name', 255)->default('Unknown');
             $table->string('os_code', 40);
             $table->string('country', 120)->default('Unknown');
-            $table->string('country_code', 2)->default('XX');
+            $table->string('country_code', 4)->default('XX');
             $table->string('region', 120)->default('Unknown');
             $table->string('city', 120)->default('Unknown');
             $table->string('latitude', 30)->default('0');

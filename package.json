@@ -21,6 +21,8 @@
     },
     "dependencies": {
         "ajv": "^6.0.0",
-        "imagemin": "^6.0.0"
+        "imagemin": "^6.0.0",
+        "laravel-echo": "^1.4.1",
+        "socket.io-client": "^2.1.1"
     }
 }
