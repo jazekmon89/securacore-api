@@ -25,10 +25,16 @@ class UserRequest extends FormRequest
      */
     public function rules()
     {
+        $user_id = request()->get('id') ?? null;
+        if (!$user_id) {
+            return [
+                'id' => 'required|exists:users,id'
+            ];
+        }
         return [
             'first_name' => 'required|string|max:191',
             'last_name' => 'required|string|max:191',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email,' . $user_id,
             'username' => 'required|string|max:191',
             'role' => 'required|integer',
             'status' => 'required|boolean'

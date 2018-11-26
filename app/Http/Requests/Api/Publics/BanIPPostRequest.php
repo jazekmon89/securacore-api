@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Api;
+namespace App\Http\Requests\Api\Publics;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class BanCountryGetRequest extends FormRequest
+class BanIPPostRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,12 @@ class BanCountryGetRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
+            'ip' => 'required|ip',
+            'date' => 'required|date|date_format:Y-m-d',
+            'time' => 'required|date_format:H:i',
+            'reason' => 'required|string|min:3',
+            'url' => 'required|url',
+            'website_id' => 'required|integer|exists:websites,id',
             'public_key' => 'required|string|min:1',
         ];
     }

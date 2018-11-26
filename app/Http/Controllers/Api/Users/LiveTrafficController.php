@@ -8,7 +8,6 @@ use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\LiveTrafficRequest;
 
-
 class LiveTrafficController extends Controller
 {
 

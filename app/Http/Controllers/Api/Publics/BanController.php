@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Api\Publics;
 
-use App\Website;
 use App\BannedIP;
 use App\BannedCountry;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\BanIPGetRequest;
-use App\Http\Requests\Api\BanIPPostRequest;
-use App\Http\Requests\Api\BanCountryGetRequest;
-use App\Http\Requests\Api\BanCountryPostRequest;
+use App\Http\Requests\Api\Publics\BanCountryGetRequest;
+use App\Http\Requests\Api\Publics\BanCountryPostRequest;
+use App\Http\Requests\Api\Publics\BanIPGetRequest;
+use App\Http\Requests\Api\Publics\BanIPPostRequest;
 use App\Helpers\ApiHelper;
-
+use App\Website;
 
 class BanController extends Controller
 {

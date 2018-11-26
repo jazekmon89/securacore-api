@@ -49,7 +49,7 @@ class APILogicController extends Controller
             ['id', '=', $all['website_id']],
             ['url', '=', $all['url']],
             ['public_key', '=', $all['public_key']],
-        ])->first();
+        ])->whereNull('deleted_at')->first();
         
         if ($attacked_site) {
             $client = User::where('id', $attacked_site->user_id)->first();

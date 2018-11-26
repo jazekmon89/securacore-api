@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Api\Admin;
+namespace App\Http\Requests\Api\Publics;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class UserStoreRequest extends FormRequest
+class BanCountryGetRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,13 +26,8 @@ class UserStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'first_name' => 'required|string|max:191',
-            'last_name' => 'required|string|max:191',
-            'email' => 'required|email|unique:users,email',
-            'username' => 'nullable|string|max:191',
-            'password' => 'required|string|min:8|max:191|confirmed',
-            'role' => 'required|integer',
-            'status' => 'required|boolean'
+            'name' => 'required|string',
+            'public_key' => 'required|string|min:1',
         ];
     }
 
