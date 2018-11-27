@@ -29,10 +29,10 @@ class UserStoreRequest extends FormRequest
             'first_name' => 'required|string|max:191',
             'last_name' => 'required|string|max:191',
             'email' => 'required|email|unique:users,email',
-            'username' => 'nullable|string|max:191',
-            'password' => 'required|string|min:8|max:191|confirmed',
-            'role' => 'required|integer',
-            'status' => 'required|boolean'
+            //'username' => 'nullable|string|max:191',
+            //'password' => 'required|string|min:8|max:191|confirmed',
+            //'role' => 'required|integer',
+            //'status' => 'required|boolean'
         ];
     }
 

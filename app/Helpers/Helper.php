@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Helpers;
+use Faker\Factory as Faker;
 
 class Helper {
 
@@ -18,6 +19,11 @@ class Helper {
 	    curl_close($curlInit);
 	    
 	    return ($response) ? true : false;
+	}
+
+	static function generatePassword() {
+		$faker = Faker::create();
+		return $faker->password;
 	}
 
 }

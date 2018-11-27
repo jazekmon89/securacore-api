@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\User;
 use App\Helpers\ApiHelper;
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Admin\UserStoreRequest;
 use App\Http\Requests\Api\Admin\UserUpdateRequest;
@@ -32,10 +33,17 @@ class UserController extends Controller
             $request = $request->all();
             foreach($request as $field=>$value) {
                 if ( ($value || $value === 0) && in_array($field, $fillables) ) {
-                    $user->{$field} = ($field == 'password' ? bcrypt($value) : $value);
+                    //$user->{$field} = ($field == 'password' ? bcrypt($value) : $value);
+                    $user->{$field} = $value;
                 }
             }
-            $user->save();
+            if (!empty($request)) {
+                $user->status = 1;
+                $user->role = 2;
+                $password = Helper::generatePassword();
+                $user->password = bcrypt($password);
+                $user->save();
+            }
             $to_return = $user->toArray();
         }
         return response()->json($to_return, 200);
