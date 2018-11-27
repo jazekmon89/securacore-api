@@ -18,8 +18,9 @@ use Illuminate\Http\Request;
 // });
 
 // PUBLIC ENDPOINTS
-Route::post('login', 'Api\APILoginController@login');
-Route::post('notify', 'Api\APILogicController@notify');
+
+// Route::post('notify', 'Api\APILogicController@notify');
+// Route::post('clientlog', 'Api\APILogicController@storeClientLog');
 
 // PROTECTED USER ROUTES
 Route::group([
@@ -121,6 +122,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'jwt.auth'], function() {
 
 
 // Public ----------------------------------------------------------------------------------
+
+// User Login
+Route::post('login', 'Api\APILoginController@login');
 
 // Log
 Route::post('log', 'Api\Publics\LogController@store');

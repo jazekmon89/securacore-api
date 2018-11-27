@@ -11,81 +11,53 @@ use App\Http\Controllers\Controller;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
-use App\Notifications\AttackNotification;
 // use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Notifiable as Notification;
+use App\Http\Requests\Api\LogRequest;
+use App\Jobs\ProcessClientLog;
 
 class APILogicController extends Controller
 {
-    public function notify(Request $request)
-    {
-        $all = $request->only([
-            'website_id',
-            'attack_type',
-            'attack_message',
-            'public_key',
-            'url'
-        ]);
-        // dd($request->all());
-        $validator = Validator::make($request->all(), [
-            'website_id' => 'required',
-            'attack_type' => 'required',
-            'attack_message' => 'required',
-            'public_key' => 'required',
-            'url' => 'required'
-        ]);
+    // public function storeClientLog(LogRequest $clientlog)
+    // {
+    //     $attacked_site = DB::table('websites')->where([
+    //         ['id', '=', $clientlog->website_id],
+    //         ['url', '=', $clientlog->referer_url],
+    //         ['public_key', '=', $clientlog->public_key],
+    //     ])->whereNull('deleted_at')->first();
         
-        if ($validator->fails()) {
-            $invalid = new ValidationException($validator);
-            return response()->json([
-                'success'   => false,
-                'message'   => $invalid->getMessage(),
-                'errors'   => $invalid->errors()
-            ], 500);
-        }
-        $admin = User::where('role', 1)->first();
-        
-        $attacked_site = DB::table('websites')->where([
-            ['id', '=', $all['website_id']],
-            ['url', '=', $all['url']],
-            ['public_key', '=', $all['public_key']],
-        ])->whereNull('deleted_at')->first();
-        
-        if ($attacked_site) {
-            $client = User::where('id', $attacked_site->user_id)->first();
+    //     // dump($attacked_site);
+
+    //     if ($attacked_site) {
             
-            //email to admin
-            $admin->sendAttackNotification($all);
-            //email to client
-            $client->sendAttackNotification($all);
+    //         if ($attacked_site->is_activated === 1) {
 
-            if ($attacked_site->is_activated === 1 && $attacked_site->status === 1) {
-                return response()->json([
-                    'success'   => true,
-                    'message'   => 'Admin & Client has been notified of the attack!',
-                    // 'data'   => $all
-                ], 200);
-            } elseif ($attacked_site->is_activated === 0 && $attacked_site->status === 1) {
-                return response()->json([
-                    'success'   => true,
-                    'message'   => 'Admin & Client has been notified of the attack! Protection is not activated, please turn it on.',
-                    // 'data'   => $all
-                ], 200);
-            } else {
-                return response()->json([
-                    'success'   => true,
-                    'message'   => 'Admin & Client has been notified of the attack! Protection status has not been activated.',
-                ], 200);
-            }
+    //             ProcessClientLog::dispatch($clientlog);
 
-        } else {
-            return response()->json([
-                'success'   => false,
-                'message'   => 'URL is not yet registered as client domain.',
-            ], 400);
-        }
+    //             return response()->json([
+    //                 'success'   => true,
+    //                 'message'   => 'Admin & Client has been notified of the attack!',
+    //                 // 'data'   => $all
+    //             ], 200);
+    //         } else {
 
-    }
+    //             ProcessClientLog::dispatch($clientlog);
+
+    //             return response()->json([
+    //                 'success'   => true,
+    //                 'message'   => 'Admin & Client has been notified of the attack! Protection is not activated, please turn it on.',
+    //                 // 'data'   => $all
+    //             ], 200);
+    //         } 
+
+    //     } else {
+    //         return response()->json([
+    //             'success'   => false,
+    //             'message'   => 'URL is not yet registered as client domain.',
+    //         ], 400);
+    //     }
+        
+    // }
 
     public function getUserWebsites(Request $request)
     {

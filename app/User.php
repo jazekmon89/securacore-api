@@ -3,7 +3,8 @@
 namespace App;
 
 
-use App\Notifications\AttackNotification;
+use App\Notifications\AdminAttackNotification;
+use App\Notifications\ClientAttackNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -42,9 +43,14 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function sendAttackNotification($data)
+    public function sendAdminAttackNotification($data)
     {
-        $this->notify(new AttackNotification($data));
+        $this->notify(new AdminAttackNotification($data));
+    }
+
+    public function sendClientAttackNotification($data)
+    {
+        $this->notify(new ClientAttackNotification($data));
     }
 
     public function websites() {

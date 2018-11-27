@@ -2,12 +2,13 @@
 
 namespace App\Notifications;
 
+use App\Log;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class AttackNotification extends Notification implements ShouldQueue
+class AdminAttackNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -18,7 +19,7 @@ class AttackNotification extends Notification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($data)
+    public function __construct(Log $data)
     {
         $this->attack_detail = $data;
     }
@@ -42,17 +43,18 @@ class AttackNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        // dump('notification', $notifiable);
+        // dump('notification: ', $notifiable);
+        // dump('$this->attack_detail', $this->attack_detail['referer_url']);
         // dump('$this->attack_detail', $this->attack_detail);
         
         return (new MailMessage)
-            ->subject('Client has been attacked with ' . $this->attack_detail['attack_type'])
+            ->subject('Client has been attacked with ' . $this->attack_detail->type)
             ->greeting('Alert!')
-            ->line('A client has been attacked!' . $this->attack_detail['attack_message'] )
-            ->line(' URL: ' . $this->attack_detail['url'])
-            ->line('Public key: ' . $this->attack_detail['public_key'])
-            ->action('Activate Security', url('/'))
-            ->line('Please notify your administrator now!');
+            ->line('A client has been attacked ' . $this->attack_detail->type )
+            ->line(' URL: ' . $this->attack_detail->referer_url)
+            // ->line('Public key: ' . $this->attack_detail->public_key)
+            // ->action('Activate Security', url('/'))
+            ->line('Please notify your client now!');
     }
 
     /**

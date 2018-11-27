@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api\Publics;
 
+use App\Events\ClientLogSubmitted;
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Publics\LogStoreRequest;
 use App\Http\Requests\Api\Publics\IndexFilterRequest;
+use Illuminate\Support\Facades\Redis;
 use App\Log;
 use App\Website;
 
@@ -51,6 +53,10 @@ class LogController extends Controller
             $log->referer_url = $referer;
             $log->website_id = $website->id;
             $log->save();
+            event(new ClientLogSubmitted($log));
+            // $redis = Redis::connection();
+            // $redisEmit = Redis::publish('test-channel', $log->toArray());
+            // dump('$redisEmit', $redisEmit);
             return response()->json($log->toArray(), 200);
         }
         return response()->json([
