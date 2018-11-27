@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BotSecurity extends Model
 {
+    use SoftDeletes;
+    
     protected $table = 'badbot_settings';
     const ACTIVATOR_FIELD = 'badbot';
 

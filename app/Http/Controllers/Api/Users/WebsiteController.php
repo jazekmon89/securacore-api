@@ -6,9 +6,7 @@ use App\Website;
 use App\User;
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Request\Api\UserRequest;
 use Illuminate\Http\Request;
-
 
 class WebsiteController extends Controller
 {
@@ -19,23 +17,6 @@ class WebsiteController extends Controller
         if (ApiHelper::canAccess() && auth()->user()) {
             $website = Website::where('user_id', $user->id)->get();
             $to_return = $website->toArray();
-        }
-        return response()->json($to_return, 200);
-    }
-
-    public function indexByUserId(Website $website, User $user) {
-        $to_return = [];
-        if (ApiHelper::canAccess() && auth()->user()->id == $user->id) {
-            $website = Website::where('user_id', $user->id)->get();
-            $to_return = $website->toArray();
-        }
-        return response()->json($to_return, 200);
-    }
-
-    public function show(Website $website) {
-        $to_return = [];
-        if (ApiHelper::canAccess()) {
-            $to_return = $website->getAttributes();
         }
         return response()->json($to_return, 200);
     }

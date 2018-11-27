@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Publics;
 
-use App\User;
-use App\Website;
-use App\LiveTraffic;
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Publics\LiveTrafficGetRequest;
 use App\Http\Requests\Api\Publics\LiveTrafficPostRequest;
+use App\LiveTraffic;
+use App\User;
+use App\Website;
 
 class LiveTrafficController extends Controller
 {

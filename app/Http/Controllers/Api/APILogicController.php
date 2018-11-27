@@ -18,46 +18,46 @@ use App\Jobs\ProcessClientLog;
 
 class APILogicController extends Controller
 {
-    public function storeClientLog(LogRequest $clientlog)
-    {
-        $attacked_site = DB::table('websites')->where([
-            ['id', '=', $clientlog->website_id],
-            ['url', '=', $clientlog->referer_url],
-            ['public_key', '=', $clientlog->public_key],
-        ])->first();
+    // public function storeClientLog(LogRequest $clientlog)
+    // {
+    //     $attacked_site = DB::table('websites')->where([
+    //         ['id', '=', $clientlog->website_id],
+    //         ['url', '=', $clientlog->referer_url],
+    //         ['public_key', '=', $clientlog->public_key],
+    //     ])->whereNull('deleted_at')->first();
         
-        // dump($attacked_site);
+    //     // dump($attacked_site);
 
-        if ($attacked_site) {
+    //     if ($attacked_site) {
             
-            if ($attacked_site->is_activated === 1) {
+    //         if ($attacked_site->is_activated === 1) {
 
-                ProcessClientLog::dispatch($clientlog);
+    //             ProcessClientLog::dispatch($clientlog);
 
-                return response()->json([
-                    'success'   => true,
-                    'message'   => 'Admin & Client has been notified of the attack!',
-                    // 'data'   => $all
-                ], 200);
-            } else {
+    //             return response()->json([
+    //                 'success'   => true,
+    //                 'message'   => 'Admin & Client has been notified of the attack!',
+    //                 // 'data'   => $all
+    //             ], 200);
+    //         } else {
 
-                ProcessClientLog::dispatch($clientlog);
+    //             ProcessClientLog::dispatch($clientlog);
 
-                return response()->json([
-                    'success'   => true,
-                    'message'   => 'Admin & Client has been notified of the attack! Protection is not activated, please turn it on.',
-                    // 'data'   => $all
-                ], 200);
-            } 
+    //             return response()->json([
+    //                 'success'   => true,
+    //                 'message'   => 'Admin & Client has been notified of the attack! Protection is not activated, please turn it on.',
+    //                 // 'data'   => $all
+    //             ], 200);
+    //         } 
 
-        } else {
-            return response()->json([
-                'success'   => false,
-                'message'   => 'URL is not yet registered as client domain.',
-            ], 400);
-        }
+    //     } else {
+    //         return response()->json([
+    //             'success'   => false,
+    //             'message'   => 'URL is not yet registered as client domain.',
+    //         ], 400);
+    //     }
         
-    }
+    // }
 
     public function getUserWebsites(Request $request)
     {

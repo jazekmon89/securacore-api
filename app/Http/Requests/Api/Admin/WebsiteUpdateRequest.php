@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Api;
+namespace App\Http\Requests\Api\Admin;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class BanCountryGetRequest extends FormRequest
+class WebsiteUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,8 +26,11 @@ class BanCountryGetRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
-            'public_key' => 'required|string|min:1',
+            'user_id' => 'required|integer|exists:users,id',
+            'url' => 'required|string|max:255',
+            'public_key' => 'nullable|string|max:255',
+            'is_activated' => 'required|boolean',
+            'notes' => 'nullable|string',
         ];
     }
 

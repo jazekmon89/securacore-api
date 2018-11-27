@@ -12,6 +12,7 @@ class ApiHelper {
         $referer_ip_flag = ip2long($referer_host) !== false;
         if ($referer_ip_flag) {
             $model_host = gethostbyname($host);
+            
             if ( $model_host == $referer_host ) {
                 return true;
             }
@@ -77,6 +78,14 @@ class ApiHelper {
             } else if ( $has_user && !$user_exists || $has_url && !$referer_flag ) {
                 return false;
             }
+        }
+        return false;
+    }
+
+    public static function isAdmin() {
+        $user = auth()->user();
+        if ($user && $user->role == 1) {
+            return true;
         }
         return false;
     }

@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Jobs\ProcessClientInitialData;
-use App\User;
-use App\Website;
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Request\Api\WebsiteRequest;
+use App\Http\Requests\Api\Admin\WebsiteStoreRequest;
+use App\Http\Requests\Api\Admin\WebsiteUpdateRequest;
+use App\User;
+use App\Website;
 use Illuminate\Http\Request;
-
 
 class WebsiteController extends Controller
 {
@@ -23,7 +23,16 @@ class WebsiteController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function store(WebsiteRequest $request) {
+    public function indexByUserId(Website $website, User $user) {
+        $to_return = [];
+        if (ApiHelper::canAccess() && auth()->user()->id == $user->id) {
+            $website = Website::where('user_id', $user->id)->get();
+            $to_return = $website->toArray();
+        }
+        return response()->json($to_return, 200);
+    }
+
+    public function store(WebsiteStoreRequest $request) {
         $to_return = [];
         if (ApiHelper::canAccess()) {
             if (!$request->has('user_id')) {
@@ -46,7 +55,7 @@ class WebsiteController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function storeWithUserId(User $user, WebsiteRequest $request) {
+    public function storeWithUserId(User $user, WebsiteStoreRequest $request) {
         $to_return = [];
         if (ApiHelper::canAccess()) {
             $website = new Website();
@@ -75,7 +84,7 @@ class WebsiteController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function update(Website $website, WebsiteRequest $request) {
+    public function update(Website $website, WebsiteUpdateRequest $request) {
         $to_return = [];
         if (ApiHelper::canAccess()) {
             $request = $request->all();

@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Api\Publics;
 
-use App\Website;
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\PublicKeyRequest;
-
+use App\Http\Requests\Api\Publics\PublicKeyRequest;
+use App\Website;
 
 class PublicKeyController extends Controller
 {
@@ -22,6 +21,7 @@ class PublicKeyController extends Controller
                 $website->save();
             }
             return response()->json([
+                'website_id' => $website->id,
                 'is_activated' => $website->is_activated
             ], 200);
         }

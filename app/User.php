@@ -2,15 +2,18 @@
 
 namespace App;
 
-use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Notifications\Notifiable;
+
+use App\Notifications\AdminAttackNotification;
+use App\Notifications\ClientAttackNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Notifications\AttackNotification;
+use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable;
+    use Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -18,7 +21,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'first_name', 'last_name', 'email', 'password', 'role', 'status',
     ];
 
     /**
@@ -38,8 +41,13 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function sendAttackNotification($data)
+    public function sendAdminAttackNotification($data)
     {
-        $this->notify(new AttackNotification($data));
+        $this->notify(new AdminAttackNotification($data));
+    }
+
+    public function sendClientAttackNotification($data)
+    {
+        $this->notify(new ClientAttackNotification($data));
     }
 }

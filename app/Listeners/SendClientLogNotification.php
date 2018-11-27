@@ -3,12 +3,15 @@
 namespace App\Listeners;
 
 use App\User;
+use App\Website;
+use App\Log;
 use App\Events\ClientLogSubmitted;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class SendClientLogNotification implements ShouldQueue
 {
+    
     /**
      * Create the event listener.
      *
@@ -27,14 +30,16 @@ class SendClientLogNotification implements ShouldQueue
      */
     public function handle(ClientLogSubmitted $event)
     {
-        dump('listener: ',  $event);
+        // dump('listener: ',  $event);
         $admin = User::where('role', 1)->first();
-        // $client = User::where('id', $attacked_site->user_id)->first();
-
+        $website = Website::where('id', $event->clientlog->website_id)->first();
+        $client = User::where('id', $website->user_id)->first();
+        // dump('$client: ', $client);
+        
         //email to admin
-        $admin->sendAttackNotification($all);
-        // //email to client
-        // $client->sendAttackNotification($clientlog->all());
+        $admin->sendAdminAttackNotification($event->clientlog);
+        //email to client
+        $client->sendClientAttackNotification($event->clientlog);
         
     }
 }

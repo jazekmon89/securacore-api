@@ -5,31 +5,31 @@ namespace App\Http\Controllers\Api\Admin;
 use App\User;
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Request\Api\Admin\UserRequest;
+use App\Http\Requests\Api\Admin\UserStoreRequest;
+use App\Http\Requests\Api\Admin\UserUpdateRequest;
 use Illuminate\Http\Request;
-
 
 class UserController extends Controller
 {
 
     public function index() {
         $to_return = [];
-        if (ApiHelper::canAccess()) {
+        if (ApiHelper::isAdmin()) {
             $user = User::get();
             $to_return = $user->toArray();
         }
         return response()->json($to_return, 200);
     }
 
-    public function store(UserRequest $request) {
+    public function store(UserStoreRequest $request) {
         $to_return = [];
-        if (ApiHelper::canAccess()) {
+        if (ApiHelper::isAdmin()) {
             $user = new User();
             $fillables = $user->getFillable();
             $request = $request->all();
             foreach($request as $field=>$value) {
                 if ( ($value || $value === 0) && in_array($field, $fillables) ) {
-                    $user->{$k} = $i;
+                    $user->{$field} = ($field == 'password' ? bcrypt($value) : $value);
                 }
             }
             $user->save();
@@ -40,20 +40,20 @@ class UserController extends Controller
 
     public function show(User $user) {
         $to_return = [];
-        if (ApiHelper::canAccess()) {
+        if (ApiHelper::isAdmin()) {
             $to_return = $user->getAttributes();
         }
         return response()->json($to_return, 200);
     }
 
-    public function update(User $user, UserRequest $request) {
+    public function update(User $user, UserUpdateRequest $request) {
         $to_return = [];
-        if (ApiHelper::canAccess()) {
+        if (ApiHelper::isAdmin()) {
             $request = $request->all();
             $fillables = $user->getFillable();
             foreach($request as $field=>$value) {
                 if ( ($value || $value === 0) && in_array($field, $fillables) ) {
-                    $user->{$k} = $i;
+                    $user->{$field} = $value;
                 }
             }
             $user->save();
@@ -63,8 +63,12 @@ class UserController extends Controller
     }
 
     public function destroy(User $user) {
-        $user->delete();
-        return response()->json(['success'=>true], 200);
+        $to_return = [];
+        if (isAdmin()) {
+            $user->delete();
+            $to_return = ['success'=>true];
+        }
+        return response()->json($to_return, 200);
     }
     
 }

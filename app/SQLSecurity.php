@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SQLSecurity extends Model
 {
+    use SoftDeletes;
+    
     protected $table = 'sqli_settings';
     const ACTIVATOR_FIELD = 'sql_injection';
 
