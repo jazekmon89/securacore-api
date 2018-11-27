@@ -34,7 +34,7 @@ class UserController extends Controller
                 }
             }
             $user->save();
-            $to_return = $user->getAttributes();
+            $to_return = $user->toArray();
         }
         return response()->json($to_return, 200);
     }

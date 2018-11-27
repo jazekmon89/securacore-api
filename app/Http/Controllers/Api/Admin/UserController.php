@@ -15,7 +15,7 @@ class UserController extends Controller
     public function index() {
         $to_return = [];
         if (ApiHelper::isAdmin()) {
-            $to_return = User::with('websites')->paginate(10)->toArray();
+            $to_return = User::paginate(10)->toArray();
         }
         return response()->json($to_return, 200);
     }
@@ -32,16 +32,15 @@ class UserController extends Controller
                 }
             }
             $user->save();
-            $to_return = $user->getAttributes();
+            $to_return = $user->toArray();
         }
         return response()->json($to_return, 200);
     }
 
     public function show(User $user) {
-        $user = $user->with('websites')->first();
         $to_return = [];
         if (ApiHelper::isAdmin()) {
-            $to_return = $user;//$user->getAttributes();
+            $to_return = $user->toArray();
         }
         return response()->json($to_return, 200);
     }
@@ -57,7 +56,7 @@ class UserController extends Controller
                 }
             }
             $user->save();
-            $to_return = $user->getAttributes();
+            $to_return = $user->toArray();
         }
         return response()->json($to_return, 200);
     }

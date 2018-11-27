@@ -22,9 +22,9 @@ class WebsiteController extends Controller
         return response()->json($to_return, 200);
     }
 
-    public function indexByUserId(Website $website, User $user) {
+    public function indexByUserId(User $user) {
         $to_return = [];
-        if (ApiHelper::canAccess() && auth()->user()->id == $user->id) {
+        if (ApiHelper::isAdmin()) {
             $website = Website::where('user_id', $user->id)->get();
             $to_return = $website->toArray();
         }
@@ -33,7 +33,7 @@ class WebsiteController extends Controller
 
     public function store(WebsiteStoreRequest $request) {
         $to_return = [];
-        if (ApiHelper::canAccess()) {
+        if (ApiHelper::isAdmin()) {
             if (!$request->has('user_id')) {
                 return response()->json([
                     'error'=>'user_id needed'
@@ -56,7 +56,7 @@ class WebsiteController extends Controller
 
     public function storeWithUserId(User $user, WebsiteStoreRequest $request) {
         $to_return = [];
-        if (ApiHelper::canAccess()) {
+        if (ApiHelper::isAdmin()) {
             $website = new Website();
             $request = $request->all();
             $fillables = $website->getFillable();
@@ -77,7 +77,7 @@ class WebsiteController extends Controller
 
     public function show(Website $website) {
         $to_return = [];
-        if (ApiHelper::canAccess()) {
+        if (ApiHelper::isAdmin()) {
             $to_return = $website->getAttributes();
         }
         return response()->json($to_return, 200);
@@ -85,7 +85,7 @@ class WebsiteController extends Controller
 
     public function update(Website $website, WebsiteUpdateRequest $request) {
         $to_return = [];
-        if (ApiHelper::canAccess()) {
+        if (ApiHelper::isAdmin()) {
             $request = $request->all();
             $fillables = $website->getFillable();
             foreach($request as $field=>$value) {
@@ -100,8 +100,12 @@ class WebsiteController extends Controller
     }
 
     public function destroy(Website $website) {
-        $website->delete();
-        return response()->json(['success'=>true], 200);
+        $to_return = [];
+        if (ApiHelper::isAdmin()) {
+            $website->delete();
+            $to_return = ['success'=>true];
+        }
+        return response()->json($to_return, 200);
     }
     
 }
