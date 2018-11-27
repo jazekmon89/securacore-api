@@ -6,17 +6,19 @@ use App\Website;
 use App\User;
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Api\IndexFilterRequest;
 
 class WebsiteController extends Controller
 {
 
-    public function index() {
+    public function index(IndexFilterRequest $request) {
         $to_return = [];
         $user = auth()->user();
         if (ApiHelper::canAccess() && auth()->user()) {
             $website = Website::where('user_id', $user->id);
-            $to_return = $website->paginate(10)->toArray();
+            $per_page = $request->get('per_page') ?? 10;
+            $page = $request->get('page') ?? 1;
+            $to_return = $website->paginate($per_page, array('*'), 'page', $page)->toArray();
         }
         return response()->json($to_return, 200);
     }

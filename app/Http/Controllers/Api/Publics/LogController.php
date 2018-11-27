@@ -4,29 +4,37 @@ namespace App\Http\Controllers\Api\Publics;
 
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Publics\LogRequest;
+use App\Http\Requests\Api\Publics\LogStoreRequest;
+use App\Http\Requests\Api\Publics\IndexFilterRequest;
 use App\Log;
 use App\Website;
 
 class LogController extends Controller
 {
 
-    public function index(LogRequest $request) {
+    public function index(IndexFilterRequest $request) {
+        $field = 'public_key';
+        $public_key = $request->get($field) ?? null;
         $to_return = [];
-        if (ApiHelper::canAccess()) {
-            $website = Website::where('public_key', $request->get('public_key'));
+        $website = new Website();
+        if (ApiHelper::publicCheckAccess($public_key, $website, $field, $request)) {
+            $website = $website->where('public_key', $request->get('public_key'))->first();
+            $per_page = $request->get('per_page') ?? 10;
+            $page = $request->get('page') ?? 1;
             $logs = Log::where('website_id', $website->id);
             if ($logs->exists()) {
-                $to_return = $logs->paginate(10)->toArray();
+                $to_return = $logs->paginate($per_page, array('*'), 'page', $page)->toArray();
             }
         }
         return response()->json($to_return, 200);
     }
 
-    public function store(LogRequest $request) {
+    public function store(LogStoreRequest $request) {
         $field = 'public_key';
         $public_key = $request->get($field) ?? null;
-        if (ApiHelper::publicCheckAccess($public_key, new Website(), $field, $request)) {
+        $website = new Website();
+        if (ApiHelper::publicCheckAccess($public_key, $website, $field, $request)) {
+            $website = $website->where('public_key', $request->get('public_key'))->first();
             $data = $request->all();
             if ($request->has($field)) {
                 unset($data[$field]);
@@ -37,6 +45,9 @@ class LogController extends Controller
                 if ( ($value || $value === 0) && in_array($field, $fillables) ) {
                     $log->{$field} = $value;
                 }
+            }
+            if (!$request->has('website_id')) {
+                $log->website_id = $website->id;
             }
             $log->save();
             return response()->json($log->toArray(), 200);

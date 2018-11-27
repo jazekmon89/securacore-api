@@ -12,15 +12,22 @@ class LiveTrafficController extends Controller
 {
 
     public function index(Website $website, LiveTrafficRequest $request) {
-        $ip = $request->get('ip') ?? null;
-        $useragent = $request->get('useragent') ?? null;
-        $date = $request->get('date') ?? null;
         $to_return = [];
         if (ApiHelper::canAccess()) {
-            $live_traffic = LiveTraffic::where('ip', $ip)
-                ->where('useragent', 'like', '%' . $useragent . '%')
-                ->where('date', $date);
-            $to_return = $live_traffic->paginate(10)->toArray();
+            $per_page = $request->get('per_page') ?? 10;
+            $page = $request->get('page') ?? 1;
+            $live_traffic = new LiveTraffic();
+            $fillables = $live_traffic->getFillable();
+            array_push($fillables, 'created_at', 'updated_at');
+            foreach ($request->all() as $field => $value) {
+                if (in_array($field, $fillables)) {
+                    $live_traffic = $live_traffic->where($field, $value);
+                }
+            }
+            if (!$request->has('website_id')) {
+                $live_traffic = $live_traffic->where('website_id', $website->id);
+            }
+            $to_return = $live_traffic->paginate($per_page, array('*'), 'page', $page)->toArray();
         }
         return response()->json($to_return, 200);
     }

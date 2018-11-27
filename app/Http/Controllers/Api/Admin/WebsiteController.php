@@ -7,6 +7,7 @@ use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Admin\WebsiteStoreRequest;
 use App\Http\Requests\Api\Admin\WebsiteUpdateRequest;
+use App\Http\Requests\Api\IndexFilterRequest;
 use App\User;
 use App\Website;
 use Illuminate\Http\Request;
@@ -14,19 +15,25 @@ use Illuminate\Http\Request;
 class WebsiteController extends Controller
 {
 
-    public function index() {
+    public function index(IndexFilterRequest $request) {
         $to_return = [];
         if (ApiHelper::canAccess()) {
-            $to_return = Website::paginate(10)->toArray();
+            $per_page = $request->get('per_page') ?? 10;
+            $page = $request->get('page') ?? 1;
+            $to_return = Website::paginate($per_page, array('*'), 'page', $page)
+                ->toArray();
         }
         return response()->json($to_return, 200);
     }
 
-    public function indexByUserId(User $user) {
+    public function indexByUserId(User $user, IndexFilterRequest $request) {
         $to_return = [];
         if (ApiHelper::isAdmin()) {
-            $website = Website::where('user_id', $user->id)->get();
-            $to_return = $website->toArray();
+            $per_page = $request->get('per_page') ?? 10;
+            $page = $request->get('page') ?? 1;
+            $to_return = Website::where('user_id', $user->id)
+                ->paginate($per_page, array('*'), 'page', $page)
+                ->toArray();
         }
         return response()->json($to_return, 200);
     }

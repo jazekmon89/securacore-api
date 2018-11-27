@@ -7,15 +7,19 @@ use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Admin\UserStoreRequest;
 use App\Http\Requests\Api\Admin\UserUpdateRequest;
+use App\Http\Requests\Api\IndexFilterRequest;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
 
-    public function index() {
+    public function index(IndexFilterRequest $request) {
         $to_return = [];
         if (ApiHelper::isAdmin()) {
-            $to_return = User::paginate(10)->toArray();
+            $per_page = $request->get('per_page') ?? 10;
+            $page = $request->get('page') ?? 1;
+            $to_return = User::paginate($per_page, array('*'), 'page', $page)
+                ->toArray();
         }
         return response()->json($to_return, 200);
     }
