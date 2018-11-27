@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Jobs\ProcessClientInitialData;
 use App\Helpers\ApiHelper;
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Admin\WebsiteStoreRequest;
 use App\Http\Requests\Api\Admin\WebsiteUpdateRequest;
 use App\Http\Requests\Api\IndexFilterRequest;
+use App\Jobs\ProcessClientInitialData;
+use App\Notifications\AdminCreateUserWebsiteNotification;
 use App\User;
 use App\Website;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class WebsiteController extends Controller
 {
@@ -54,9 +57,15 @@ class WebsiteController extends Controller
                     $website->{$field} = $value;
                 }
             }
-            $website->save();
-            ProcessClientInitialData::dispatch($website);
-            $to_return = $website->getAttributes();
+            if (!empty($request)) {
+                $website->public_key = Helper::generatePublicKey();
+                $website->is_activated = 1;
+                $website->save();
+                $user = User::where('id', $website->user_id)->first();
+                ProcessClientInitialData::dispatch($website);
+                Notification::send($user, new AdminCreateUserWebsiteNotification($website));
+                $to_return = $website->toArray();
+            }
         }
         return response()->json($to_return, 200);
     }

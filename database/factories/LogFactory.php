@@ -5,7 +5,7 @@ use App\Website;
 use Faker\Generator as Faker;
 
 $factory->define(Log::class, function (Faker $faker) {
-	$types = ['attack', 'log'];
+	$types = ['spam', 'bot', 'sql', 'mass request', 'proxy'];
 	shuffle($types);
 	$browsers = ['Google Chrome', 'Mozilla Firefox', 'Opera', 'Internet Explorer'];
 	shuffle($browsers);

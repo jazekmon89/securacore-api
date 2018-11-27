@@ -26,4 +26,9 @@ class Helper {
 		return $faker->password;
 	}
 
+	static function generatePublicKey() {
+		$faker = Faker::create();
+		return $faker->unique()->randomNumber($nbDigits = 8);
+	}
+
 }

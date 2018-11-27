@@ -30,9 +30,7 @@ class LiveTrafficController extends Controller
                     $live_traffic = $live_traffic->where($field, $value);
                 }
             }
-            if (!$request->has('website_id')) {
-                $live_traffic = $live_traffic->where('website_id', $website->id);
-            }
+            $live_traffic = $live_traffic->where('website_id', $website->id);
             $to_return = $live_traffic->paginate($per_page, array('*'), 'page', $page)->toArray();
         }
         return response()->json($to_return, 200);
@@ -55,9 +53,7 @@ class LiveTrafficController extends Controller
                     $live_traffic->{$field} = $value;
                 }
             }
-            if (!$request->has('website_id')) {
-                $live_traffic->website_id = $website->id;
-            }
+            $live_traffic->website_id = $website->id;
             $live_traffic->save();
             return response()->json($live_traffic->toArray(), 200);
         }
