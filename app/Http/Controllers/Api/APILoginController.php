@@ -72,13 +72,19 @@ class APILoginController extends Controller
 
         info('User login attempt success.', ['user' => $user]);
 
+        $expiry = auth('api')->factory()->getTTL() * 60;
+
+        // Longer token expiration for admin ?
+        if ($user->role == 1) {
+            $expiry = auth('api')->factory()->getTTL() * 10000;
+        }
 
         return response()->json([
             'success' => true,
             'message' => 'User logged-in successfully.',
             'token' => $jwt_token,
             'data' => auth()->user(),
-            'expires' => auth('api')->factory()->getTTL() * 60
+            'expires' => $expiry
         ]);
     }
 

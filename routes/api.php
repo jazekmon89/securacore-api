@@ -88,32 +88,41 @@ Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
 
 
 // ------- Admin ---------
-// User and Website CRUD Api
-Route::group(['prefix' => 'admin/user', 'middleware' => 'jwt.auth'], function() {
-	Route::get('/', 'Api\Admin\UserController@index');
-	Route::post('/', 'Api\Admin\UserController@store');
-	Route::get('/{user}', 'Api\Admin\UserController@show');
-	Route::put('/{user}', 'Api\Admin\UserController@update');
-	Route::delete('/{user}', 'Api\Admin\UserController@destroy');
+Route::group(['prefix' => 'admin', 'middleware' => 'jwt.auth'], function() {
+	
+	Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
+		// User and Website CRUD Api
+		Route::get('/', 'Api\Admin\UserController@index');
+		Route::post('/', 'Api\Admin\UserController@store');
+		Route::get('/{user}', 'Api\Admin\UserController@show');
+		Route::put('/{user}', 'Api\Admin\UserController@update');
+		Route::delete('/{user}', 'Api\Admin\UserController@destroy');
 
-	Route::get('/{user}/website', 'Api\Admin\WebsiteController@indexByUserId');
-	Route::post('/{user}/website', 'Api\Admin\WebsiteController@storeWithUserId');
-});
+		Route::get('/{user}/website', 'Api\Admin\WebsiteController@indexByUserId');
+		Route::post('/{user}/website', 'Api\Admin\WebsiteController@storeWithUserId');
+	});
 
-// Website CRUD Api
-Route::group(['prefix' => 'admin/website', 'middleware' => 'jwt.auth'], function() {
-	Route::get('/', 'Api\Admin\WebsiteController@index');
-	Route::post('/', 'Api\Admin\WebsiteController@store');
-	Route::get('/{website}', 'Api\Admin\WebsiteController@show');
-	Route::put('/{website}', 'Api\Admin\WebsiteController@update');
-	Route::delete('/{website}', 'Api\Admin\UserController@destroy');
+	
+	Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
+		// Website CRUD Api
+		Route::get('/', 'Api\Admin\WebsiteController@index');
+		Route::post('/', 'Api\Admin\WebsiteController@store');
+		Route::get('/{website}', 'Api\Admin\WebsiteController@show');
+		Route::put('/{website}', 'Api\Admin\WebsiteController@update');
+		Route::delete('/{website}', 'Api\Admin\UserController@destroy');
+
+		// Log get API
+		Route::get('/{website}/log', 'Api\Admin\LogController@indexByWebsiteId');
+	});
+
+	Route::get('log', 'Api\Admin\LogController@index');
+
 });
 
 
 // Public ----------------------------------------------------------------------------------
 
 // Log
-Route::get('log', 'Api\Publics\LogController@index');
 Route::post('log', 'Api\Publics\LogController@store');
 
 // Public Key

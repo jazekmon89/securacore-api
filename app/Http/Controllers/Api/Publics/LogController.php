@@ -46,9 +46,10 @@ class LogController extends Controller
                     $log->{$field} = $value;
                 }
             }
-            if (!$request->has('website_id')) {
-                $log->website_id = $website->id;
-            }
+            $referer = request()->server('HTTP_REFERER');
+            $referer = !$referer ? request()->server('REMOTE_ADDR') : null;
+            $log->referer_url = $referer;
+            $log->website_id = $website->id;
             $log->save();
             return response()->json($log->toArray(), 200);
         }

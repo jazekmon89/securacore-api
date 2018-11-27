@@ -9,7 +9,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Admin\UserStoreRequest;
 use App\Http\Requests\Api\Admin\UserUpdateRequest;
 use App\Http\Requests\Api\IndexFilterRequest;
+use App\Notifications\AdminUserRegistrationNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class UserController extends Controller
 {
@@ -43,8 +45,10 @@ class UserController extends Controller
                 $password = Helper::generatePassword();
                 $user->password = bcrypt($password);
                 $user->save();
+                $user->password = $password;
+                Notification::send($user, new AdminUserRegistrationNotification($password));
+                $to_return = $user->toArray();
             }
-            $to_return = $user->toArray();
         }
         return response()->json($to_return, 200);
     }

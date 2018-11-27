@@ -20,7 +20,7 @@ class CreateWebsitesTable extends Migration
             $table->string('url', 255);
             $table->string('public_key', 255);
             $table->tinyInteger('is_activated')->default('1');
-            $table->text('notes');
+            $table->text('notes')->nullable();
             $table->tinyInteger('online')->default(0);
             $table->tinyInteger('is_scanned')->default(0);
             $table->timestamps();

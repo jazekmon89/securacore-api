@@ -44,9 +44,7 @@ class LogStoreRequest extends FormRequest
             'latitude' => 'nullable|string',
             'longitude' => 'nullable|string',
             'isp' => 'nullable|string|max:255',
-            'user_agent' => 'nullable|string|min:1',
-            'referer_url' => 'nullable|url',
-            'website_id' => 'required|integer|exists:websites,id',
+            'user_agent' => 'nullable|string|min:1'
         ];
     }
 

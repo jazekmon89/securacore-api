@@ -33,9 +33,7 @@ class BanController extends Controller
                     $banned_ip->{$field} = $value;
                 }
             }
-            if (!$request->has('website_id')) {
-                $banned_ip->website_id = $website->id;
-            }
+            $banned_ip->website_id = $website->id;
             $banned_ip->save();
             $to_return = $banned_ip->toArray();
         }
@@ -59,9 +57,8 @@ class BanController extends Controller
                 if ( ($value || $value === 0) && in_array($field, $fillables) ) {
                     $banned_country->{$field} = $value;
                 }
-            }if (!$request->has('website_id')) {
-                $banned_country->website_id = $website->id;
             }
+            $banned_country->website_id = $website->id;
             $banned_country->save();
             $to_return = $banned_country->toArray();
         }
