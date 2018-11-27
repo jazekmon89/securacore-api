@@ -26,10 +26,10 @@ class LiveTrafficRequest extends FormRequest
     public function rules()
     {
         return [
-            'ip' => 'required|ip',
-            'useragent' => 'required|string|min:1',
-            'date' => 'required|date|date_format:Y-m-d',
-            'browser' => 'required|string|max:50',
+            'ip' => 'nullable|ip',
+            'useragent' => 'nullable|string|min:1',
+            'date' => 'nullable|date|date_format:Y-m-d',
+            /*'browser' => 'required|string|max:50',
             'os' => 'required|string|max:255',
             'os_code' => 'required|string|max:40',
             'device_type' => 'required|string|max:12',
@@ -40,7 +40,9 @@ class LiveTrafficRequest extends FormRequest
             'bot' => 'required|integer',
             'time' => 'required|required|date_format:H:i',
             'uniquev' => 'required|integer',
-            'website_id' => 'required|exists:websites,id',
+            'website_id' => 'required|exists:websites,id',*/
+            'per_page' => 'nullable|integer|in:'.env('PER_PAGE_DEFAULT'),
+            'page' => 'nullable|integer|min:1'
         ];
     }
 

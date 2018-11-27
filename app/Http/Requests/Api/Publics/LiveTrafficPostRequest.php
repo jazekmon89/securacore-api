@@ -26,6 +26,7 @@ class LiveTrafficPostRequest extends FormRequest
     public function rules()
     {
         return [
+            'public_key' => 'required|string|min:1',
             'ip' => 'required|ip',
             'useragent' => 'required|string|min:1',
             'date' => 'required|date|date_format:Y-m-d',

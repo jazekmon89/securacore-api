@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Api;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class IndexFilterRequest extends FormRequest
 {
@@ -24,7 +26,12 @@ class IndexFilterRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'per_page' => 'nullable|integer|in:'.env('PER_PAGE_DEFAULT'),
+            'page' => 'nullable|integer|min:1'
         ];
+    }
+
+    protected function failedValidation(Validator $validator) {
+        throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
 }

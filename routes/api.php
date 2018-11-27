@@ -38,8 +38,9 @@ Route::group([
 //     return auth('api')->user();
 // });
 
-// Securities API
+// Website API
 Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
+	// Securities API
 	$securities = [
 		'content-protection' => ['function'],
 		'ad-blocker-protection' => null,
@@ -62,16 +63,20 @@ Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
 		}
 	}
 
-	Route::get('/', 'Api\Users\UserController@index');
+	Route::get('/', 'Api\Users\WebsiteController@index');
+	Route::put('/', 'Api\Users\WebsiteController@update');
+	
 	Route::get('/{website}', 'Api\Users\WebsiteController@show');
 	Route::put('/{website}', 'Api\Users\WebsiteController@update');
 
 	// Log
 	Route::get('/{website}/log', 'Api\Users\LogController@index');
-	
 	Route::get('/{website}/logs/{log}', 'Api\Users\LogController@show');
 
+	// Live Traffic
+	Route::get('/{website}/live-traffic', 'Api\Users\LiveTrafficController@index');
 });
+
 
 // User Api
 Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
@@ -79,13 +84,6 @@ Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
 	Route::put('/', 'Api\Users\UserController@update');
 
 	Route::get('/{user}/website', 'Api\Admin\WebsiteController@indexByUserId');
-});
-
-
-// Website Api
-Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
-	Route::get('/', 'Api\Users\UserController@index');
-	Route::put('/', 'Api\Users\WebsiteController@update');
 });
 
 
@@ -102,7 +100,7 @@ Route::group(['prefix' => 'admin/user', 'middleware' => 'jwt.auth'], function() 
 	Route::post('/{user}/website', 'Api\Admin\WebsiteController@storeWithUserId');
 });
 
-// Client CRUD Api
+// Website CRUD Api
 Route::group(['prefix' => 'admin/website', 'middleware' => 'jwt.auth'], function() {
 	Route::get('/', 'Api\Admin\WebsiteController@index');
 	Route::post('/', 'Api\Admin\WebsiteController@store');
