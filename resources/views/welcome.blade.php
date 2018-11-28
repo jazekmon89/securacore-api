@@ -62,10 +62,7 @@
                 margin-bottom: 30px;
             }
         </style>
-        <script>
-        console.log('this is a test');
-        
-        </script>
+        <script type="text/javascript" src='{{ URL::asset("js/app.js") }}'></script>
     </head>
     <body>
         <div class="flex-center position-ref full-height">

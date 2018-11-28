@@ -11,7 +11,7 @@ use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Support\Facades\Redis;
+// use Illuminate\Support\Facades\Redis;
 
 class ClientLogSubmitted implements ShouldBroadcast
 {
@@ -37,9 +37,9 @@ class ClientLogSubmitted implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        Redis::publish('client-log', json_encode($this->clientlog));
+        // Redis::publish('client-log', json_encode($this->clientlog));
         $admin = User::where('role', 1)->first();
         // dump('$admin: ', $admin->role);
-        return new PrivateChannel('App.User.admin');
+        return new Channel('App.User.admin');
     }
 }

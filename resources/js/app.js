@@ -36,7 +36,7 @@ const app = new Vue({
 });
 
 
-import Echo from "laravel-echo"
+import Echo from "laravel-echo";
 
 window.io = require('socket.io-client');
 
@@ -44,3 +44,17 @@ window.Echo = new Echo({
     broadcaster: 'socket.io',
     host: window.location.hostname + ':6001'
 });
+
+console.log('this is a test!');
+// console.log('io test: ', window.Echo.channel);
+// console.log('echo test: ', window.Echo);
+
+window.Echo.channel('App.User.admin')
+    .listen('ClientLogSubmitted', (event) => {
+        console.log('event: ', event);
+    })
+
+// Echo.private('App.User.admin')
+//     .listen('ClientLogSubmitted', (event) => {
+//         console.log('event: ', event);
+// });
