@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Website;
 use App\User;
 use App\Helpers\ApiHelper;
 use App\Helpers\Helper;
@@ -10,6 +11,7 @@ use App\Http\Requests\Api\Admin\UserStoreRequest;
 use App\Http\Requests\Api\Admin\UserUpdateRequest;
 use App\Http\Requests\Api\IndexFilterRequest;
 use App\Http\Requests\Api\Admin\ChangePasswordRequest;
+use App\Notifications\AdminUserChangePassword;
 use App\Notifications\AdminUserRegistrationNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
@@ -94,7 +96,7 @@ class UserController extends Controller
         ];
         $http_code = 400;
         if (ApiHelper::isAdmin()) {
-            $user->password = $request->get('password');
+            $user->password = bcrypt($request->get('password'));
             $user->save();
             $to_return = [
                 'success' => 1

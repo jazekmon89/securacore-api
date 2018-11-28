@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Api\Users;
 
 use App\User;
+use App\Website;
 use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\IndexFilterRequest;
 use App\Http\Requests\Api\UserUpdateRequest;
 use App\Http\Requests\Api\ChangePasswordRequest;
+use App\Notifications\UserChangePassword;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 
 class UserController extends Controller
@@ -51,14 +54,14 @@ class UserController extends Controller
         $http_code = 400;
         if (ApiHelper::canAccess()) {
             $user = auth()->user();
-            $user->password = $request->get('password');
+            $user->password = bcrypt($request->get('password'));
             $user->save();
             $to_return = [
                 'success' => 1
             ];
             $http_code = 200;
             $website = Website::where('user_id', $user->id)->first();
-            Notification::send($user, new AdminUserChangePassword($website));
+            Notification::send($user, new UserChangePassword($website));
             auth()->refresh();
             auth()->logout();
         }

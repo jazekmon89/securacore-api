@@ -6,6 +6,7 @@ use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Publics\PublicKeyRequest;
 use App\Http\Requests\Api\Publics\ChangePasswordRequest;
+use App\Notifications\PublicChangePassword;
 use App\User;
 use App\Website;
 use Illuminate\Support\Facades\Notification;
@@ -38,10 +39,11 @@ class PublicKeyController extends Controller
         $website = new Website();
         $public_key = $request->get($field) ?? null;
         if (ApiHelper::publicCheckAccess($public_key, $website, $field, $request)) {
-            $user = User::where('id', $website->id)->first();
-            $user->password = $request->get('password');
+            $website = $website->where($field, $public_key)->first();
+            $user = User::where('id', $website->user_id)->first();
+            $user->password = bcrypt($request->get('password'));
             $user->save();
-            Notification::send($user, new AdminUserChangePassword($website));
+            Notification::send($user, new PublicChangePassword($website));
             return response()->json([
                 'success' => 1
             ], 200);

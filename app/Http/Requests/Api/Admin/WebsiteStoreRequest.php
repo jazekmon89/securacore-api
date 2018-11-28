@@ -27,7 +27,7 @@ class WebsiteStoreRequest extends FormRequest
     {
         return [
             'user_id' => 'required|integer|exists:users,id',
-            'url' => 'required|string|max:255',
+            'url' => 'required|string|max:255|unique:websites,url',
             //'public_key' => 'nullable|string|max:255',
             //'is_activated' => 'required|boolean',
             'notes' => 'nullable|string',
