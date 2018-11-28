@@ -59,7 +59,7 @@ class WebsiteController extends Controller
             }
             if (!empty($request)) {
                 $website->public_key = Helper::generatePublicKey();
-                $website->is_activated = 1;
+                $website->is_activated = 0;
                 $website->save();
                 $user = User::where('id', $website->user_id)->first();
                 ProcessClientInitialData::dispatch($website);

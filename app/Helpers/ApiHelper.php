@@ -12,7 +12,6 @@ class ApiHelper {
         $referer_ip_flag = ip2long($referer_host) !== false;
         if ($referer_ip_flag) {
             $model_host = gethostbyname($host);
-            
             if ( $model_host == $referer_host ) {
                 return true;
             }
@@ -22,9 +21,12 @@ class ApiHelper {
         return false;
     }
 
-	public static function canAccess() {
-		$user = auth()->user();
-		$website = Website::where('user_id', $user->id)->first();
+    public static function canAccess() {
+        $user = auth()->user();
+        if ( !$user ) {
+            return false;
+        }
+        $website = Website::where('user_id', $user->id)->first();
         // for testing environments, let us give access
         if ( env('APP_ENV') != 'production' ){
             return true;
