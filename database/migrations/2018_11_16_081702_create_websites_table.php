@@ -17,7 +17,7 @@ class CreateWebsitesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->string('url', 255)->unique();
+            $table->string('url')->unique();
             $table->string('public_key', 255);
             $table->tinyInteger('is_activated')->default('1');
             $table->text('notes')->nullable();
