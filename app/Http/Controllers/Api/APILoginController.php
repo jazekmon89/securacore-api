@@ -121,10 +121,17 @@ class APILoginController extends Controller
      */
     protected function respondWithToken($token)
     {
+        $user = auth()->user();
+        $expiry = auth()->factory()->getTTL() * 60;
+        
+        // Longer token expiration for admin ?
+        if ($user && $user->role == 1) {
+            $expiry = auth('api')->factory()->getTTL() * 10000;
+        }
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+            'expires_in' => $expiry
         ]);
     }
 

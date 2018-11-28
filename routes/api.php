@@ -66,6 +66,9 @@ Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
 
 	Route::get('/', 'Api\Users\WebsiteController@index');
 	Route::put('/', 'Api\Users\WebsiteController@update');
+
+	// Change password
+	Route::post('/change-password', 'Api\Users\UserController@changePassword');
 	
 	Route::get('/{website}', 'Api\Users\WebsiteController@show');
 	Route::put('/{website}', 'Api\Users\WebsiteController@update');
@@ -92,13 +95,17 @@ Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
 Route::group(['prefix' => 'admin', 'middleware' => 'jwt.auth'], function() {
 	
 	Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
-		// User and Website CRUD Api
+		// User
 		Route::get('/', 'Api\Admin\UserController@index');
 		Route::post('/', 'Api\Admin\UserController@store');
 		Route::get('/{user}', 'Api\Admin\UserController@show');
 		Route::put('/{user}', 'Api\Admin\UserController@update');
 		Route::delete('/{user}', 'Api\Admin\UserController@destroy');
 
+		// Change password
+		Route::post('/{user}/change-password', 'Api\Admin\UserController@changePassword');
+
+		// Website
 		Route::get('/{user}/website', 'Api\Admin\WebsiteController@indexByUserId');
 		Route::post('/{user}/website', 'Api\Admin\WebsiteController@storeWithUserId');
 	});
@@ -143,3 +150,6 @@ Route::post('country/ban', 'Api\Publics\BanController@banCountry');
 // Live Traffic
 Route::get('live-traffic', 'Api\Publics\LiveTrafficController@index');
 Route::post('live-traffic', 'Api\Publics\LiveTrafficController@store');
+
+// Change password
+Route::post('/change-password', 'Api\Publics\PublicKeyController@changePassword');

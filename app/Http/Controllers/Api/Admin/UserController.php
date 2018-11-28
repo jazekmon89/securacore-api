@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Admin\UserStoreRequest;
 use App\Http\Requests\Api\Admin\UserUpdateRequest;
 use App\Http\Requests\Api\IndexFilterRequest;
+use App\Http\Requests\Api\Admin\ChangePasswordRequest;
 use App\Notifications\AdminUserRegistrationNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
@@ -79,11 +80,30 @@ class UserController extends Controller
 
     public function destroy(User $user) {
         $to_return = [];
-        if (isAdmin()) {
+        if (ApiHelper::isAdmin()) {
             $user->delete();
             $to_return = ['success'=>true];
         }
         return response()->json($to_return, 200);
+    }
+
+    public function changePassword(User $user, ChangePasswordRequest $request) {
+        $to_return = [
+            'success' => 0,
+            'error' => "Failed to change password."
+        ];
+        $http_code = 400;
+        if (ApiHelper::isAdmin()) {
+            $user->password = $request->get('password');
+            $user->save();
+            $to_return = [
+                'success' => 1
+            ];
+            $http_code = 200;
+            $website = Website::where('user_id', $user->id)->first();
+            Notification::send($user, new AdminUserChangePassword($website));
+        }
+        return response()->json($to_return, $http_code);
     }
     
 }

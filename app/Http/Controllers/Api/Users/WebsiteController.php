@@ -14,7 +14,7 @@ class WebsiteController extends Controller
     public function index(IndexFilterRequest $request) {
         $to_return = [];
         $user = auth()->user();
-        if (ApiHelper::canAccess() && auth()->user()) {
+        if (ApiHelper::canAccess()) {
             $website = Website::where('user_id', $user->id);
             $per_page = $request->get('per_page') ?? 10;
             $page = $request->get('page') ?? 1;
