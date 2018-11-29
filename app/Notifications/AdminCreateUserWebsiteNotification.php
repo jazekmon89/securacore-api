@@ -43,12 +43,18 @@ class AdminCreateUserWebsiteNotification extends Notification implements ShouldQ
      */
     public function toMail($notifiable)
     {
+        $activation_url = $this->website->url;
+        $last_character = substr($activation_url, strlen($activation_url)-1);
+        if (strlen($activation_url) > 0 && $last_character == '/' || $last_character == '\\') {
+            $activation_url = substr($activation_url, 0, strlen($activation_url)-1);
+        }
+        $activation_url .= '/pages/install/index.php';
         return (new MailMessage)
                     ->subject('SecuraCore Public Key')
                     ->greeting('Hi ' . $notifiable->first_name . ' ' . $notifiable->last_name . ',')
                     ->line("Here's your public key: " . $this->website->public_key)
                     ->line('Please activate your public key here: ')
-                    ->action('Activate Public Key', ($this->website->url . '/securacore/pages/install/index.php'));
+                    ->action('Activate Public Key', $activation_url);
     }
 
     /**
