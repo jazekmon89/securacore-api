@@ -25,7 +25,7 @@ class UsersSeeder extends Seeder
             'created_at' => now()
         ]);
 
-        $users = factory(User::class, 9)->make();
+        $users = factory(User::class, 4)->make();
 
         foreach ($users as $user) {
             User::create([

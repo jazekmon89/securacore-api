@@ -15,7 +15,7 @@ class WebsitesSeeder extends Seeder
     {
 
         $user_ids = DB::table('users')->pluck('id');
-        $websites = factory(Website::class, 10)->make();
+        $websites = factory(Website::class, 5)->make();
         
         foreach ($websites as $key => $website) {
             $random_user_id = array_random(json_decode($user_ids, true));
