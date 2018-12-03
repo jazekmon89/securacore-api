@@ -11,8 +11,10 @@ use App\Http\Requests\Api\Admin\UserStoreRequest;
 use App\Http\Requests\Api\Admin\UserUpdateRequest;
 use App\Http\Requests\Api\IndexFilterRequest;
 use App\Http\Requests\Api\Admin\ChangePasswordRequest;
+use App\Http\Requests\Api\Admin\UserAndWebsiteStoreRequest;
 use App\Notifications\AdminUserChangePassword;
 use App\Notifications\AdminUserRegistrationNotification;
+use App\Notifications\AdminUserAndWebsiteRegistrationNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 
@@ -21,51 +23,81 @@ class UserController extends Controller
 
     public function index(IndexFilterRequest $request) {
         $to_return = [];
+        $http_code = 401;
         if (ApiHelper::isAdmin()) {
             $per_page = $request->get('per_page') ?? 10;
             $page = $request->get('page') ?? 1;
             $to_return = User::paginate($per_page, array('*'), 'page', $page)
                 ->toArray();
+            $http_code = 200;
         }
-        return response()->json($to_return, 200);
+        return response()->json($to_return, $http_code);
+    }
+
+    private function storeUser($request, $password) {
+        $user = new User();
+        $fillables = $user->getFillable();
+        $request = $request->all();
+        foreach($request as $field=>$value) {
+            if ( ($value || $value === 0) && in_array($field, $fillables) ) {
+                //$user->{$field} = ($field == 'password' ? bcrypt($value) : $value);
+                $user->{$field} = $value;
+            }
+        }
+        if (!empty($request)) {
+            $user->status = 1;
+            $user->role = 2;
+            $user->password = bcrypt($password);
+            $user->save();
+            $user->password = $password;
+        }
+        return $user;
+    }
+
+    private function storeWebsite($request, $user_id) {
+        $website = new Website();
+        $request = $request->all();
+        $fillables = $website->getFillable();
+        foreach($request as $field=>$value) {
+            if ( ($value || $value === 0) && in_array($field, $fillables) ) {
+                $website->{$field} = $value;
+            }
+        }
+        if (!empty($request)) {
+            $website->user_id = $user_id;
+            $website->public_key = Helper::generatePublicKey();
+            $website->is_activated = 0;
+            $website->save();
+        }
+        return $website;
     }
 
     public function store(UserStoreRequest $request) {
         $to_return = [];
+        $http_code = 401;
         if (ApiHelper::isAdmin()) {
-            $user = new User();
-            $fillables = $user->getFillable();
-            $request = $request->all();
-            foreach($request as $field=>$value) {
-                if ( ($value || $value === 0) && in_array($field, $fillables) ) {
-                    //$user->{$field} = ($field == 'password' ? bcrypt($value) : $value);
-                    $user->{$field} = $value;
-                }
-            }
-            if (!empty($request)) {
-                $user->status = 1;
-                $user->role = 2;
-                $password = Helper::generatePassword();
-                $user->password = bcrypt($password);
-                $user->save();
-                $user->password = $password;
-                Notification::send($user, new AdminUserRegistrationNotification($password));
-                $to_return = $user->toArray();
-            }
+            $password = Helper::generatePassword();
+            $user = $this->storeUser($request, $password);
+            Notification::send($user, new AdminUserRegistrationNotification($user->password));
+            $to_return = $user->toArray();
+            $http_code = 200;
         }
-        return response()->json($to_return, 200);
+        return response()->json($to_return, $http_code);
     }
 
     public function show(User $user) {
         $to_return = [];
+        $http_code = 401;
         if (ApiHelper::isAdmin()) {
             $to_return = $user->toArray();
+            $http_code = 200;
         }
-        return response()->json($to_return, 200);
+        return response()->json($to_return, $http_code);
     }
 
     public function update(User $user, UserUpdateRequest $request) {
         $to_return = [];
+        $http_code = 401;
         if (ApiHelper::isAdmin()) {
             $request = $request->all();
             $fillables = $user->getFillable();
@@ -76,17 +108,20 @@ class UserController extends Controller
             }
             $user->save();
             $to_return = $user->toArray();
+            $http_code = 200;
         }
-        return response()->json($to_return, 200);
+        return response()->json($to_return, $http_code);
     }
 
     public function destroy(User $user) {
         $to_return = [];
+        $http_code = 401;
         if (ApiHelper::isAdmin()) {
             $user->delete();
             $to_return = ['success'=>true];
+            $http_code = 200;
         }
-        return response()->json($to_return, 200);
+        return response()->json($to_return, $http_code);
     }
 
     public function changePassword(User $user, ChangePasswordRequest $request) {
@@ -94,7 +129,7 @@ class UserController extends Controller
             'success' => 0,
             'error' => "Failed to change password."
         ];
-        $http_code = 400;
+        $http_code = 401;
         if (ApiHelper::isAdmin()) {
             $user->password = bcrypt($request->get('password'));
             $user->save();
@@ -104,6 +139,23 @@ class UserController extends Controller
             $http_code = 200;
             $website = Website::where('user_id', $user->id)->first();
             Notification::send($user, new AdminUserChangePassword($website));
+        }
+        return response()->json($to_return, $http_code);
+    }
+
+    public function createUserAndWebsite(UserAndWebsiteStoreRequest $request) {
+        $to_return = [
+            'success' => 0,
+            'error' => 'Failed to create User and Website.'
+        ];
+        $http_code = 401;
+        if (ApiHelper::isAdmin()) {
+            $password = Helper::generatePassword();
+            $user = $this->storeUser($request, $password);
+            $website = $this->storeWebsite($request, $user->id);
+            Notification::send($user, new AdminUserAndWebsiteRegistrationNotification($website, $password));
+            $to_return = User::where('id', $user->id)->first();
+            $http_code = 200;
         }
         return response()->json($to_return, $http_code);
     }

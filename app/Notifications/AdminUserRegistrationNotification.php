@@ -46,8 +46,7 @@ class AdminUserRegistrationNotification extends Notification implements ShouldQu
         return (new MailMessage)
                     ->subject('SecuraCore Registration')
                     ->greeting('Welcome, ' . $notifiable['first_name'] . ' ' . $notifiable['last_name'] . ', to SecuraCore.')
-                    ->line('You are now registered to SecuraCore. Your login credentials to access your SecuraCore dashboard are found below:')
-                    ->line('Email: ' . $notifiable['email'])
+                    ->line('You are now registered to SecuraCore. Below is your system generated password:')
                     ->line('Password: ' . $this->password);
     }
 

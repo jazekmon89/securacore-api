@@ -23,7 +23,7 @@ class Helper {
 
 	static function generatePassword() {
 		$faker = Faker::create();
-		return $faker->password;
+		return $faker->password($minLength = 8, $maxLength = 20);
 	}
 
 	static function generatePublicKey() {
