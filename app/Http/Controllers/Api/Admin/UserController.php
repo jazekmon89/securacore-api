@@ -127,7 +127,7 @@ class UserController extends Controller
     public function changePassword(User $user, ChangePasswordRequest $request) {
         $to_return = [
             'success' => 0,
-            'error' => "Failed to change password."
+            'message' => "Failed to change password."
         ];
         $http_code = 401;
         if (ApiHelper::isAdmin()) {
@@ -146,7 +146,7 @@ class UserController extends Controller
     public function createUserAndWebsite(UserAndWebsiteStoreRequest $request) {
         $to_return = [
             'success' => 0,
-            'error' => 'Failed to create User and Website.'
+            'message' => 'Failed to create User and Website.'
         ];
         $http_code = 401;
         if (ApiHelper::isAdmin()) {

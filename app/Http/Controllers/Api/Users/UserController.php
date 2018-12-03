@@ -49,7 +49,7 @@ class UserController extends Controller
     public function changePassword(ChangePasswordRequest $request) {
         $to_return = [
             'success' => 0,
-            'error' => "Failed to change password."
+            'message' => "Failed to change password."
         ];
         $http_code = 400;
         if (ApiHelper::canAccess()) {

@@ -30,7 +30,8 @@ class PublicKeyController extends Controller
             ], 200);
         }
         return response()->json([
-            'error' => 'Public key not found!'
+            'success' => 0,
+            'message' => 'Public key not found!'
         ], 404);
     }
 
@@ -49,7 +50,8 @@ class PublicKeyController extends Controller
             ], 200);
         }
         return response()->json([
-            'error' => 'Public key not found!'
+            'success' => 0,
+            'message' => 'Public key not found!'
         ], 404);
     }
     

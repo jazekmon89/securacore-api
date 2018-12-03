@@ -46,7 +46,8 @@ class WebsiteController extends Controller
         if (ApiHelper::isAdmin()) {
             if (!$request->has('user_id')) {
                 return response()->json([
-                    'error'=>'user_id needed'
+                    'success' => 0,
+                    'message' => 'user_id not found'
                 ], 400);
             }
             $website = new Website();
