@@ -66,7 +66,9 @@ class ApiHelper {
                 if ( $user->exists() ) {
                     $user_exists = true;
                 } else {
-                    throw new HttpResponseException(response()->json(['error' => "Access denied. User's status is disabled or is not activated"], 403));
+                    throw new HttpResponseException(response()->json([
+                        'success' => 0,
+                        'message' => "Access denied. User's status is disabled or is not activated"], 403));
                 }
             }
             if ( isset($model->url) ) {
