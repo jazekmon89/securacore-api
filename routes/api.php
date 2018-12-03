@@ -110,7 +110,6 @@ Route::group(['prefix' => 'admin', 'middleware' => 'jwt.auth'], function() {
 		Route::post('/{user}/website', 'Api\Admin\WebsiteController@storeWithUserId');
 	});
 
-	
 	Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
 		// Website CRUD Api
 		Route::get('/', 'Api\Admin\WebsiteController@index');
@@ -124,7 +123,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'jwt.auth'], function() {
 	});
 
 	Route::get('log', 'Api\Admin\LogController@index');
-
+	Route::post('create-user-website', 'Api\Admin\UserController@createUserAndWebsite');
 });
 
 

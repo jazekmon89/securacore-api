@@ -46,8 +46,8 @@ class AdminUserChangePassword extends Notification implements ShouldQueue
         return (new MailMessage)
                     ->subject('SecuraCore Change Password')
                     ->greeting('Hey ' . $notifiable->first_name . ' ' . $notifiable->last_name . ',')
-                    ->line('Your password has been changed by our representative as per your request.')
-                    ->line('You may now login with your new password.')
+                    ->line('Your password has been changed by our representative, as requested.')
+                    ->line('You may now login with your new system generated password.')
                     ->action('Login to Dashboard', $this->website->url . '/securacore/pages/install/index.php');
     }
 

@@ -8,20 +8,23 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class AdminCreateUserWebsiteNotification extends Notification implements ShouldQueue
+class AdminUserAndWebsiteRegistrationNotification extends Notification
 {
     use Queueable;
 
     public $website;
+
+    public $password;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(Website $website)
+    public function __construct(Website $website, $password)
     {
         $this->website = $website;
+        $this->password = $password;
     }
 
     /**
@@ -50,9 +53,11 @@ class AdminCreateUserWebsiteNotification extends Notification implements ShouldQ
         }
         $activation_url .= '/securacore-client/pages/install/index.php';
         return (new MailMessage)
-                    ->subject('SecuraCore Public Key')
-                    ->greeting('Hi ' . $notifiable->first_name . ' ' . $notifiable->last_name . ',')
-                    ->line("Here's your public key: " . $this->website->public_key)
+                    ->subject('SecuraCore Registration')
+                    ->greeting('Welcome, ' . $notifiable->first_name . ' ' . $notifiable->last_name . ', to SecuraCore.')
+                    ->line('You are now registered to SecuraCore. Below is your system generated password and public key:')
+                    ->line('Password: ' . $this->password)
+                    ->line("Public key: " . $this->website->public_key)
                     ->line('Please activate your public key here: ')
                     ->action('Activate Public Key', $activation_url);
     }
