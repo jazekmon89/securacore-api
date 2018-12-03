@@ -12,6 +12,7 @@ use App\Http\Requests\Api\Admin\UserUpdateRequest;
 use App\Http\Requests\Api\IndexFilterRequest;
 use App\Http\Requests\Api\Admin\ChangePasswordRequest;
 use App\Http\Requests\Api\Admin\UserAndWebsiteStoreRequest;
+use App\Jobs\ProcessClientInitialData;
 use App\Notifications\AdminUserChangePassword;
 use App\Notifications\AdminUserRegistrationNotification;
 use App\Notifications\AdminUserAndWebsiteRegistrationNotification;
@@ -79,6 +80,7 @@ class UserController extends Controller
             $password = Helper::generatePassword();
             $user = $this->storeUser($request, $password);
             Notification::send($user, new AdminUserRegistrationNotification($user->password));
+            ProcessClientInitialData::dispatch($website);
             $to_return = $user->toArray();
             $http_code = 200;
         }
@@ -154,6 +156,7 @@ class UserController extends Controller
             $user = $this->storeUser($request, $password);
             $website = $this->storeWebsite($request, $user->id);
             Notification::send($user, new AdminUserAndWebsiteRegistrationNotification($website, $password));
+            ProcessClientInitialData::dispatch($website);
             $to_return = User::where('id', $user->id)->first();
             $http_code = 200;
         }
