@@ -45,16 +45,20 @@ window.Echo = new Echo({
     host: window.location.hostname + ':6001'
 });
 
-console.log('this is a test!');
 // console.log('io test: ', window.Echo.channel);
 // console.log('echo test: ', window.Echo);
 
-window.Echo.channel('App.User.admin')
-    .listen('ClientLogSubmitted', (event) => {
-        console.log('event: ', event);
-    })
+// window.Echo.channel('App.User.admin')
+//     .listen('ClientLogSubmitted', (event) => {
+//         console.log('event: ', event);
+//     })
 
 // Echo.private('App.User.admin')
 //     .listen('ClientLogSubmitted', (event) => {
 //         console.log('event: ', event);
 // });
+
+Echo.private(`App.User.admin`)
+    .listen('ClientLogSubmitted', (e) => {
+        console.log(e);
+    });
