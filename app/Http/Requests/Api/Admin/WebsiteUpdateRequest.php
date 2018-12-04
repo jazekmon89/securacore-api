@@ -27,9 +27,7 @@ class WebsiteUpdateRequest extends FormRequest
     {
         $website = $this->route('website');
         return [
-            'user_id' => 'required|integer|exists:users,id',
             'url' => 'required|string|max:255|unique:websites,url,'$website->id,
-            'public_key' => 'nullable|string|max:255',
             'is_activated' => 'required|boolean',
             'notes' => 'nullable|string',
         ];
