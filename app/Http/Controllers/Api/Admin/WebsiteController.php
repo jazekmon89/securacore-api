@@ -20,29 +20,34 @@ class WebsiteController extends Controller
 
     public function index(IndexFilterRequest $request) {
         $to_return = [];
+        $http_code = 401;
         if (ApiHelper::canAccess()) {
             $per_page = $request->get('per_page') ?? 10;
             $page = $request->get('page') ?? 1;
             $to_return = Website::paginate($per_page, array('*'), 'page', $page)
                 ->toArray();
+            $http_code = 200;
         }
-        return response()->json($to_return, 200);
+        return response()->json($to_return, $http_code);
     }
 
     public function indexByUserId(User $user, IndexFilterRequest $request) {
         $to_return = [];
+        $http_code = 401;
         if (ApiHelper::isAdmin()) {
             $per_page = $request->get('per_page') ?? 10;
             $page = $request->get('page') ?? 1;
             $to_return = Website::where('user_id', $user->id)
                 ->paginate($per_page, array('*'), 'page', $page)
                 ->toArray();
+            $http_code = 200;
         }
-        return response()->json($to_return, 200);
+        return response()->json($to_return, $http_code);
     }
 
     public function store(WebsiteStoreRequest $request) {
         $to_return = [];
+        $http_code = 401;
         if (ApiHelper::isAdmin()) {
             if (!$request->has('user_id')) {
                 return response()->json([
@@ -66,13 +71,15 @@ class WebsiteController extends Controller
                 ProcessClientInitialData::dispatch($website);
                 Notification::send($user, new AdminCreateUserWebsiteNotification($website));
                 $to_return = $website->toArray();
+                $http_code = 200;
             }
         }
-        return response()->json($to_return, 200);
+        return response()->json($to_return, $http_code);
     }
 
     public function storeWithUserId(User $user, WebsiteStoreRequest $request) {
         $to_return = [];
+        $http_code = 401;
         if (ApiHelper::isAdmin()) {
             $website = new Website();
             $request = $request->all();
@@ -88,20 +95,24 @@ class WebsiteController extends Controller
             $website->save();
             ProcessClientInitialData::dispatch($website);
             $to_return = $website->getAttributes();
+            $http_code = 200;
         }
-        return response()->json($to_return, 200);
+        return response()->json($to_return, $http_code);
     }
 
     public function show(Website $website) {
         $to_return = [];
+        $http_code = 401;
         if (ApiHelper::isAdmin()) {
             $to_return = $website->getAttributes();
+            $http_code = 200;
         }
-        return response()->json($to_return, 200);
+        return response()->json($to_return, $http_code);
     }
 
     public function update(Website $website, WebsiteUpdateRequest $request) {
         $to_return = [];
+        $http_code = 401;
         if (ApiHelper::isAdmin()) {
             $request = $request->all();
             $fillables = $website->getFillable();
@@ -112,17 +123,20 @@ class WebsiteController extends Controller
             }
             $website->save();
             $to_return = $website->getAttributes();
+            $http_code = 200;
         }
-        return response()->json($to_return, 200);
+        return response()->json($to_return, $http_code);
     }
 
     public function destroy(Website $website) {
         $to_return = [];
+        $http_code = 401;
         if (ApiHelper::isAdmin()) {
             $website->delete();
             $to_return = ['success'=>true];
+            $http_code = 200;
         }
-        return response()->json($to_return, 200);
+        return response()->json($to_return, $http_code);
     }
     
 }
