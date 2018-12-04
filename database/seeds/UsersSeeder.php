@@ -25,14 +25,14 @@ class UsersSeeder extends Seeder
             'created_at' => now()
         ]);
 
-        $users = factory(User::class, 4)->make();
+        $users = factory(User::class, 59)->make();
 
         foreach ($users as $user) {
             User::create([
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
                 'email' => $user->email,
-                'username' => $user->first_name,
+                'username' => null,
                 'email_verified_at' => $user->email_verified_at,
                 'password' => bcrypt($user->password),
                 'role' => 2,
