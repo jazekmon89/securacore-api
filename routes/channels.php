@@ -17,10 +17,10 @@ Broadcast::channel('App.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
-Broadcast::channel('App.User.admin', function ($user, $id) {
-    dump('channel $user', $user);
-    dump('channel $id', $id);
-    $admin = User::where('role', 1)->first();
-    // return (int) $user->id === (int) $admin->id;
-    return true;
-});
+// Broadcast::channel('App.User.admin', function ($user, $id) {
+//     dump('channel $user', $user);
+//     dump('channel $id', $id);
+//     // $admin = User::where('role', 1)->first();
+//     // return (int) $user->id === (int) $id;
+//     return true;
+// });

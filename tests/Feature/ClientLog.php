@@ -42,6 +42,8 @@ class ClientLog extends TestCase
             "website_id" => 5
         ];
 
+        dd(env('JWT_TTL'));
+
         $response = $this->withHeaders([
             'Content-Type' => 'application/x-www-form-urlencoded',
             'Accept' => 'application/json',

@@ -40,6 +40,6 @@ class ClientLogSubmitted implements ShouldBroadcast
         Redis::publish('client-log', json_encode($this->clientlog));
         $admin = User::where('role', 1)->first();
         // dump('$admin: ', $admin->role);
-        return new PrivateChannel('App.User.admin');
+        return new Channel('admin-client-log');
     }
 }
