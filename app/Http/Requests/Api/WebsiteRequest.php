@@ -26,9 +26,7 @@ class WebsiteRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'required|integer|exists:users,id',
             'url' => 'required|string|max:255',
-            'public_key' => 'nullable|string|max:255',
             'is_activated' => 'required|boolean',
             'notes' => 'nullable|string',
         ];
