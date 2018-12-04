@@ -110,3 +110,9 @@ This applications has CORS enabled by default on all API endpoints. The default 
 - https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS
 - https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
 - https://www.w3.org/TR/cors
+
+# .env configuration
+- QUEUE_CONNECTION=redis - default queue connection will be through redis
+- MAIL_FROM_ADDRESS - email address to be used as sender of the emails
+- MAIL_FROM_NAME - name of the sender
+- PER_PAGE_DEFAULT="10,20,30,50,80,100" - default pagination max records

@@ -50,7 +50,6 @@ class UserController extends Controller
             $user->role = 2;
             $user->password = bcrypt($password);
             $user->save();
-            $user->password = $password;
         }
         return $user;
     }
