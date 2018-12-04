@@ -28,7 +28,7 @@ class UserController extends Controller
         if (ApiHelper::isAdmin()) {
             $per_page = $request->get('per_page') ?? 10;
             $page = $request->get('page') ?? 1;
-            $to_return = User::paginate($per_page, array('*'), 'page', $page)
+            $to_return = User::where('role', 2)->paginate($per_page, array('*'), 'page', $page)
                 ->toArray();
             $http_code = 200;
         }
