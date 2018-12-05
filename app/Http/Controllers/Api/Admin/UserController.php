@@ -76,10 +76,15 @@ class UserController extends Controller
         $to_return = [];
         $http_code = 401;
         if (ApiHelper::isAdmin()) {
-            $password = Helper::generatePassword();
+            $password = '';
+            while (true) {
+                $password = Helper::generatePassword();
+                if (strlen($password) >= 8) {
+                    break;
+                }
+            }
             $user = $this->storeUser($request, $password);
             Notification::send($user, new AdminUserRegistrationNotification($user->password));
-            ProcessClientInitialData::dispatch($website);
             $to_return = $user->toArray();
             $http_code = 200;
         }
@@ -151,7 +156,13 @@ class UserController extends Controller
         ];
         $http_code = 401;
         if (ApiHelper::isAdmin()) {
-            $password = Helper::generatePassword();
+            $password = '';
+            while (true) {
+                $password = Helper::generatePassword();
+                if (strlen($password) >= 8) {
+                    break;
+                }
+            }
             $user = $this->storeUser($request, $password);
             $website = $this->storeWebsite($request, $user->id);
             Notification::send($user, new AdminUserAndWebsiteRegistrationNotification($website, $password));
