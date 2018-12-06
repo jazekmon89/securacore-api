@@ -28,18 +28,22 @@ class Helper {
 		return $faker->unique()->randomNumber($nbDigits = 8);
 	}
 
-	static function getModelByTable($model_name, $access_level = 1) {
+	static function getModelByTable($table_name, $access_level = 1) {
 		$model_path = app_path();
 		$models = File::files($model_path);
 		foreach($models as $model) {
 			$model = 'App\\'.substr($model->getFilename(), 0, -4);
 			$model = new $model();
-			if ( (
-					$access_level == 1 && $model::CAN_ADMIN_SEARCH || 
-					$access_level == 2 && $model::CAN_USER_SEARCH ||
-					$model::CAN_PUBLIC_SEARCH
-				) && strpos($model->getTable(), $model_name) !== FALSE ) {
-				return $model;
+			if (
+				($access_level == 1 && $model::CAN_ADMIN_SEARCH) || 
+				($access_level == 2 && $model::CAN_USER_SEARCH) ||
+				$model::CAN_PUBLIC_SEARCH
+			) {
+				if (strpos($model->getTable(), $table_name) !== FALSE ) {
+					return $model;
+				}	
+			} else {
+				return false;
 			}
 		}
 		return null;

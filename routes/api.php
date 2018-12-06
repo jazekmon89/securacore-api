@@ -100,7 +100,7 @@ Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
 	Route::get('/{user}/website', 'Api\Admin\WebsiteController@indexByUserId');
 	
 	// Search
-	Route::get('search', 'Api\SearchController@search');
+	Route::get('search', 'Api\Users\SearchController@search');
 });
 
 /*
