@@ -12,6 +12,25 @@ class BotSecurity extends Model
     protected $table = 'badbot_settings';
     const ACTIVATOR_FIELD = 'badbot';
 
+    const TEXT_SEARCHABLE = [
+        //
+    ];
+
+    const SPECIFIC_SEARCHABLE = [
+        'id',
+        'badbot',
+        'fakebot',
+        'useragent_header',
+        'website_id',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+
+    const CAN_ADMIN_SEARCH = true;
+    const CAN_USER_SEARCH = false;
+    const CAN_PUBLIC_SEARCH = false;
+
     /**
      * The attributes that are mass assignable.
      *

@@ -39,6 +39,16 @@ Route::group([
 //     return auth('api')->user();
 // });
 
+
+
+/*
+ |
+ |----------------------------------------------------------------------------------
+ | USER AUTHENTICATED
+ |----------------------------------------------------------------------------------
+ |
+ */
+
 // Website API
 Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
 	// Securities API
@@ -88,10 +98,28 @@ Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
 	Route::post('/change-password', 'Api\Users\UserController@changePassword');
 
 	Route::get('/{user}/website', 'Api\Admin\WebsiteController@indexByUserId');
+	
+	// Search
+	Route::get('search', 'Api\SearchController@search');
 });
 
+/*
+																					|
+ -----------------------------------------------------------------------------------|
+ 															 END USER AUTHENTICATED |
+ -----------------------------------------------------------------------------------|
+ 																					|
+ */
 
-// ------- Admin ---------
+
+/*
+ |
+ |----------------------------------------------------------------------------------
+ | ADMIN
+ |----------------------------------------------------------------------------------
+ |
+ */
+
 Route::group(['prefix' => 'admin', 'middleware' => 'jwt.auth'], function() {
 	
 	Route::group(['prefix' => 'user', 'middleware' => 'jwt.auth'], function() {
@@ -124,10 +152,27 @@ Route::group(['prefix' => 'admin', 'middleware' => 'jwt.auth'], function() {
 
 	Route::get('log', 'Api\Admin\LogController@index');
 	Route::post('create-user-website', 'Api\Admin\UserController@createUserAndWebsite');
+
+	// Search
+	Route::get('search', 'Api\Admin\SearchController@search');
 });
 
+/*
+																					|
+ -----------------------------------------------------------------------------------|
+ 																		  END ADMIN |
+ -----------------------------------------------------------------------------------|
+ 																					|
+ */
 
-// Public ----------------------------------------------------------------------------------
+
+/*
+ |
+ |----------------------------------------------------------------------------------
+ | PUBLIC
+ |----------------------------------------------------------------------------------
+ |
+ */
 
 // User Login
 Route::post('login', 'Api\APILoginController@login');
@@ -152,3 +197,14 @@ Route::post('live-traffic', 'Api\Publics\LiveTrafficController@store');
 
 // Change password
 Route::post('change-password', 'Api\Publics\PublicKeyController@changePassword');
+
+// Search
+Route::get('search', 'Api\Publics\SearchController@search');
+
+/*
+																					|
+ -----------------------------------------------------------------------------------|
+ 																		 END PUBLIC |
+ -----------------------------------------------------------------------------------|
+ 																					|
+ */
