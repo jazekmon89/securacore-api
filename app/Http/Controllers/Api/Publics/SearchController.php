@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Api\Publics;
 
+use App\Website;
+use App\Helpers\Helper;
+use App\Helpers\ApiHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Publics\SearchRequest;
 
@@ -9,8 +12,11 @@ class SearchController extends Controller
 {
 
     public function search(SearchRequest $request) {
-        $to_return = [];
-        $http_code = 401;
+        $to_return = [
+        	'success' => 0,
+            'message' => "Public key not found, is not yet activated, or your access doesn't match with your info in our system."
+        ];
+        $http_code = 404;
         $field = 'public_key';
         $website = new Website();
         $public_key = $request->get($field) ?? null;
@@ -24,16 +30,21 @@ class SearchController extends Controller
         		return response()->json([
         			'success' => 0,
         			'message' => "Empty request, there's no thing to search."
-        		]);
+        		], 204);
         	}
             $per_page = $request->get('per_page') ?? 10;
             $page = $request->get('page') ?? 1;
         	$model = Helper::getModelByTable($table_name, 3);
-        	if (!$model) {
+        	if ($model === false) {
+        		return response()->json([
+        			'success' => 0,
+        			'message' => 'Access to this request is forbidden'
+        		], 403);
+        	} else if (!$model) {
         		return response()->json([
         			'success' => 0,
         			'message' => 'Table or Model not found'
-        		]);
+        		], 204);
         	}
     		$searchables = $model::TEXT_SEARCHABLE;
         	if (count($searchables) > 0) {

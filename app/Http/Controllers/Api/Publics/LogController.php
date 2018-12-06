@@ -33,6 +33,11 @@ class LogController extends Controller
 
     public function store(LogStoreRequest $request) {
         $field = 'public_key';
+        $http_code = 404;
+        $to_return = [
+            'success' => 0,
+            'message' => 'Public key not found!'
+        ];
         $public_key = $request->get($field) ?? null;
         $website = new Website();
         if (ApiHelper::publicCheckAccess($public_key, $website, $field, $request)) {
@@ -57,12 +62,10 @@ class LogController extends Controller
             // $redis = Redis::connection();
             // $redisEmit = Redis::publish('test-channel', $log->toArray());
             // dump('$redisEmit', $redisEmit);
-            return response()->json($log->toArray(), 200);
+            $http_code = 200;
+            $to_return = $log->toArray();
         }
-        return response()->json([
-            'success' => 0,
-            'message' => 'Public key not found!'
-        ], 404);
+        return response()->json($to_return, $http_code);
     }
     
 }

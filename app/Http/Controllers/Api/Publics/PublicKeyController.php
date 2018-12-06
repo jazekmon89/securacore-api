@@ -18,41 +18,47 @@ class PublicKeyController extends Controller
         $field = 'public_key';
         $website = new Website();
         $public_key = $request->get($field) ?? null;
+        $http_code = 404;
+        $to_return = [
+            'success' => 0,
+            'message' => "Public key not found, is not yet activated, or your access doesn't match with your info in our system."
+        ];
         if (ApiHelper::publicCheckAccess($public_key, $website, $field, $request)) {
             $website = $website->where($field, $public_key)->first();
             if ( !$website->is_activated ) {
                 $website->is_activated = 1;
                 $website->save();
             }
-            return response()->json([
+            $http_code = 200;
+            $to_return = [
                 'website_id' => $website->id,
                 'is_activated' => $website->is_activated
-            ], 200);
+            ];
         }
-        return response()->json([
-            'success' => 0,
-            'message' => 'Public key not found!'
-        ], 404);
+        return response()->json($to_return, $http_code);
     }
 
     public function changePassword(ChangePasswordRequest $request) {
         $field = 'public_key';
         $website = new Website();
         $public_key = $request->get($field) ?? null;
+        $http_code = 404;
+        $to_return = [
+            'success' => 0,
+            'message' => "Public key not found, is not yet activated, or your access doesn't match with your info in our system."
+        ];
         if (ApiHelper::publicCheckAccess($public_key, $website, $field, $request)) {
             $website = $website->where($field, $public_key)->first();
             $user = User::where('id', $website->user_id)->first();
             $user->password = bcrypt($request->get('password'));
             $user->save();
             Notification::send($user, new PublicChangePassword($website));
-            return response()->json([
+            $http_code = 200;
+            $to_return = [
                 'success' => 1
-            ], 200);
+            ];
         }
-        return response()->json([
-            'success' => 0,
-            'message' => 'Public key not found!'
-        ], 404);
+        return response()->json($to_return, $http_code);
     }
     
 }

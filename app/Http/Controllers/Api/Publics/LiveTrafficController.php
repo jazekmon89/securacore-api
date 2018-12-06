@@ -40,6 +40,11 @@ class LiveTrafficController extends Controller
         $field = 'public_key';
         $public_key = $request->get($field) ?? null;
         $website = new Website();
+        $to_return = [
+            'success' => 0,
+            'message' => "Public key not found, is not yet activated, or your access doesn't match with your info in our system."
+        ];
+        $http_code = 404;
         if (ApiHelper::publicCheckAccess($public_key, $website, $field, $request)) {
             $website = $website->where($field, $public_key)->first();
             $data = $request->all();
@@ -55,12 +60,10 @@ class LiveTrafficController extends Controller
             }
             $live_traffic->website_id = $website->id;
             $live_traffic->save();
-            return response()->json($live_traffic->toArray(), 200);
+            $http_code = 200;
+            $to_return = $live_traffic->toArray();
         }
-        return response()->json([
-            'success' => 0,
-            'message' => 'Public key not found!'
-        ], 404);
+        return response()->json($to_return, $http_code);
     }
     
 }
