@@ -11,6 +11,39 @@ class Log extends Model
     
     protected $table = 'logs';
 
+    const TEXT_SEARCHABLE = [
+        'page',
+        'query',
+        'browser_name',
+        'browser_code',
+        'os_name',
+        'os_code',
+        'country',
+        'country_code',
+        'region',
+        'city',
+        'isp',
+        'user_agent',
+        'referer_url',
+    ];
+
+    const SPECIFIC_SEARCHABLE = [
+        'id',
+        'date',
+        'time',
+        'type',
+        'latitude',
+        'longitude',
+        'website_id',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+
+    const CAN_ADMIN_SEARCH = true;
+    const CAN_USER_SEARCH = true;
+    const CAN_PUBLIC_SEARCH = false;
+
     /**
      * The attributes that are mass assignable.
      *

@@ -15,6 +15,25 @@ class User extends Authenticatable implements JWTSubject
 {
     use Notifiable, SoftDeletes;
 
+    const TEXT_SEARCHABLE = [
+        'first_name',
+        'last_name',
+        'email',
+    ];
+
+    const SPECIFIC_SEARCHABLE = [
+        'id',
+        'role',
+        'status',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+
+    const CAN_ADMIN_SEARCH = true;
+    const CAN_USER_SEARCH = true;
+    const CAN_PUBLIC_SEARCH = false;
+
     /**
      * The attributes that are mass assignable.
      *

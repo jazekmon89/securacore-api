@@ -11,6 +11,24 @@ class Website extends Model
     
     protected $table = 'websites';
 
+    const TEXT_SEARCHABLE = [
+        'url',
+        'public_key',
+        'notes',
+    ];
+
+    const SPECIFIC_SEARCHABLE = [
+        'id',
+        'user_id',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+
+    const CAN_ADMIN_SEARCH = true;
+    const CAN_USER_SEARCH = true;
+    const CAN_PUBLIC_SEARCH = false;
+
     /**
      * The attributes that should be hidden for arrays.
      *

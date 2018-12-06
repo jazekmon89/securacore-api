@@ -11,6 +11,30 @@ class MainSettings extends Model
     
     protected $table = 'settings';
 
+    const TEXT_SEARCHABLE = [
+        //
+    ];
+
+    const SPECIFIC_SEARCHABLE = [
+        'id',
+        'realtime',
+        'mail',
+        'ip_check',
+        'countryban',
+        'live_traffic',
+        'jquery',
+        'error_reporting',
+        'display_errors',
+        'user_id',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+
+    const CAN_ADMIN_SEARCH = true;
+    const CAN_USER_SEARCH = false;
+    const CAN_PUBLIC_SEARCH = false;
+
     /**
      * The attributes that are mass assignable.
      *
