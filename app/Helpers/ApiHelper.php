@@ -94,4 +94,11 @@ class ApiHelper {
         return false;
     }
 
+    public static function canAuthenticatedAccess() {
+        if (self::canAccess() || self::isAdmin()) {
+            return true;
+        }
+        return false;
+    }
+
 }
