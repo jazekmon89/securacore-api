@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateChatSessionUsersTable extends Migration
+class CreateChatOnlineAgentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class CreateChatSessionUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('chat_session_users', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->unsignedBigInteger('chat_session_id');
-            $table->foreign('chat_session_id')->references('id')->on('chat_sessions');
+        Schema::create('chat_online_agents', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->unsignedBigInteger('resource_id')->nullable();
@@ -32,6 +30,6 @@ class CreateChatSessionUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chat_session_users');
+        Schema::dropIfExists('chat_online_agents');
     }
 }

@@ -12,6 +12,7 @@ class UsersSeeder extends Seeder
      */
     public function run()
     {
+        $random = factory(User::class, 1)->make();
         User::create([
             'first_name' => 'Admin',
             'last_name' => 'Istrator',
@@ -22,6 +23,7 @@ class UsersSeeder extends Seeder
             'password' => bcrypt('secretsecret'),
             'role' => 1, // admin
             'status' => 1, // active
+            'admin_chat_token' => $random[0]->random_token,
             'created_at' => now()
         ]);
 

@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->unsignedSmallInteger('role')->nullable(); // admin - 1, client - 2
             $table->boolean('status')->default(0); // inactive - 0, active - 1
+            $table->string('admin_chat_token')->unique()->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
