@@ -86,6 +86,10 @@ Route::group(['prefix' => 'website', 'middleware' => 'jwt.auth'], function() {
 
 	// Live Traffic
 	Route::get('/{website}/live-traffic', 'Api\Users\LiveTrafficController@index');
+
+	// Ban API
+	Route::get('/{website}/banned-ips', 'Api\Users\BanController@getBannedIPs');
+	Route::get('/{website}/banned-countries', 'Api\Users\BanController@getBannedCountries');
 });
 
 

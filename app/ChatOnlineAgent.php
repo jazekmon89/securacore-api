@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ChatSessionUser extends Model
+class ChatOnlineAgent extends Model
 {
     use SoftDeletes;
 
@@ -19,9 +19,6 @@ class ChatSessionUser extends Model
     const CAN_USER_SEARCH = false;
     const CAN_PUBLIC_SEARCH = false;
     
-    protected $table = 'chat_session_users';
-
-    public function session() {
-        return $this->belongsTo('App\ChatSession', 'chat_session_id', 'id');
-    }
+    protected $table = 'chat_online_agents';
+    protected $fillable = ['user_id', 'resource_id'];
 }

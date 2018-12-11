@@ -1,22 +1,27 @@
 <?php
+
 namespace App\Http\Controllers\Api;
+
+use App;
+use JWTAuth;
+use App\Chat\Chat;
+use App\Website;
+use App\User;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
-/**
- * @author Rohit Dhiman | @aimflaiims
- */
+
 class WebSocketController implements MessageComponentInterface
 {
     protected $clients;
     private $subscriptions;
     private $users;
     private $userresources;
+    private $chat;
     public function __construct()
     {
         $this->clients = new \SplObjectStorage;
-        $this->subscriptions = [];
         $this->users = [];
-        $this->userresources = [];
+        $this->chat = new Chat();
     }
     /**
      * [onOpen description]
@@ -29,6 +34,7 @@ class WebSocketController implements MessageComponentInterface
     {
         $this->clients->attach($conn);
         $this->users[$conn->resourceId] = $conn;
+        $this->checkChatSessions();
     }
     /**
      * [onMessage description]
@@ -45,65 +51,75 @@ class WebSocketController implements MessageComponentInterface
     {
         echo $msg;
         $data = json_decode($msg);
+        $key = null;
+        $has_key = false;
+        if (isset($data->public_key)) {
+            $has_key = true;
+        } else if (isset($data->chat_token)) {
+            $has_key = true;
+        }
+        $user = null;
+        if (isset($data->public_key)) {
+            $website = Website::where('public_key', $data->public_key);
+            if ($website->exists()) {
+                $user = User::where('id', $website->user_id)->first();
+            }
+        } else if(isset($data->chat_token)) {
+            $user = User::where('admin_chat_token', $data->chat_token)->first();
+        }
         if (isset($data->command)) {
             switch ($data->command) {
-                case "subscribe":
-                    $this->subscriptions[$conn->resourceId] = $data->channel;
-                break;
-                case "groupchat":
-                    //
-                    // $conn->send(json_encode($this->subscriptions));
-                    if (isset($this->subscriptions[$conn->resourceId])) {
-                        $target = $this->subscriptions[$conn->resourceId];
-                        foreach ($this->subscriptions as $id=>$channel) {
-                            if ($channel == $target && $id != $conn->resourceId) {
-                                $this->users[$id]->send($data->message);
-                            }
-                        }
-                    }
-                break;
                 case "message":
-                    //
-                    if ( isset($this->userresources[$data->to]) ) {
-                        foreach ($this->userresources[$data->to] as $key => $resourceId) {
-                            if ( isset($this->users[$resourceId]) ) {
-                                $this->users[$resourceId]->send($msg);
+                    if (isset($data->session_id) && $has_key && $user) {
+                        $resource_ids = $this->chat->processMessage($user, $session_id);
+                        if (count($resource_ids)) {
+                            foreach ($resource_ids as $resource_id) {
+                                if ($conn->resourceId != $resource_id) {
+                                    $this->users[$resource_id]->send($msg);
+                                }
                             }
                         }
-                        $conn->send(json_encode($this->userresources[$data->to]));
-                    }
-                    if (isset($this->userresources[$data->from])) {
-                        foreach ($this->userresources[$data->from] as $key => $resourceId) {
-                            if ( isset($this->users[$resourceId])  && $conn->resourceId != $resourceId ) {
-                                $this->users[$resourceId]->send($msg);
-                            }
-                        }
+                    } else {
+                        $conn->send(json_encode([
+                            'success' => 0,
+                            'message' => 'Failed to send message: missing session_id, token, or access is unauthorized.'
+                        ]));
                     }
                 break;
                 case "register":
-                    //
-                    if (isset($data->userId)) {
-                        if (isset($this->userresources[$data->userId])) {
-                            if (!in_array($conn->resourceId, $this->userresources[$data->userId]))
-                            {
-                                $this->userresources[$data->userId][] = $conn->resourceId;
-                            }
-                        }else{
-                            $this->userresources[$data->userId] = [];
-                            $this->userresources[$data->userId][] = $conn->resourceId;
-                        }
+                    $to_send = [
+                        'success' => 0,
+                        'message' => 'Unauthorized access!'
+                    ];
+                    if ($has_key && $user) {
+                        $session_id = $this->chat->registerClientAndAutoAssignAgent($user->id, $conn);
+                        $to_send = [
+                            'success' => 1,
+                            'session_id' => $session_id
+                        ];
                     }
-                    $conn->send(json_encode($this->users));
-                    $conn->send(json_encode($this->userresources));
+                    $conn->send(json_encode($to_send));
+                break;
+                case "end_chat":
+                    if (isset($data->session_id)) {
+                        $this->chat->end($data->session_id);
+                        $conn->send(json_encode([
+                            'success' => 1,
+                            'message' => 'Chat has been ended.'
+                        ]));
+                    } else {
+                        $conn->send(json_encode([
+                            'success' => 0,
+                            'message' => 'Failed to end chat.'
+                        ]));
+                    }
                 break;
                 default:
                     $example = array(
                         'methods' => [
-                                    "subscribe" => '{command: "subscribe", channel: "global"}',
-                                    "groupchat" => '{command: "groupchat", message: "hello glob", channel: "global"}',
-                                    "message" => '{command: "message", to: "1", message: "it needs xss protection"}',
-                                    "register" => '{command: "register", userId: 9}',
-                                ],
+                            "message" => '{command: "message", session_id: "1", message: "it needs xss protection"}',
+                            "register" => '{command: "register"}',
+                        ],
                     );
                     $conn->send(json_encode($example));
                 break;
@@ -113,20 +129,17 @@ class WebSocketController implements MessageComponentInterface
     public function onClose(ConnectionInterface $conn)
     {
         $this->clients->detach($conn);
+        $this->chat->clearAgentResourceId($resource_id);
         echo "Connection {$conn->resourceId} has disconnected\n";
         unset($this->users[$conn->resourceId]);
-        unset($this->subscriptions[$conn->resourceId]);
-        foreach ($this->userresources as &$userId) {
-            foreach ($userId as $key => $resourceId) {
-                if ($resourceId==$conn->resourceId) {
-                    unset( $userId[ $key ] );
-                }
-            }
-        }
     }
     public function onError(ConnectionInterface $conn, \Exception $e)
     {
         echo "An error has occurred: {$e->getMessage()}\n";
         $conn->close();
+    }
+    private function checkChatSessions()
+    {
+        $this->chat->cleanUpChatSessions($this->users);
     }
 }
