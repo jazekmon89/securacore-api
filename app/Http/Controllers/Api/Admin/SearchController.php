@@ -11,7 +11,10 @@ class SearchController extends Controller
 {
 
     public function search(SearchRequest $request) {
-        $to_return = [];
+        $to_return = [
+            'success' => 0,
+            'message' => 'Unauthorized access!'
+        ];
         $http_code = 401;
         if (ApiHelper::isAdmin()) {
         	$table_name = $request->get('table');

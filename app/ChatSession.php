@@ -20,6 +20,7 @@ class ChatSession extends Model
     const CAN_PUBLIC_SEARCH = false;
     
     protected $table = 'chat_sessions';
+    protected $fillable = ['initiator_user_id', 'user_id'];
 
     public function messages() {
     	return $this->hasMany('App\ChatMessage');
