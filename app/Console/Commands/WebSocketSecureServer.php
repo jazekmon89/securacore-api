@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\ChatOnlineAgent;
 use App\Http\Controllers\Api\WebSocketController;
 use Illuminate\Console\Command;
 use Ratchet\Server\IoServer;
@@ -44,6 +45,12 @@ class WebSocketSecureServer extends Command
      */
     public function handle()
     {
+        // clean up logged in agents first!
+        $agents_logged_in = ChatOnlineAgent::whereNotNull('resource_id');
+        if ($agents_logged_in->exists()) {
+            $agents_logged_in = $agents_logged_in->get();
+            $agents_logged_in->fill(['resouce_id'=>null]);
+        }
         $loop   = Factory::create();
         $webSock = new SecureServer(
             new Server('0.0.0.0:8091', $loop),

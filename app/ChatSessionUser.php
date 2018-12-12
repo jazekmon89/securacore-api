@@ -20,6 +20,7 @@ class ChatSessionUser extends Model
     const CAN_PUBLIC_SEARCH = false;
     
     protected $table = 'chat_session_users';
+    protected $fillable = ['chat_session_id', 'user_id', 'resource_id'];
 
     public function session() {
         return $this->belongsTo('App\ChatSession', 'chat_session_id', 'id');

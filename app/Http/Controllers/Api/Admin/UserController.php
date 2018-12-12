@@ -23,7 +23,10 @@ class UserController extends Controller
 {
 
     public function index(IndexFilterRequest $request) {
-        $to_return = [];
+        $to_return = [
+            'success' => 0,
+            'message' => 'Unauthorized access!'
+        ];
         $http_code = 401;
         if (ApiHelper::isAdmin()) {
             $per_page = $request->get('per_page') ?? 10;

@@ -11,26 +11,29 @@ use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
 use Ratchet\ConnectionInterface;
+use App\Jobs\AgentRoundRobinAssign;
 
-class Chat implements ChatInterface
+class Chat
 {
     
-    public function registerClientAndAutoAssignAgent($user_id, ConnectionInterface $conn) {
+    public function register($user_id, ConnectionInterface $conn) {
     	$user = User::where('id', $user_id)->first();
     	if ($user->role >= 2) {
 	    	$session = ChatSession::create([
 	    		'initiator_user_id' => $user->id
 	    	]);
-    		$admin_agent = $this->supportBalancing();
+	    	// create user session
     		ChatSessionUser::create([
     			'chat_session_id' => $session->id,
     			'user_id' => $user->id,
     			'resource_id' => $conn->resourceId
     		]);
-    		ChatSessionUser::create([
-    			'chat_session_id' => $session->id,
-    			'user_id' => $admin_agent
-    		]);
+    		// create admin/support session (assign admin/support to user)
+    		if (!ChatOnlineAgent::whereNotNull('resource_id')->exists()) {
+    			return false;
+    		} else {
+				AgentRoundRobinAssign::dispatch($session->id);
+    		}
     		return $session->id;
     	} else {
     		$chat_agent = ChatOnlineAgent::where('user_id', $user_id);
@@ -62,13 +65,20 @@ class Chat implements ChatInterface
         ChatSession::whereIn('id', $chat_session_users)->delete();
     }
 
-    public function processMessage($session_id) {
-    	$session = ChatSession::where('id', $data->session_id);
+    public function processMessage($user_id, $session_id, $message) {
+    	$session = ChatSession::where('id', $session_id);
     	if ($session->exists()) {
-    		$session_user = ChatSessionUser::where('chat_session_id', $session->id);
-    		if ($session_user->exists()) {
-    			return $session_user->pluck('resource_id')->all();
-    		}
+    		if (ChatSessionUser::where('chat_session_id', $session_id)->where('user_id', $user_id)->exists()) {
+	    		$session_user = ChatSessionUser::where('chat_session_id', $session_id)->where('user_id', '!=', $user_id);
+	    		if ($session_user->exists()) {
+	    			ChatMessage::create([
+	    				'user_id' => $user_id,
+	    				'message' => $message,
+	    				'chat_session_id' => $session_id
+	    			]);
+	    			return $session_user->pluck('resource_id')->all();
+	    		}
+	    	}
     	}
     	return [];
     }
@@ -90,88 +100,8 @@ class Chat implements ChatInterface
     		}
     	}
     }
-    /*public function userRetrieveMessagesBySession(ChatSession $session, $data) {
-    	$to_return = [
-			'success' => 0,
-			'message' => 'User authentication required!'
-		];
-		$http_code = 401;
-		$user = auth()->user();
-		if (ChatSessionUser::where('user_id', $user->id)->where('chat_session_id', $session->id)->has('session')->exists() && ApiHelper::canAuthenticatedAccess()) {
-			$to_return = ChatMessage::where('user_id', $user->id)->where('chat_session_id', $session->id)->paginate(10, array('*'), 'page', $page)->toArray();
-			$htt_code = 200;
-		}
-		return response()->json($to_return, $http_code);
-    }
 
-	public function store(ChatSession $session, ChatStoreRequest $request) {
-		$to_return = [
-			'success' => 0,
-			'message' => 'User authentication required!'
-		];
-		$http_code = 401;
-		$user = auth()->user();
-		if (ChatSessionUser::where('user_id', $user->id)->where('chat_session_id', $session->id)->has('session')->exists() && ApiHelper::canAuthenticatedAccess()) {
-			$to_return = [];
-			$message = new ChatMessage();
-			$fillables = $message->getFillable();
-			$data = $request->all();
-			foreach($data as $field=>$value) {
-                if ( ($value || $value === 0) && in_array($field, $fillables) ) {
-                	$message->{$field} = $value;
-                }
-			}
-			if (count($request->all())) {
-				$message->user_id = $user->id;
-				$message->session_id = $session->id;
-				$message->save();
-				$to_return = [
-					'success' => 1
-				];
-			}
-			$http_code = 200;
-		}
-		return response()->json($to_return, $http_code);
-	}
-
-	public function initiate(ChatStoreRequest $request) {
-		$to_return = [
-			'success' => 0,
-			'message' => 'User authentication required!'
-		];
-		$http_code = 401;
-		if (ApiHelper::canAuthenticatedAccess()) {
-			$session = ChatSession::create([]);
-			$user = auth()->user();
-			$session_user = ChatSessionUser::create([
-				'session_id' => $session->id,
-				'user_id' => $user->id
-			]);
-			$available_admin = $this->supportBalancing();
-			if (!$available_admin) {
-				return response()->json([
-					'success' => 0,
-					'message' => 'No available agents'
-				], 204);
-			}
-			$session_admin = ChatSessionUser::create([
-				'session_id' => $session->id,
-				'user_id' => $available_admin
-			]);
-			$to_return = $session;
-			$http_code = 200;
-		}
-		return response()->json($to_return, $http_code);
-	}
-
-	public function endSession(ChatSession $session) {
-		$session::delete();
-		return response()->json([
-			'success' => 0
-		], 200);
-	}*/
-
-	private function supportBalancing() {
+	/*private function supportBalancing() {
 		$users = User::where('role', 1)->get();
 		$counts = [];
 		foreach ($users as $user) {
@@ -183,6 +113,6 @@ class Chat implements ChatInterface
 			return null;
 		}
 		return array_shift($user_ids);
-	}
+	}*/
 
 }

@@ -16,10 +16,10 @@ class CreateBannedTable extends Migration
         Schema::create('banned', function (Blueprint $table) {
             $table->increments('id');
             $table->char('ip', 15);
-            $table->date('date');
-            $table->time('time');
-            $table->string('reason', 255);
-            $table->string('url', 255);
+            $table->date('date')->nullable();
+            $table->time('time')->nullable();
+            $table->string('reason', 255)->nullable();
+            $table->string('url', 255)->nullable();
             $table->unsignedInteger('website_id');
             $table->foreign('website_id')->references('id')->on('websites');
             $table->timestamps();

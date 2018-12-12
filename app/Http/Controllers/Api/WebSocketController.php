@@ -49,6 +49,9 @@ class WebSocketController implements MessageComponentInterface
      */
     public function onMessage(ConnectionInterface $conn, $msg)
     {
+
+        // TODO: implement queueing!
+
         echo $msg;
         $data = json_decode($msg);
         $key = null;
@@ -62,6 +65,7 @@ class WebSocketController implements MessageComponentInterface
         if (isset($data->public_key)) {
             $website = Website::where('public_key', $data->public_key);
             if ($website->exists()) {
+                $website = $website->first();
                 $user = User::where('id', $website->user_id)->first();
             }
         } else if(isset($data->chat_token)) {
@@ -71,13 +75,18 @@ class WebSocketController implements MessageComponentInterface
             switch ($data->command) {
                 case "message":
                     if (isset($data->session_id) && $has_key && $user) {
-                        $resource_ids = $this->chat->processMessage($user, $session_id);
+                        $resource_ids = $this->chat->processMessage($user->id, $data->session_id, $data->message);
                         if (count($resource_ids)) {
                             foreach ($resource_ids as $resource_id) {
-                                if ($conn->resourceId != $resource_id) {
+                                if ($resource_id && intval($conn->resourceId) != intval($resource_id)) {
                                     $this->users[$resource_id]->send($msg);
                                 }
                             }
+                        } else {
+                            $conn->send(json_encode([
+                                'success' => 0,
+                                'message' => 'Failed to send message. You do not belong to this session.'
+                            ]));
                         }
                     } else {
                         $conn->send(json_encode([
@@ -92,11 +101,24 @@ class WebSocketController implements MessageComponentInterface
                         'message' => 'Unauthorized access!'
                     ];
                     if ($has_key && $user) {
-                        $session_id = $this->chat->registerClientAndAutoAssignAgent($user->id, $conn);
-                        $to_send = [
-                            'success' => 1,
-                            'session_id' => $session_id
-                        ];
+                        $session_id = $this->chat->register($user->id, $conn);
+                        if ($user->role >= 2) {
+                            if (!$session_id) {
+                                $to_send = [
+                                    'success' => 0,
+                                    'message' => 'There are no agents available as of the moment.'
+                                ];
+                            } else {
+                                $to_send = [
+                                    'success' => 1,
+                                    'session_id' => $session_id
+                                ];
+                            }
+                        } else if ($user->role == 1) {
+                            $to_send = [
+                                'success' => 1
+                            ];
+                        }
                     }
                     $conn->send(json_encode($to_send));
                 break;

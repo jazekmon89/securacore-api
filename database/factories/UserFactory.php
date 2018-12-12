@@ -23,7 +23,7 @@ $factory->define(User::class, function (Faker $faker) {
         'role' => $faker->numberBetween($min = 1, $max = 2),
         'password' => 'secretsecret',
         'password_confirmation' => 'secretsecret',
-        'random_token' => $faker->asciify('********************'),
+        'random_token' => $faker->unique()->asciify('********************'),
         'email_verified_at' => now(),
     ];
 });

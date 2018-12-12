@@ -152,6 +152,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'jwt.auth'], function() {
 
 		// Log get API
 		Route::get('/{website}/log', 'Api\Admin\LogController@indexByWebsiteId');
+
+		// Ban API
+		Route::post('/{website}/ban-ip', 'Api\Admin\BanController@banIP');
+		Route::post('/{website}/ban-country', 'Api\Admin\BanController@banCountry');
 	});
 
 	Route::get('log', 'Api\Admin\LogController@index');
