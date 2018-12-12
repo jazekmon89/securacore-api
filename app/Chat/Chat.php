@@ -69,14 +69,32 @@ class Chat
     	$session = ChatSession::where('id', $session_id);
     	if ($session->exists()) {
     		if (ChatSessionUser::where('chat_session_id', $session_id)->where('user_id', $user_id)->exists()) {
-	    		$session_user = ChatSessionUser::where('chat_session_id', $session_id)->where('user_id', '!=', $user_id);
-	    		if ($session_user->exists()) {
+	    		$session_users = ChatSessionUser::where('chat_session_id', $session_id)->where('user_id', '!=', $user_id);
+	    		if ($session_users->exists()) {
+	    			$admin_users = $session_users->pluck('user_id')->all();
+		    		$admin_users = User::whereIn('id', $admin_users)->where('role', 1);
+		    		if ($admin_users->exists()) {
+		    			$admin_users = $admin_users->pluck('id')->all();
+		    			$online_agents = ChatOnlineAgent::whereIn('user_id', $admin_users);
+		    			if ($online_agents->exists()) {
+		    				$online_agents = $online_agents->get();
+		    				foreach ($online_agents as $online_agent) {
+		    					$session_admin_user = ChatSessionUser::where('user_id', $online_agent->user_id)
+		    						->where('chat_session_id', $session_id);
+		    					if ($session_admin_user->exists()) {
+		    						$session_admin_user = $session_admin_user->first();
+		    						$session_admin_user->resource_id = $online_agent->resource_id;
+		    						$session_admin_user->save();
+		    					}
+		    				}
+		    			}
+		    		}
 	    			ChatMessage::create([
 	    				'user_id' => $user_id,
 	    				'message' => $message,
 	    				'chat_session_id' => $session_id
 	    			]);
-	    			return $session_user->pluck('resource_id')->all();
+	    			return $session_users->select('user_id', 'resource_id')->get()->toArray();
 	    		}
 	    	}
     	}
