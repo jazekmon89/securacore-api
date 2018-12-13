@@ -25,4 +25,9 @@ class ChatMessage extends Model
     	'message',
         'chat_session_id'
     ];
+    protected $with = ['user'];
+
+    public function user() {
+        $this->belongsTo('App\User', 'id', 'user_id');
+    }
 }
