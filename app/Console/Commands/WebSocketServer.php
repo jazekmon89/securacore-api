@@ -43,11 +43,12 @@ class WebSocketServer extends Command
      */
     public function handle()
     {
-        // clean up logged in agents first!
+        echo "\033[34m Cleaning up support agent resources \033[0m \n";
         $agents_logged_in = ChatOnlineAgent::whereNotNull('resource_id');
         if ($agents_logged_in->exists()) {
             $agents_logged_in->update(['resource_id'=>null]);
         }
+        echo "\033[34m Starting the chat server... \033[0m \n";
         $server = IoServer::factory(
              new HttpServer(
                  new WsServer(

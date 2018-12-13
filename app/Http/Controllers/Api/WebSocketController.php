@@ -19,6 +19,7 @@ class WebSocketController implements MessageComponentInterface
     private $chat;
     public function __construct()
     {
+        echo "\033[35m Chat server is up! \033[0m \n";
         $this->clients = new \SplObjectStorage;
         $this->users = [];
         $this->chat = new Chat();
@@ -40,19 +41,14 @@ class WebSocketController implements MessageComponentInterface
      * [onMessage description]
      * @method onMessage
      * @param  ConnectionInterface $conn [description]
-     * @param  [JSON.stringify]              $msg  [description]
+     * @param  [JSON.stringify]          $msg  [description]
      * @return [JSON]                    [description]
-     * @example subscribe                conn.send(JSON.stringify({command: "subscribe", channel: "global"}));
-     * @example groupchat                conn.send(JSON.stringify({command: "groupchat", message: "hello glob", channel: "global"}));
      * @example message                  conn.send(JSON.stringify({command: "message", to: "1", from: "9", message: "it needs xss protection"}));
      * @example register                 conn.send(JSON.stringify({command: "register", userId: 9}));
      */
     public function onMessage(ConnectionInterface $conn, $msg)
     {
-
         // TODO: implement queueing!
-
-        echo $msg;
         $data = json_decode($msg);
         $key = null;
         $has_key = false;
@@ -71,10 +67,15 @@ class WebSocketController implements MessageComponentInterface
         } else if(isset($data->chat_token)) {
             $user = User::where('admin_chat_token', $data->chat_token)->first();
         }
-        if (isset($data->command)) {
+        if (!$has_key || !$user) {
+            $conn->send(json_encode([
+                'success' => 0,
+                'message' => 'Unauthorized access!'
+            ]));
+        }else if (isset($data->command)) {
             switch ($data->command) {
                 case "message":
-                    if (isset($data->session_id) && $has_key && $user) {
+                    if (isset($data->session_id)) {
                         $resources = $this->chat->processMessage($user->id, $data->session_id, $data->message);
                         if (count($resources)) {
                             foreach ($resources as $resource) {
@@ -88,10 +89,16 @@ class WebSocketController implements MessageComponentInterface
                                         ];
                                         $msg = json_encode($data);
                                     }
-                                    $this->users[$resource['resource_id']]->send($msg);
+                                    if (isset($this->users[$resource['resource_id']])) {
+                                        $this->users[$resource['resource_id']]->send($msg);
+                                    }
                                 }
                             }
-                        } else {
+                            $conn->send(json_encode([
+                                'success' => 0,
+                                'message' => 'Message was successfully sent.'
+                            ]));
+                        } else if ($resources === false) {
                             $conn->send(json_encode([
                                 'success' => 0,
                                 'message' => 'Failed to send message. You do not belong to this session.'
@@ -104,44 +111,52 @@ class WebSocketController implements MessageComponentInterface
                         ]));
                     }
                 break;
+                case "chat_history":
+                    $conn->send(json_encode($this->chat->chat_history($user->id)));
+                break;
                 case "register":
-                    $to_send = [
-                        'success' => 0,
-                        'message' => 'Unauthorized access!'
-                    ];
-                    if ($has_key && $user) {
-                        $session_id = $this->chat->register($user->id, $conn);
-                        if ($user->role >= 2) {
-                            if (!$session_id) {
-                                $to_send = [
-                                    'success' => 0,
-                                    'message' => 'There are no agents available as of the moment.'
-                                ];
-                            } else {
-                                $to_send = [
-                                    'success' => 1,
-                                    'session_id' => $session_id
-                                ];
-                            }
-                        } else if ($user->role == 1) {
+                    $session_id = $this->chat->register($user->id, $conn);
+                    if ($user->role >= 2) {
+                        if (!$session_id) {
                             $to_send = [
-                                'success' => 1
+                                'success' => 0,
+                                'message' => 'There are no agents available as of the moment.'
+                            ];
+                        } else {
+                            $to_send = [
+                                'success' => 1,
+                                'session_id' => $session_id
                             ];
                         }
+                    } else if ($user->role == 1) {
+                        $to_send = [
+                            'success' => 1
+                        ];
                     }
                     $conn->send(json_encode($to_send));
                 break;
+                case "reconnect":
+
+                break;
                 case "end_chat":
                     if (isset($data->session_id)) {
-                        $this->chat->end($data->session_id);
-                        $conn->send(json_encode([
+                        $resource_ids = $this->chat->end($data->session_id);
+                        $end_msg = [
                             'success' => 1,
                             'message' => 'Chat has been ended.'
-                        ]));
+                        ];
+                        // send to all users in the channel except me
+                        foreach ($resource_ids as $resource_id) {
+                            if (isset($this->users[$resource_id]) && $conn->resourceId != $resource_id) {
+                                $this->users[$resource_id]->send($end_msg);
+                            }
+                        }
+                        // send to myself
+                        $conn->send(json_encode($end_msg));
                     } else {
                         $conn->send(json_encode([
                             'success' => 0,
-                            'message' => 'Failed to end chat.'
+                            'message' => 'Failed to end chat: session id not provided'
                         ]));
                     }
                 break;

@@ -98,12 +98,15 @@ class Chat
 	    		}
 	    	}
     	}
-    	return [];
+    	return false;
     }
 
     public function end($session_id) {
-        ChatSessionUser::where('chat_session_id', $session_id)->delete();
+        $session_users = ChatSessionUser::where('chat_session_id', $session_id);
+        $current_session_users = $session_users->pluck('resource_id')->all();
+        $session_users->delete();
         ChatSession::where('id', $session_id)->delete();
+        return $current_session_users;
     }
 
     public function clearAgentResourceId($resource_id) {
@@ -117,6 +120,10 @@ class Chat
     			$agent->save();
     		}
     	}
+    }
+
+    public function chat_history($user_id) {
+        return ChatSession::where('user_id', $user_id)->with('message')->paginate('10', array('*'), 'page', 1)->toArray();
     }
 
 	/*private function supportBalancing() {
