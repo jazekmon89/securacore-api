@@ -17,6 +17,7 @@ class CreateChatSessionsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedInteger('initiator_user_id');
             $table->foreign('initiator_user_id')->references('id')->on('users');
+            $table->boolean('is_end')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -33,6 +33,7 @@ class BanController extends Controller
                     'website_id' => $website->id
                 ]);
                 $to_return = $banned_ip->toArray();
+                $http_code = 200;
             }
         }
         return response()->json($to_return, $http_code);
@@ -58,6 +59,7 @@ class BanController extends Controller
                     'website_id' => $website->id
                 ]);
                 $to_return = $banned_Country->toArray();
+                $http_code = 200;
             }
         }
         return response()->json($to_return, $http_code);
