@@ -20,6 +20,7 @@ class CreateChatSessionUsersTable extends Migration
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
             $table->unsignedBigInteger('resource_id')->nullable();
+            $table->boolean('is_end_session')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

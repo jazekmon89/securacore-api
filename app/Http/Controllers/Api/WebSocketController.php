@@ -35,7 +35,7 @@ class WebSocketController implements MessageComponentInterface
     {
         $this->clients->attach($conn);
         $this->users[$conn->resourceId] = $conn;
-        $this->checkChatSessions();
+        //$this->checkChatSessions();
     }
     /**
      * [onMessage description]
@@ -76,8 +76,10 @@ class WebSocketController implements MessageComponentInterface
             switch ($data->command) {
                 case "message":
                     if (isset($data->session_id)) {
-                        $resources = $this->chat->processMessage($user->id, $data->session_id, $data->message);
-                        if (count($resources)) {
+                        $message_data = $this->chat->processMessage($user->id, $data->session_id, $data->message);
+                        $datetime = $message_data['chat_message_datetime'];
+                        $resources = $message_data['resources'];
+                        if ($resources && count($resources)) {
                             foreach ($resources as $resource) {
                                 if ($resource['resource_id'] && intval($conn->resourceId) != intval($resource['resource_id'])) {
                                     $user = User::where('id', $resource['user_id']);
@@ -87,6 +89,7 @@ class WebSocketController implements MessageComponentInterface
                                             'id' => $user->id,
                                             'fullname' => $user->first_name . ' ' . $user->last_name
                                         ];
+                                        $data->datetime = $datetime;
                                         $msg = json_encode($data);
                                     }
                                     if (isset($this->users[$resource['resource_id']])) {
@@ -112,7 +115,7 @@ class WebSocketController implements MessageComponentInterface
                     }
                 break;
                 case "chat_history":
-                    $conn->send(json_encode($this->chat->chat_history($user->id)));
+                    $conn->send(json_encode($this->chat->chat_history($user->id, $user->role)));
                 break;
                 case "register":
                     $session_id = $this->chat->register($user->id, $conn);
@@ -176,12 +179,13 @@ class WebSocketController implements MessageComponentInterface
     {
         $this->clients->detach($conn);
         $this->chat->clearAgentResourceId($resource_id);
-        echo "Connection {$conn->resourceId} has disconnected\n";
+        echo "\033[37m Connection {$conn->resourceId} has disconnected \033[0m \n";
         unset($this->users[$conn->resourceId]);
     }
     public function onError(ConnectionInterface $conn, \Exception $e)
     {
-        echo "An error has occurred: {$e->getMessage()}\n";
+        echo "\033[31m An error has occurred: \033[0m \n";
+        dump($e);
         $conn->close();
     }
     private function checkChatSessions()

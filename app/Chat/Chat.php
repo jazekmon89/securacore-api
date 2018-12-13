@@ -89,12 +89,15 @@ class Chat
 		    				}
 		    			}
 		    		}
-	    			ChatMessage::create([
+	    			$message = ChatMessage::create([
 	    				'user_id' => $user_id,
 	    				'message' => $message,
 	    				'chat_session_id' => $session_id
 	    			]);
-	    			return $session_users->select('user_id', 'resource_id')->get()->toArray();
+	    			return [
+                        'chat_message_datetime' => $message->created_at,
+                        'resources' => $session_users->select('user_id', 'resource_id')->get()->toArray()
+                    ];
 	    		}
 	    	}
     	}
@@ -102,6 +105,20 @@ class Chat
     }
 
     public function end($session_id) {
+        $current_session_users = [];
+        $session = ChatSession::where('id', $session_id);
+        if ($session->exists()){
+            $session_users = ChatSessionUser::where('chat_session_id', $session_id);
+            $current_session_users = $session_users->pluck('resource_id')->all();
+            $session_users->is_end_session = 1;
+            $session_users->save();
+            $session->is_end = 1;
+            $session->save();
+        }
+        return $current_session_users;
+    }
+
+    public function delete($session_id) {
         $session_users = ChatSessionUser::where('chat_session_id', $session_id);
         $current_session_users = $session_users->pluck('resource_id')->all();
         $session_users->delete();
@@ -122,8 +139,19 @@ class Chat
     	}
     }
 
-    public function chat_history($user_id) {
-        return ChatSession::where('user_id', $user_id)->with('message')->paginate('10', array('*'), 'page', 1)->toArray();
+    public function chat_history($user_id, $role) {
+        if ($role == 1) {
+            return ChatSessionUser::where('user_id', $user_id)
+                ->where('is_end_session', 0)
+                ->has('session.messages')
+                ->with(['session.messages'])
+                ->limit(10)->get()->toArray();
+        } else {
+            return ChatSessionUser::where('user_id', $user_id)
+                ->has('session.messages')
+                ->with(['session.messages'])
+                ->limit(10)->get()->toArray();
+        }
     }
 
 	/*private function supportBalancing() {

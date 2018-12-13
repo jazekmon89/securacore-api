@@ -23,7 +23,7 @@ class ChatSession extends Model
     protected $fillable = ['initiator_user_id', 'user_id'];
 
     public function messages() {
-    	return $this->hasMany('App\ChatMessage');
+    	return $this->hasMany('App\ChatMessage', 'chat_session_id', 'id');
     }
 
     public function users() {

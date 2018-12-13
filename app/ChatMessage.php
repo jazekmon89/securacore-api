@@ -28,6 +28,6 @@ class ChatMessage extends Model
     protected $with = ['user'];
 
     public function user() {
-        $this->belongsTo('App\User', 'id', 'user_id');
+        return $this->belongsTo('App\User', 'user_id', 'id');
     }
 }
