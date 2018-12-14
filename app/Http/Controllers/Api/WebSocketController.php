@@ -70,7 +70,7 @@ class WebSocketController implements MessageComponentInterface
             }
         }
         if ($has_key) {
-            echo "\033[32m Public key found in request! \033[0m \n";
+            echo "\033[32m Public key or chat token found in request! \033[0m \n";
         } else {
             echo "\033[33m Public key or chat token not found in request! \033[0m \n";
         }
