@@ -63,13 +63,9 @@ class WebSocketController implements MessageComponentInterface
                 $user = User::where('id', $website->user_id)->first();
             }
         } else if(isset($data->chat_token)) {
-            echo "\033[35m Chat token found in request. An admin is registering! \033[0m \n";
             $user = User::where('admin_chat_token', $data->chat_token)->first();
-            if ($user) {
-                
-            }
         }
-        if ($has_key) {
+        /*if ($has_key) {
             echo "\033[32m Public key or chat token found in request! \033[0m \n";
         } else {
             echo "\033[33m Public key or chat token not found in request! \033[0m \n";
@@ -78,7 +74,7 @@ class WebSocketController implements MessageComponentInterface
             echo "\033[32m User exists with the given public key or chat token! \033[0m \n";
         } else {
             echo "\033[33m User not found with the given public key or chat token! \033[0m \n";
-        }
+        }*/
         if (!$has_key || !$user) {
             $conn->send(json_encode([
                 'success' => 0,
