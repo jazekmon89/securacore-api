@@ -98,7 +98,7 @@ class WebSocketController implements MessageComponentInterface
                                 }
                             }
                             $conn->send(json_encode([
-                                'success' => 0,
+                                'success' => 1,
                                 'message' => 'Message was successfully sent.'
                             ]));
                         } else if ($resources === false) {
