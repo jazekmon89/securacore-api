@@ -155,7 +155,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'jwt.auth'], function() {
 
 		// Ban API
 		Route::post('/{website}/ban-ip', 'Api\Admin\BanController@banIP');
+		Route::delete('/{website}/unban-ip/{banned_ip}', 'Api\Admin\BanController@deleteIPBan');
 		Route::post('/{website}/ban-country', 'Api\Admin\BanController@banCountry');
+		Route::delete('/{website}/unban-country/{banned_country}', 'Api\Admin\BanController@deleteCountryBan');
 	});
 
 	Route::get('log', 'Api\Admin\LogController@index');
