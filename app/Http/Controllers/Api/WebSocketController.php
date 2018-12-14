@@ -52,9 +52,7 @@ class WebSocketController implements MessageComponentInterface
         $data = json_decode($msg);
         $key = null;
         $has_key = false;
-        if (isset($data->public_key)) {
-            $has_key = true;
-        } else if (isset($data->chat_token)) {
+        if (isset($data->public_key)  || isset($data->chat_token)) {
             $has_key = true;
         }
         $user = null;
@@ -65,7 +63,21 @@ class WebSocketController implements MessageComponentInterface
                 $user = User::where('id', $website->user_id)->first();
             }
         } else if(isset($data->chat_token)) {
+            echo "\033[35m Chat token found in request. An admin is registering! \033[0m \n";
             $user = User::where('admin_chat_token', $data->chat_token)->first();
+            if ($user) {
+                
+            }
+        }
+        if ($has_key) {
+            echo "\033[32m Public key found in request! \033[0m \n";
+        } else {
+            echo "\033[33m Public key or chat token not found in request! \033[0m \n";
+        }
+        if ($user) {
+            echo "\033[32m User exists with the given public key or chat token! \033[0m \n";
+        } else {
+            echo "\033[33m User not found with the given public key or chat token! \033[0m \n";
         }
         if (!$has_key || !$user) {
             $conn->send(json_encode([
@@ -115,7 +127,8 @@ class WebSocketController implements MessageComponentInterface
                     }
                 break;
                 case "chat_history":
-                    $conn->send(json_encode($this->chat->chat_history($user->id, $user->role)));
+                    $history = $this->chat->chat_history($user->id, $user->role);
+                    $conn->send(json_encode($history));
                 break;
                 case "register":
                     $session_id = $this->chat->register($user->id, $conn);
