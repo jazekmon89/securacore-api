@@ -146,7 +146,7 @@ class Chat
                 ->has('session.messages')
                 ->with(['session.messages'])
                 ->orderBy('chat_session_id', 'desc')
-                ->limit(10)->get()->keyBy('chat_session_id')->toArray();
+                ->limit(10)->get()->toArray();
         } else {
             return ChatSessionUser::where('user_id', $user_id)
                 ->has('session.messages')
