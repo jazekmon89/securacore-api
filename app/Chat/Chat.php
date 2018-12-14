@@ -144,13 +144,17 @@ class Chat
             return ChatSessionUser::where('user_id', $user_id)
                 ->where('is_end_session', 0)
                 ->has('session.messages')
-                ->with(['session.messages'])
+                ->with(['session.messages.user'=>function($query){
+                    $query->select('id', 'first_name', 'last_name', 'role');
+                }])
                 ->orderBy('chat_session_id', 'desc')
                 ->limit(10)->get()->toArray();
         } else {
             return ChatSessionUser::where('user_id', $user_id)
                 ->has('session.messages')
-                ->with(['session.messages'])
+                ->with(['session.messages.user'=>function($query){
+                    $query->select('id', 'first_name', 'last_name');
+                }])
                 ->orderBy('chat_session_id', 'desc')
                 ->limit(10)->get()->toArray();
         }
