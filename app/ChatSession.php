@@ -21,9 +21,15 @@ class ChatSession extends Model
     
     protected $table = 'chat_sessions';
     protected $fillable = ['initiator_user_id', 'user_id'];
+    protected $with = ['initiator'];
+
 
     public function messages() {
     	return $this->hasMany('App\ChatMessage', 'chat_session_id', 'id');
+    }
+
+    public function initiator() {
+        return $this->belongsTo('App\User', 'initiator_user_id', 'id');
     }
 
     public function users() {
