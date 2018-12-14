@@ -94,10 +94,9 @@ class Chat
 	    				'message' => $message,
 	    				'chat_session_id' => $session_id
 	    			]);
-	    			return [
-                        'chat_message_datetime' => $message->created_at,
-                        'resources' => $session_users->select('user_id', 'resource_id')->get()->toArray()
-                    ];
+	    			return $session_users->with(['session.messages.user'=>function($query){
+                        $query->select('id', 'first_name', 'last_name');
+                    }])->get()->toArray();
 	    		}
 	    	}
     	}

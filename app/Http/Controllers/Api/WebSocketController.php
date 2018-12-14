@@ -84,21 +84,13 @@ class WebSocketController implements MessageComponentInterface
             switch ($data->command) {
                 case "message":
                     if (isset($data->session_id)) {
-                        $message_data = $this->chat->processMessage($user->id, $data->session_id, $data->message);
-                        $datetime = $message_data['chat_message_datetime'];
-                        $resources = $message_data['resources'];
+                        $resources = $this->chat->processMessage($user->id, $data->session_id, $data->message);
                         if ($resources && count($resources)) {
                             foreach ($resources as $resource) {
                                 if ($resource['resource_id'] && intval($conn->resourceId) != intval($resource['resource_id'])) {
                                     $user = User::where('id', $resource['user_id']);
                                     if ($user->exists()) {
-                                        $user = $user->first();
-                                        $data->user_info = [
-                                            'id' => $user->id,
-                                            'fullname' => $user->first_name . ' ' . $user->last_name
-                                        ];
-                                        $data->datetime = $datetime;
-                                        $msg = json_encode($data);
+                                        $msg = json_encode($resource);
                                     }
                                     if (isset($this->users[$resource['resource_id']])) {
                                         $this->users[$resource['resource_id']]->send($msg);
