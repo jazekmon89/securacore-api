@@ -77,6 +77,7 @@ class WebSocketController implements MessageComponentInterface
         }*/
         if (!$has_key || !$user) {
             $conn->send(json_encode([
+                'type' => $data->command,
                 'success' => 0,
                 'message' => 'Unauthorized access!'
             ]));
@@ -98,17 +99,20 @@ class WebSocketController implements MessageComponentInterface
                                 }
                             }
                             $conn->send(json_encode([
+                                'type' => $data->command,
                                 'success' => 1,
                                 'message' => 'Message was successfully sent.'
                             ]));
                         } else if ($resources === false) {
                             $conn->send(json_encode([
+                                'type' => $data->command,
                                 'success' => 0,
                                 'message' => 'Failed to send message. You do not belong to this session.'
                             ]));
                         }
                     } else {
                         $conn->send(json_encode([
+                            'type' => $data->command,
                             'success' => 0,
                             'message' => 'Failed to send message: missing session_id, token, or access is unauthorized.'
                         ]));
@@ -116,6 +120,10 @@ class WebSocketController implements MessageComponentInterface
                 break;
                 case "chat_history":
                     $history = $this->chat->chat_history($user->id, $user->role);
+                    $history = [
+                        'type' => $data->command,
+                        'data' => $history
+                    ];
                     $conn->send(json_encode($history));
                 break;
                 case "register":
@@ -123,17 +131,20 @@ class WebSocketController implements MessageComponentInterface
                     if ($user->role >= 2) {
                         if (!$session_id) {
                             $to_send = [
+                                'type' => $data->command,
                                 'success' => 0,
                                 'message' => 'There are no agents available as of the moment.'
                             ];
                         } else {
                             $to_send = [
+                                'type' => $data->command,
                                 'success' => 1,
                                 'session_id' => $session_id
                             ];
                         }
                     } else if ($user->role == 1) {
                         $to_send = [
+                            'type' => $data->command,
                             'success' => 1
                         ];
                     }
@@ -146,6 +157,7 @@ class WebSocketController implements MessageComponentInterface
                     if (isset($data->session_id)) {
                         $resource_ids = $this->chat->end($data->session_id);
                         $end_msg = [
+                            'type' => $data->command,
                             'success' => 1,
                             'message' => 'Chat has been ended.'
                         ];
@@ -159,18 +171,20 @@ class WebSocketController implements MessageComponentInterface
                         $conn->send(json_encode($end_msg));
                     } else {
                         $conn->send(json_encode([
+                            'type' => $data->command,
                             'success' => 0,
                             'message' => 'Failed to end chat: session id not provided'
                         ]));
                     }
                 break;
                 default:
-                    $example = array(
+                    $example = [
+                        'type' => $data->command,
                         'methods' => [
                             "message" => '{command: "message", session_id: "1", message: "it needs xss protection"}',
                             "register" => '{command: "register"}',
                         ],
-                    );
+                    ];
                     $conn->send(json_encode($example));
                 break;
             }
